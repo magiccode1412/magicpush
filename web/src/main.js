@@ -8,6 +8,7 @@ import './styles/index.css'
 
 import App from './App.vue'
 import router from './router'
+import { fetchVersionFromServer } from './utils/version'
 
 const app = createApp(App)
 
@@ -21,3 +22,6 @@ app.use(router)
 app.use(ElementPlus)
 
 app.mount('#app')
+
+// 从服务器获取版本信息
+fetchVersionFromServer()
