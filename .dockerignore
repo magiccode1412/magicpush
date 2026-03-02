@@ -1,0 +1,35 @@
+# 依赖目录 - 构建时会重新安装
+node_modules
+
+# npm 调试日志
+npm-debug.log
+
+# Git 相关文件和目录 - 不需要在镜像中
+.git
+.gitignore
+
+# 文档 - 构建不需要
+README.md
+
+# 环境变量文件 - 安全考虑，不打包到镜像
+.env
+
+# 测试覆盖率输出
+.nyc_output
+coverage
+
+# IDE 配置文件
+.vscode
+.idea
+
+# 编辑器临时文件
+*.swp
+*.swo
+*~
+
+# 项目文档目录
+docs
+
+# Cloud Native Buildpacks 配置
+.cnb.yml
+.cnb

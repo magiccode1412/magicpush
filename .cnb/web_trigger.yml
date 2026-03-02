@@ -1,0 +1,8 @@
+branch:
+  - buttons:
+      - name: docker
+        description: 构建完整docker镜像
+        event: web_trigger_docker
+      - name: docker_dev
+        description: 构建完整docker镜像
+        event: web_trigger_docker_dev

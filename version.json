@@ -1,0 +1,18 @@
+{
+  "name": "magicpush",
+  "version": "1.0.0",
+  "displayName": "MagicPush",
+  "description": "支持多渠道消息推送的统一管理平台",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/magiccode1412/magicpush"
+  },
+  "changelog": [
+    {
+      "version": "1.0.0",
+      "date": "2026-03-02",
+      "type": "release",
+      "changes": ["首发"]
+    }
+  ]
+}

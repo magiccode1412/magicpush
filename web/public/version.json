@@ -1,0 +1,35 @@
+{
+  "name": "magicpush",
+  "version": "1.0.1",
+  "displayName": "MagicPush",
+  "description": "支持多渠道消息推送的统一管理平台",
+  "repository": {
+    "type": "git",
+    "url": ""
+  },
+  "changelog": [
+    {
+      "version": "1.0.1",
+      "date": "2026-02-15",
+      "type": "release",
+      "changes": [
+        "修复用户登录权限验证问题",
+        "优化数据库初始化逻辑"
+      ]
+    },
+    {
+      "version": "1.0.0",
+      "date": "2026-02-15",
+      "type": "release",
+      "changes": [
+        "feat: 初始版本发布",
+        "feat: 支持企业微信、Telegram、PushPlus、WxPusher、飞书、钉钉等消息渠道",
+        "feat: Webhook 通用推送支持",
+        "feat: 用户认证与权限管理",
+        "feat: 渠道配置与推送接口管理",
+        "feat: 推送历史记录与状态追踪",
+        "feat: 响应式 Web 管理界面"
+      ]
+    }
+  ]
+}

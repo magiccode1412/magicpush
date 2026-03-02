@@ -1,0 +1,8 @@
+.pnpm-store
+node_modules
+server/data
+server/logs
+.env
+web/dist
+.codebuddy
+package-lock.json

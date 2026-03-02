@@ -1,0 +1,44 @@
+# 云原生开发
+$:
+  vscode:
+    - docker:
+        image: docker.cnb.cool/magiccode1412/universal/node_20_dev:latest
+      services:
+        - vscode
+        - docker
+      # 开发环境启动后会执行的任务
+      stages:
+        - name: install dependence
+          script: |
+            cd server
+            pnpm i
+            cp .env.example .env
+            cd ..
+            cd web
+            pnpm i
+main:  
+  web_trigger_docker:
+    - services:
+        - docker
+      imports: https://cnb.cool/magiccode1412/secret/-/blob/main/env.yml
+      stages:
+        - name: docker build && push
+          script: bash ./scripts/docker.sh
+  push:
+    - imports: https://cnb.cool/magiccode1412/secret/-/blob/main/env.yml
+      stages:
+        - name: sync_to_github
+          image: tencentcom/git-sync
+          settings:
+            target_url: https://github.com/${GITHUB_USERNAME}/${CNB_REPO_NAME_LOWERCASE}.git
+            auth_type: https
+            username: "${GITHUB_USERNAME}"
+            password: "${GITHUB_ACCESS_TOKEN}"
+            force: true
+  web_trigger_docker_dev:
+    - services:
+        - docker
+      imports: https://cnb.cool/magiccode1412/secret/-/blob/main/env.yml
+      stages:
+        - name: docker build && push
+          script: bash ./scripts/docker.sh dev
