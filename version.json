@@ -1,6 +1,6 @@
 {
   "name": "magicpush",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "displayName": "MagicPush",
   "description": "支持多渠道消息推送的统一管理平台",
   "repository": {
@@ -8,6 +8,15 @@
     "url": "https://github.com/magiccode1412/magicpush"
   },
   "changelog": [
+    {
+      "version": "1.2.0",
+      "date": "2026-03-03",
+      "type": "release",
+      "changes": [
+        "新增微信公众号渠道支持（模板消息推送）",
+        "新增Server酱渠道支持（微信推送服务）"
+      ]
+    },
     {
       "version": "1.1.0",
       "date": "2026-03-03",

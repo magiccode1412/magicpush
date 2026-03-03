@@ -6,6 +6,9 @@
 + [CNB云原生构建](https://cnb.cool/magiccode1412/magicpush)
 + [GitHub](https://github.com/magiccode1412/magicpush)
 
+## 📝 更新日志
+查看 [CHANGELOG.md](docs/CHANGELOG.md) 了解版本更新记录。
+
 ## 🌐 在线测试
 网址：https://magicpush.zeabur.app/
 

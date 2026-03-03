@@ -1,6 +1,6 @@
 {
   "name": "magicpush-server",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "MagicPush 后端服务",
   "main": "src/app.js",
   "scripts": {
