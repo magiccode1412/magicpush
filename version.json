@@ -1,6 +1,6 @@
 {
   "name": "magicpush",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "displayName": "MagicPush",
   "description": "支持多渠道消息推送的统一管理平台",
   "repository": {
@@ -9,10 +9,22 @@
   },
   "changelog": [
     {
+      "version": "1.1.0",
+      "date": "2026-03-03",
+      "type": "release",
+      "changes": [
+        "JWT_SECRET 支持自动生成，首次运行时自动创建安全密钥并存入数据库",
+        "移除不安全的环境变量默认值",
+        "简化 Docker 部署配置，JWT_SECRET 变为可选项"
+      ]
+    },
+    {
       "version": "1.0.0",
       "date": "2026-03-02",
       "type": "release",
-      "changes": ["首发"]
+      "changes": [
+        "首发"
+      ]
     }
   ]
 }
