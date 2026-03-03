@@ -60,7 +60,19 @@
 - 响应式Web管理界面
 - 深浅色主题切换
 
+## 测试
+
+[![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/magiccode1412/magicpush)
+
 ## 🐳 Docker 部署
+
+### 点击下面任一按钮一键部署
+
+[![Deploy on Zeabur](https://zeabur.com/button.svg)](https://zeabur.com/templates/GGBDF1?referralCode=nixingshiguang)
+
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?image=magiccode1412/magicpush:latest&env=PORT=3000)
+
+[![Deploy on Railway](https://railway.app/button.svg)](https://railway.app/new/template?image=magiccode1412/magicpush:latest&env=PORT=3000&name=magicpush)
 
 ### 使用预构建镜像
 

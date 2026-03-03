@@ -9,13 +9,7 @@ $:
       # 开发环境启动后会执行的任务
       stages:
         - name: install dependence
-          script: |
-            cd server
-            pnpm i
-            cp .env.example .env
-            cd ..
-            cd web
-            pnpm i
+          script: bash scripts/install.sh
 main:  
   web_trigger_docker:
     - services:

@@ -1,0 +1,18 @@
+# .gitpod.yml - 修正版（无非法参数）
+# 1. 指定开发环境（可选，Gitpod 内置大部分语言环境）
+image: docker.cnb.cool/magiccode1412/universal/node_20_dev:latest
+
+# 2. 环境启动后执行的任务（安装依赖 + 启动服务）
+tasks:
+  - name: Install dependencies & start app
+    command: |
+      bash scripts/install.sh
+      bash scripts/start.sh
+
+# 3. 暴露端口配置（让服务可外网访问）
+ports:
+  - port: 5173
+    visibility: public
+    onOpen: open-browser
+  - port: 3000
+    visibility: public
