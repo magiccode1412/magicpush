@@ -68,7 +68,6 @@
 
 ```bash
 docker run -d -p 3000:3000 \
-  -e JWT_SECRET=your-secret-key \
   -v $(pwd)/data:/app/server/data \
   magiccode1412/magicpush:latest
 ```
@@ -82,8 +81,8 @@ services:
     #image: docker.cnb.cool/magiccode1412/magicpush:latest # 国内用这个
     ports:
       - "3000:3000"
-    environment:
-      - JWT_SECRET=your-secret-key #必改项，64位随机字符串
+    # environment:
+      # - JWT_SECRET=your-secret-key # 可选，不设置则自动生成安全密钥
     volumes:
       - ./data:/app/data
     network_mode: bridge
@@ -285,12 +284,14 @@ curl -X POST http://localhost:3000/api/push \
 
 ```env
 NODE_ENV=development
-JWT_SECRET=your-secret-key
+# JWT_SECRET=your-secret-key        # 可选，不设置则自动生成安全密钥
 JWT_ACCESS_EXPIRES_IN=15m
 JWT_REFRESH_EXPIRES_IN=7d
 DB_PATH=./data/push_service.db
 LOG_LEVEL=info
 ```
+
+> **注意**：`JWT_SECRET` 为可选项。如果不设置，系统会在首次运行时自动生成一个 128 位的安全密钥并存储到数据库中。
 
 ## 📝 开发说明
 
