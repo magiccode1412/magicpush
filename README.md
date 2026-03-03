@@ -1,4 +1,4 @@
-# MagicPush
+# ![logo](public/favicon.svg)MagicPush
 
 一个支持多种消息渠道的推送服务管理平台，用户可以通过标准化的REST API接口将消息推送到多种通知渠道。
 
@@ -6,14 +6,16 @@
 + [CNB云原生构建](https://cnb.cool/magiccode1412/magicpush)
 + [GitHub](https://github.com/magiccode1412/magicpush)
 
-## 🌐 在线演示
+## 🌐 在线测试
+网址：https://magicpush.zeabur.app/
 
-**访问地址**: https://magicpush.zeabur.app/
-
-+ 用户名：`user@example.com`
-+ 密码：`168168`
+自行注册即可
 
 > 提示：演示环境仅作测试使用，请勿发送违规信息，数据会定期重置，请勿存储重要信息。
+
+## 预览
+![浅色预览图](public/image/Snipaste_2026-03-02_22-26-59.webp)
+![深色预览图](public/image/Snipaste_2026-03-02_22-27-46.webp)
 
 ## 困境
 
