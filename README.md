@@ -79,7 +79,7 @@
 + 需要验证手机号
 + 无需信用卡
 
-[![Deploy on Railway](https://railway.com/button.svg)](https://railway.com/deploy/hsY2SI?referralCode=85Y1W5&utm_medium=integration&utm_source=template&utm_campaign=generic)
+[![Deploy on Railway](https://railway.com/button.svg)](https://railway.com/deploy/JbNI4y?referralCode=85Y1W5&utm_medium=integration&utm_source=template&utm_campaign=generic)
 
 + 先用30天免费试用，5美元积分，然后每月1美元
 + 每个服务最多支持1个vCPU / 0.5GB RAM
