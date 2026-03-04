@@ -37,6 +37,7 @@ main:
         tags: cnb:arch:amd64
       services:
         - docker
+      imports: https://cnb.cool/magiccode1412/secret/-/blob/main/env.yml
       env:
         IMAGE_TAG: ${CNB_DOCKER_REGISTRY}/${CNB_REPO_SLUG_LOWERCASE}:latest-linux-amd64
       stages:
@@ -59,6 +60,7 @@ main:
         tags: cnb:arch:arm64:v8
       services:
         - docker
+      imports: https://cnb.cool/magiccode1412/secret/-/blob/main/env.yml
       env:
         IMAGE_TAG: ${CNB_DOCKER_REGISTRY}/${CNB_REPO_SLUG_LOWERCASE}:latest-linux-arm64
       stages:
