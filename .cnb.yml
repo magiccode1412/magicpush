@@ -10,15 +10,96 @@ $:
       stages:
         - name: install dependence
           script: bash scripts/install.sh
-main:  
+# main:  
+#   web_trigger_docker:
+#     - services:
+#         - docker
+#       imports: https://cnb.cool/magiccode1412/secret/-/blob/main/env.yml
+#       stages:
+#         - name: docker build && push
+#           script: bash ./scripts/docker.sh
+#   push:
+#     - imports: https://cnb.cool/magiccode1412/secret/-/blob/main/env.yml
+#       stages:
+#         - name: sync_to_github
+#           image: tencentcom/git-sync
+#           settings:
+#             target_url: https://github.com/${GITHUB_USERNAME}/${CNB_REPO_NAME_LOWERCASE}.git
+#             auth_type: https
+#             username: "${GITHUB_USERNAME}"
+#             password: "${GITHUB_ACCESS_TOKEN}"
+#             force: true
+
+
+main:
   web_trigger_docker:
+    - runner:
+        tags: cnb:arch:amd64
+      services:
+        - docker
+      env:
+        IMAGE_TAG: ${CNB_DOCKER_REGISTRY}/${CNB_REPO_SLUG_LOWERCASE}:latest-linux-amd64
+      stages:
+        - name: docker login
+          script: docker login -u ${CNB_TOKEN_USER_NAME} -p "${CNB_TOKEN}" ${CNB_DOCKER_REGISTRY}
+        - name: docker build
+          script: docker build -t ${IMAGE_TAG} .
+        - name: docker push
+          script: docker push ${IMAGE_TAG}
+        - name: resolve
+          type: cnb:resolve
+          options:
+            key: build-amd64 
+          
+    - runner:
+        tags: cnb:arch:arm64:v8
+      services:
+        - docker
+      env:
+        IMAGE_TAG: ${CNB_DOCKER_REGISTRY}/${CNB_REPO_SLUG_LOWERCASE}:latest-linux-arm64
+      stages:
+        - name: docker login
+          script: docker login -u ${CNB_TOKEN_USER_NAME} -p "${CNB_TOKEN}" ${CNB_DOCKER_REGISTRY}
+        - name: docker build
+          script: docker build -t ${IMAGE_TAG} .
+        - name: docker push
+          script: docker push ${IMAGE_TAG}
+        - name: resolve
+          type: cnb:resolve
+          options:
+            key: build-arm64
+
     - services:
         - docker
-      imports: https://cnb.cool/magiccode1412/secret/-/blob/main/env.yml
+      env:
+        IMAGE_TAG: ${CNB_DOCKER_REGISTRY}/${CNB_REPO_SLUG_LOWERCASE}:latest
       stages:
-        - name: docker build && push
-          script: bash ./scripts/docker.sh
-  push:
+        - name: await the amd64
+          type: cnb:await
+          options:
+            key: build-amd64
+        - name: await the arm64
+          type: cnb:await
+          options:
+            key: build-arm64
+        - name: manifest
+          image: cnbcool/manifest
+          settings:
+            target: ${IMAGE_TAG}
+            template: ${IMAGE_TAG}-OS-ARCH
+            platforms:
+              - linux/amd64
+              - linux/arm64
+        - name: remove tag
+          type: artifact:remove-tag
+          options:
+            name: ${CNB_REPO_NAME}
+            tags:
+              - latest-linux-amd64
+              - latest-linux-arm64
+            type: docker
+
+  web_trigger_github:
     - imports: https://cnb.cool/magiccode1412/secret/-/blob/main/env.yml
       stages:
         - name: sync_to_github
@@ -28,7 +109,23 @@ main:
             auth_type: https
             username: "${GITHUB_USERNAME}"
             password: "${GITHUB_ACCESS_TOKEN}"
-            force: true
+            force: true  
+
+  web_trigger_sync_to_dockerhub:
+    - services:
+        - docker
+      imports: https://cnb.cool/magiccode1412/secret/-/blob/main/env.yml
+      stages:
+        - name: pull docker image
+          script: docker pull ${CNB_DOCKER_REGISTRY}/${CNB_REPO_SLUG_LOWERCASE}:latest
+        - name: docker login
+          script: echo "$DOCKERHUB_TOKEN" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
+        - name: docker push
+          script: |
+            docker tag ${CNB_DOCKER_REGISTRY}/${CNB_REPO_SLUG_LOWERCASE}:latest ${DOCKERHUB_USERNAME}/CNB_REPO_SLUG_LOWERCASE:latest
+            docker push ${DOCKERHUB_USERNAME}/CNB_REPO_SLUG_LOWERCASE:latest
+
+dev:
   web_trigger_docker_dev:
     - services:
         - docker

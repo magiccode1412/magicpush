@@ -6,3 +6,9 @@ branch:
       - name: docker_dev
         description: 构建完整docker镜像
         event: web_trigger_docker_dev
+      - name: sync_to_github
+        description: 同步仓库到GitHub
+        event: web_trigger_github
+      - name: sync_to_dockerhub
+        description: 同步仓库到DockerHub
+        event: web_trigger_sync_to_dockerhub
