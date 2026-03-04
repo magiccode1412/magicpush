@@ -117,12 +117,12 @@ main:
       imports: https://cnb.cool/magiccode1412/secret/-/blob/main/env.yml
       stages:
         - name: pull docker image
-          script: docker pull ${CNB_DOCKER_REGISTRY}/${CNB_REPO_NAME_LOWERCASE}:latest
+          script: docker pull ${CNB_DOCKER_REGISTRY}/${CNB_REPO_SLUG_LOWERCASE}:latest
         - name: docker login
           script: echo "$DOCKERHUB_TOKEN" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
         - name: docker push
           script: |
-            docker tag ${CNB_DOCKER_REGISTRY}/${CNB_REPO_NAME_LOWERCASE}:latest ${DOCKERHUB_USERNAME}/${CNB_REPO_NAME_LOWERCASE}:latest
+            docker tag ${CNB_DOCKER_REGISTRY}/${CNB_REPO_SLUG_LOWERCASE}:latest ${DOCKERHUB_USERNAME}/${CNB_REPO_NAME_LOWERCASE}:latest
             docker push ${DOCKERHUB_USERNAME}/${CNB_REPO_NAME_LOWERCASE}:latest
 
 dev:
