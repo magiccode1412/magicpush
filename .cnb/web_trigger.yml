@@ -1,11 +1,14 @@
 branch:
   - buttons:
-      - name: docker
+      - name: docker_cnb
         description: 构建完整docker镜像
-        event: web_trigger_docker
+        event: web_trigger_docker_cnb
       - name: docker_dev
         description: 构建完整docker镜像
         event: web_trigger_docker_dev
       - name: sync_to_github
         description: 同步仓库到GitHub
         event: web_trigger_github
+      - name: dockerhub
+        description: 同步仓库到dockerhub
+        event: web_trigger_dockerhub
