@@ -32,25 +32,84 @@ $:
 
 
 main:
-  web_trigger_docker:
+  web_trigger_docker_cnb:
+    - runner:
+        tags: cnb:arch:amd64
+      services:
+        - docker
+      env:
+        IMAGE_TAG: ${CNB_DOCKER_REGISTRY}/${CNB_REPO_SLUG_LOWERCASE}:latest-linux-amd64
+      stages:
+        - name: docker build
+          script: docker build -t ${IMAGE_TAG} .
+        - name: docker push
+          script: docker push ${IMAGE_TAG}
+        - name: resolve
+          type: cnb:resolve
+          options:
+            key: build-amd64 
+          
+    - runner:
+        tags: cnb:arch:arm64:v8
+      services:
+        - docker
+      env:
+        IMAGE_TAG: ${CNB_DOCKER_REGISTRY}/${CNB_REPO_SLUG_LOWERCASE}:latest-linux-arm64
+      stages:
+        - name: docker build
+          script: docker build -t ${IMAGE_TAG} .
+        - name: docker push
+          script: docker push ${IMAGE_TAG}
+        - name: resolve
+          type: cnb:resolve
+          options:
+            key: build-arm64
+
+    - services:
+        - docker
+      env:
+        IMAGE_TAG: ${CNB_DOCKER_REGISTRY}/${CNB_REPO_SLUG_LOWERCASE}:latest
+      stages:
+        - name: await the amd64
+          type: cnb:await
+          options:
+            key: build-amd64
+        - name: await the arm64
+          type: cnb:await
+          options:
+            key: build-arm64
+        - name: manifest
+          image: cnbcool/manifest
+          settings:
+            target: ${IMAGE_TAG}
+            template: ${IMAGE_TAG}-OS-ARCH
+            platforms:
+              - linux/amd64
+              - linux/arm64
+        - name: remove tag
+          type: artifact:remove-tag
+          options:
+            name: ${CNB_REPO_NAME}
+            tags:
+              - latest-linux-amd64
+              - latest-linux-arm64
+            type: docker
+
+  web_trigger_dockerhub:
     - runner:
         tags: cnb:arch:amd64
       services:
         - docker
       imports: https://cnb.cool/magiccode1412/secret/-/blob/main/env.yml
       env:
-        IMAGE_TAG: ${CNB_DOCKER_REGISTRY}/${CNB_REPO_SLUG_LOWERCASE}:latest-linux-amd64
+        IMAGE_TAG: ${CNB_REPO_SLUG_LOWERCASE}:latest-linux-amd64
       stages:
         - name: docker login
           script: echo "$DOCKERHUB_TOKEN" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
         - name: docker build
           script: docker build -t ${IMAGE_TAG} .
         - name: docker push
-          script: docker push ${IMAGE_TAG}
-        - name: dockerhub push
-          script: |
-            docker tag ${IMAGE_TAG} ${DOCKERHUB_USERNAME}/${CNB_REPO_NAME_LOWERCASE}:latest
-            docker push ${DOCKERHUB_USERNAME}/${CNB_REPO_NAME_LOWERCASE}:latest    
+          script: docker push ${IMAGE_TAG}  
         - name: resolve
           type: cnb:resolve
           options:
@@ -62,7 +121,7 @@ main:
         - docker
       imports: https://cnb.cool/magiccode1412/secret/-/blob/main/env.yml
       env:
-        IMAGE_TAG: ${CNB_DOCKER_REGISTRY}/${CNB_REPO_SLUG_LOWERCASE}:latest-linux-arm64
+        IMAGE_TAG: ${CNB_REPO_SLUG_LOWERCASE}:latest-linux-arm64
       stages:
         - name: docker login
           script: echo "$DOCKERHUB_TOKEN" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
@@ -70,10 +129,6 @@ main:
           script: docker build -t ${IMAGE_TAG} .
         - name: docker push
           script: docker push ${IMAGE_TAG}
-        - name: dockerhub push
-          script: |
-            docker tag ${IMAGE_TAG} ${DOCKERHUB_USERNAME}/${CNB_REPO_NAME_LOWERCASE}:latest
-            docker push ${DOCKERHUB_USERNAME}/${CNB_REPO_NAME_LOWERCASE}:latest    
         - name: resolve
           type: cnb:resolve
           options:
