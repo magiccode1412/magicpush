@@ -1,6 +1,6 @@
 {
   "name": "magicpush",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "displayName": "MagicPush",
   "description": "支持多渠道消息推送的统一管理平台",
   "repository": {
@@ -8,6 +8,15 @@
     "url": "https://github.com/magiccode1412/magicpush"
   },
   "changelog": [
+    {
+      "version": "1.2.1",
+      "date": "2026-03-05",
+      "type": "release",
+      "changes": [
+        "修复Webhook渠道Body模板变量未转义导致JSON格式错误的问题",
+        "优化Webhook模板解析失败时的错误处理，改为返回默认JSON格式"
+      ]
+    },
     {
       "version": "1.2.0",
       "date": "2026-03-03",
