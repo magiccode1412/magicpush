@@ -9,10 +9,9 @@
 ## 📝 更新日志
 查看 [CHANGELOG.md](docs/CHANGELOG.md) 了解版本更新记录。
 
-## 🌐 在线测试
-网址：https://magicpush.zeabur.app/
-
-自行注册即可
+## 🌐 在线测试（自行注册即可）
++ 网址一：https://magicpush.up.railway.app/
++ 网址二：https://rurvbrlarizv.ap-northeast-1.clawcloudrun.com/
 
 > 提示：演示环境仅作测试使用，请勿发送违规信息，数据会定期重置，请勿存储重要信息。
 
@@ -85,8 +84,6 @@
 + 每个服务最多支持1个vCPU / 0.5GB RAM
 + 0.5 GB 卷存储
 + 无需信用卡
-
-[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?image=magiccode1412/magicpush:latest&env=PORT=3000)（未测试）
 
 ### 使用预构建镜像
 
