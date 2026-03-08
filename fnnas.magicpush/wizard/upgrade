@@ -1,0 +1,27 @@
+[
+    {
+        "stepTitle": "应用更新",
+        "items": [
+            {
+                "type": "tips",
+                "helpText": "如需更新端口，请输入端口号，必须是数字，在0~65535之间，且未被其他程序占用，默认使用818端口"
+            },
+            {
+                "type": "text",
+                "field": "wizard_app_port",
+                "label": "端口配置",
+                "initValue": "818",
+                "rules": [
+                    {
+                        "required": false,
+                        "message": "如需更新端口，请输入端口号"
+                    },
+                    {
+                        "pattern": "^[0-9]+$",
+                        "message": "端口号必须是数字，在0~65535之间，且未被其他程序占用，默认使用818端口"
+                    }
+                ]
+            }
+        ]
+    }
+]

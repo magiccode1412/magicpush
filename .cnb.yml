@@ -10,6 +10,12 @@ $:
       stages:
         - name: install dependence
           script: bash scripts/install.sh
+        - name: install fnpack
+          script: |
+            cd /root
+            curl -fsSL -o fnpack https://static2.fnnas.com/fnpack/fnpack-1.2.1-linux-amd64
+            chmod +x fnpack
+            mv fnpack /usr/local/bin/fnpack
 
 main:
   web_trigger_docker_cnb:

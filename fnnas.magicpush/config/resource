@@ -1,0 +1,22 @@
+{
+    "docker-project": {
+        "projects": [
+            {
+                "name": "magicpush",
+                "path": "docker"
+            }
+        ]
+    },
+    "data-share": {
+        "shares": [
+            {
+                "name": "magicpush",
+                "permission": {
+                    "rw": [
+                        "docker-magicpush"
+                    ]
+                }
+            }
+        ]
+    }
+}

@@ -1,0 +1,40 @@
+#!/bin/bash
+
+### This script is called after the user uninstalls the application.
+
+# 如果wizard_data_action为delete，则遍历TRIM_DATA_SHARE_PATHS列表，多个路径会使用冒号分隔，删除数据文件，
+
+# 检查用户选择的数据操作类型
+if [ "$wizard_data_action" = "delete" ]; then
+    echo "用户选择删除数据，开始清理数据文件..."
+    
+    # 检查 TRIM_DATA_SHARE_PATHS 是否存在
+    if [ -n "$TRIM_DATA_SHARE_PATHS" ]; then
+        # 将冒号分隔的路径转换为数组
+        IFS=':' read -ra DATA_PATHS <<< "$TRIM_DATA_SHARE_PATHS"
+        
+        # 遍历所有路径并删除
+        for path in "${DATA_PATHS[@]}"; do
+            if [ -d "$path" ] || [ -f "$path" ]; then
+                echo "正在删除: $path"
+                rm -rf "$path"
+                
+                if [ $? -eq 0 ]; then
+                    echo "成功删除: $path"
+                else
+                    echo "删除失败: $path"
+                fi
+            else
+                echo "路径不存在，跳过: $path"
+            fi
+        done
+        
+        echo "数据清理完成"
+    else
+        echo "未找到 TRIM_DATA_SHARE_PATHS 环境变量"
+    fi
+else
+    echo "用户选择保留数据，跳过数据清理"
+fi
+
+exit 0

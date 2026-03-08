@@ -1,0 +1,16 @@
+{
+    ".url": {
+        "magicpush.Application": {
+            "title": "魔法推送",
+            "icon": "images/icon_{0}.png",
+            "type": "url",
+            "protocol": "",
+            "port": "${wizard_app_port}",
+            "url": "/",
+            "allUsers": true,
+            "control": {
+                "accessPerm": "editable"
+            }
+        }
+    }
+}

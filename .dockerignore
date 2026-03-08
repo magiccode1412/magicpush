@@ -33,3 +33,5 @@ docs
 # Cloud Native Buildpacks 配置
 .cnb.yml
 .cnb
+
+magicpush

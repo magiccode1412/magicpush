@@ -1,0 +1,12 @@
+appname               = magicpush
+version               = 1.0.0
+display_name          = 魔法推送
+desc                  = 一个支持多种消息渠道的统一推送服务管理平台，用户可以通过标准化的REST API接口将消息推送到多种通知渠道
+arch                  = x86_64
+source                = thirdparty
+maintainer            = magiccode
+distributor           = magiccode
+desktop_uidir         = ui
+desktop_applaunchname = magicpush.Application
+service_port          = "${wizard_app_port}"
+changelog             = 这是更新日志内容

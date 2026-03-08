@@ -1,0 +1,10 @@
+services:
+  magicpush:
+    image: docker.cnb.cool/magiccode1412/magicpush:latest
+    ports:
+      - "${wizard_app_port}:3000"
+    volumes:
+      - /var/apps/magicpush/shares/magicpush/data:/app/server/data
+      - /var/apps/magicpush/shares/magicpush/logs:/app/server/logs
+    network_mode: bridge
+    container_name: magicpush
