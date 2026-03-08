@@ -4,20 +4,16 @@
         "items": [
             {
                 "type": "tips",
-                "helpText": "在开始使用前，请阅读并同意我们的服务条款。"
-            },
-            {
-                "type": "tips",
-                "helpText": "请阅读 <a target=\"_blank\" href=\"https://github.com/magiccode1412/magicpush/docs/privacy-policy.md\">隐私政策</a> 和 <a target=\"_blank\" href=\"https://github.com/magiccode1412/magicpush/docs/terms-of-service.md\">服务条款</a>。"
+                "helpText": "在开始使用前，请阅读 <a target=\"_blank\" href=\"https://github.com/magiccode1412/magicpush/blob/main/docs/privacy-policy.md\">隐私政策</a> 和 <a target=\"_blank\" href=\"https://github.com/magiccode1412/magicpush/blob/main/docs/terms-of-service.md\">服务条款</a>，并同意我的隐私政策和服务条款"
             },
             {
                 "type": "switch",
                 "field": "wizard_agree_terms",
-                "label": "我已阅读并同意服务条款",
+                "label": "我已阅读并同意隐私政策和服务条款",
                 "rules": [
                     {
                         "required": true,
-                        "message": "请同意服务条款"
+                        "message": "请阅读并同意隐私政策和服务条款"
                     }
                 ]
             }
@@ -29,7 +25,7 @@
             {
                 "type": "text",
                 "field": "wizard_app_port",
-                "label": "应用端口",
+                "label": "应用将监听的端口",
                 "initValue": "818",
                 "rules": [
                     {
