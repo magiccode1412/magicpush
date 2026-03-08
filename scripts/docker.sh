@@ -34,21 +34,8 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-# 登录 CNB 仓库
-echo "[2/3] 登录 CNB 仓库..."
-if [ -z "$CNB_DOCKER_USERNAME" ] || [ -z "$CNB_DOCKER_PASSWORD" ]; then
-    echo "错误: 请设置 CNB_DOCKER_USERNAME 和 CNB_DOCKER_PASSWORD 环境变量"
-    exit 1
-fi
-DOCKER_CLI_HINTS=false echo "$CNB_DOCKER_PASSWORD" | docker login "${CNB_DOCKER_REGISTRY}" -u "$CNB_DOCKER_USERNAME" --password-stdin
-
-if [ $? -ne 0 ]; then
-    echo "错误: CNB 仓库登录失败"
-    exit 1
-fi
-
 # 推送到 CNB 仓库
-echo "[3/3] 推送镜像到 CNB 仓库..."
+echo "[2/3] 推送镜像到 CNB 仓库..."
 docker push "${CNB_IMAGE_NAME}:${MAIN_TAG}"
 
 if [ $? -ne 0 ]; then
