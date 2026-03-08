@@ -29,9 +29,6 @@
   "pnpm": {
     "onlyBuiltDependencies": [
       "better-sqlite3"
-    ],
-    "overrides": {
-      "@colors/colors": ">=1.6.1"
-    }
+    ]
   }
 }
