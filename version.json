@@ -1,6 +1,6 @@
 {
   "name": "magicpush",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "displayName": "MagicPush",
   "description": "支持多渠道消息推送的统一管理平台",
   "repository": {
@@ -8,6 +8,15 @@
     "url": "https://github.com/magiccode1412/magicpush"
   },
   "changelog": [
+    {
+      "version": "1.2.2",
+      "date": "2026-03-08",
+      "type": "release",
+      "changes": [
+        "修复未有管理员用户时自动跳转到注册页面",
+        "即将发布飞牛NAS部署方式"
+      ]
+    },
     {
       "version": "1.2.1",
       "date": "2026-03-05",
