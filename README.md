@@ -1,9 +1,8 @@
-<!-- ![logo](public/logo.png) -->
-<div style="text-align: center;" >
+<div align="center">
   <img src="public/logo.png" alt="测试logo" width="256px">
 </div>
 
-<h1 style="text-align: center;">MagicPush</h1>
+<h1 align="center">MagicPush</h1>
 
 一个支持多种消息渠道的推送服务管理平台，用户可以通过标准化的REST API接口将消息推送到多种通知渠道。
 
