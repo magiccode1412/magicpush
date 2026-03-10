@@ -1,3 +1,6 @@
+const { HttpsProxyAgent } = require('https-proxy-agent');
+const { SocksProxyAgent } = require('socks-proxy-agent');
+
 /**
  * 渠道适配器基类
  * 所有具体渠道适配器都需要继承此类
@@ -58,6 +61,32 @@ class BaseChannel {
    */
   static getConfigFields() {
     throw new Error('子类必须实现getConfigFields静态方法');
+  }
+
+  /**
+   * 根据代理URL创建代理Agent
+   * @param {string} proxyUrl - 代理URL，如 http://127.0.0.1:7890 或 socks5://user:pass@host:port
+   * @returns {Object|null} - HttpsProxyAgent 或 SocksProxyAgent 实例，无效时返回null
+   */
+  createProxyAgent(proxyUrl) {
+    if (!proxyUrl || proxyUrl.trim() === '') {
+      return null;
+    }
+
+    try {
+      const url = new URL(proxyUrl);
+      const protocol = url.protocol.replace(':', '').toLowerCase();
+
+      if (protocol === 'socks' || protocol === 'socks5' || protocol === 'socks4') {
+        // SOCKS 代理
+        return new SocksProxyAgent(proxyUrl);
+      } else {
+        // HTTP/HTTPS 代理
+        return new HttpsProxyAgent(proxyUrl);
+      }
+    } catch (e) {
+      return null;
+    }
   }
 }
 

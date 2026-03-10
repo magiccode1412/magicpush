@@ -9,6 +9,7 @@ class TelegramChannel extends BaseChannel {
     super(config);
     this.apiUrl = `https://api.telegram.org/bot${config.botToken}`;
     this.chatId = config.chatId;
+    this.proxyUrl = config.proxyUrl;
   }
 
   async send(message) {
@@ -29,10 +30,18 @@ class TelegramChannel extends BaseChannel {
       parse_mode: parseMode,
     };
 
-    const response = await axios.post(`${this.apiUrl}/sendMessage`, payload, {
+    const axiosConfig = {
       headers: { 'Content-Type': 'application/json' },
       timeout: 10000,
-    });
+    };
+
+    // 如果配置了代理，使用代理Agent
+    const proxyAgent = this.createProxyAgent(this.proxyUrl);
+    if (proxyAgent) {
+      axiosConfig.httpsAgent = proxyAgent;
+    }
+
+    const response = await axios.post(`${this.apiUrl}/sendMessage`, payload, axiosConfig);
 
     if (!response.data.ok) {
       throw new Error(`Telegram发送失败: ${response.data.description}`);
@@ -92,6 +101,14 @@ class TelegramChannel extends BaseChannel {
         required: true,
         placeholder: '请输入Chat ID',
         description: '目标聊天ID（用户ID或群组ID）',
+      },
+      {
+        name: 'proxyUrl',
+        label: '代理地址',
+        type: 'text',
+        required: false,
+        placeholder: '如 http://127.0.0.1:7890',
+        description: '可选，用于访问Telegram API的代理地址',
       },
     ];
   }
