@@ -59,6 +59,38 @@ class BaseChannel {
   static getConfigFields() {
     throw new Error('子类必须实现getConfigFields静态方法');
   }
+
+  /**
+   * 解析代理URL，返回axios兼容的代理配置
+   * @param {string} proxyUrl - 代理URL，如 http://127.0.0.1:7890 或 socks5://user:pass@host:port
+   * @returns {Object|null} - axios代理配置对象，无效时返回null
+   */
+  parseProxyUrl(proxyUrl) {
+    if (!proxyUrl || proxyUrl.trim() === '') {
+      return null;
+    }
+
+    try {
+      const url = new URL(proxyUrl);
+      const proxyConfig = {
+        protocol: url.protocol.replace(':', ''),
+        host: url.hostname,
+        port: parseInt(url.port, 10),
+      };
+
+      // 如果有认证信息
+      if (url.username || url.password) {
+        proxyConfig.auth = {
+          username: decodeURIComponent(url.username),
+          password: decodeURIComponent(url.password),
+        };
+      }
+
+      return proxyConfig;
+    } catch (e) {
+      return null;
+    }
+  }
 }
 
 module.exports = BaseChannel;
