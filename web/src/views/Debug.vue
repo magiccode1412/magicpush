@@ -302,6 +302,7 @@ import { ref, reactive, computed, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
 import axios from 'axios'
 import { getEndpoints } from '@/api/endpoint'
+import { useSettingsStore } from '@/stores/settings'
 import {
   Settings,
   Edit3,
@@ -321,6 +322,7 @@ const tokenPosition = ref('url')
 const headerFormat = ref('text')
 const loading = ref(false)
 const response = ref(null)
+const settingsStore = useSettingsStore()
 
 const form = reactive({
   title: '',
@@ -350,7 +352,9 @@ const canSubmitInbound = computed(() => {
 const requestUrl = computed(() => {
   if (!currentEndpoint.value) return '请选择接口'
   
-  const baseUrl = window.location.origin
+  const baseUrl = settingsStore.isProxyEnabled 
+    ? settingsStore.proxyUrl.trim().replace(/\/$/, '')
+    : window.location.origin
   const token = currentEndpoint.value.token
   
   if (apiType.value === 'inbound') {
@@ -468,7 +472,9 @@ const handleTest = async () => {
   response.value = null
   
   try {
-    const baseUrl = window.location.origin
+    const baseUrl = settingsStore.isProxyEnabled 
+      ? settingsStore.proxyUrl.trim().replace(/\/$/, '')
+      : window.location.origin
     const token = currentEndpoint.value.token
     
     let res

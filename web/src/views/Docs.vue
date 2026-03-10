@@ -285,8 +285,9 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { ElMessage } from 'element-plus'
+import { useSettingsStore } from '@/stores/settings'
 import {
   Rocket,
   Server,
@@ -298,28 +299,34 @@ import {
   Settings,
 } from 'lucide-vue-next'
 
-const apiBaseUrl = window.location.origin
+const settingsStore = useSettingsStore()
 
-const getExample = `curl "${apiBaseUrl}/api/push/your_token?title=测试消息&content=这是一条测试消息&type=text"`
+const apiBaseUrl = computed(() => {
+  return settingsStore.isProxyEnabled 
+    ? settingsStore.proxyUrl.trim().replace(/\/$/, '')
+    : window.location.origin
+})
 
-const postExample = `curl -X POST ${apiBaseUrl}/api/push/your_token \\
+const getExample = computed(() => `curl "${apiBaseUrl.value}/api/push/your_token?title=测试消息&content=这是一条测试消息&type=text"`)
+
+const postExample = computed(() => `curl -X POST ${apiBaseUrl.value}/api/push/your_token \\
   -H "Content-Type: application/json" \\
   -d '{
     "title": "测试消息",
     "content": "这是一条测试消息",
     "type": "text"
-  }'`
+  }'`)
 
-const authExample = `curl -X POST ${apiBaseUrl}/api/push \\
+const authExample = computed(() => `curl -X POST ${apiBaseUrl.value}/api/push \\
   -H "Authorization: Bearer your_token" \\
   -H "Content-Type: application/json" \\
   -d '{
     "title": "测试消息",
     "content": "这是一条测试消息",
     "type": "text"
-  }'`
+  }'`)
 
-const inboundExample = `curl -X POST ${apiBaseUrl}/api/inbound/your_token \\
+const inboundExample = computed(() => `curl -X POST ${apiBaseUrl.value}/api/inbound/your_token \\
   -H "Content-Type: application/json" \\
   -d '{
     "alerts": [{
@@ -327,7 +334,7 @@ const inboundExample = `curl -X POST ${apiBaseUrl}/api/inbound/your_token \\
       "labels": { "alertname": "HighMemoryUsage" },
       "annotations": { "message": "内存使用率超过 90%" }
     }]
-  }'`
+  }'`)
 
 const successResponse = JSON.stringify({
   success: true,
@@ -357,7 +364,7 @@ const errorResponse = JSON.stringify({
 }, null, 2)
 
 const copyCode = (code) => {
-  navigator.clipboard.writeText(code)
+  navigator.clipboard.writeText(typeof code === 'string' ? code : code.value)
   ElMessage.success('已复制到剪贴板')
 }
 </script>

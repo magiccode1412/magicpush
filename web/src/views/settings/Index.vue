@@ -130,6 +130,40 @@
           </div>
         </div>
 
+        <!-- IPv4-to-IPv6 代理设置 -->
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
+          <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">代理转发</h3>
+          <div class="space-y-4">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-lg bg-orange-100 dark:bg-orange-900/30 flex items-center justify-center">
+                  <Globe class="w-5 h-5 text-orange-600" />
+                </div>
+                <div>
+                  <p class="text-sm font-medium text-gray-900 dark:text-white">IPv4-to-IPv6 转发</p>
+                  <p class="text-xs text-gray-500 dark:text-gray-400">解决 IPv6-only 服务器访问问题</p>
+                </div>
+              </div>
+              <el-switch
+                v-model="settingsStore.proxyEnabled"
+              />
+            </div>
+            
+            <div v-if="settingsStore.proxyEnabled" class="mt-4">
+              <el-form-item label="代理地址" class="!mb-0">
+                <el-input
+                  v-model="settingsStore.proxyUrl"
+                  placeholder="https://your-proxy.pages.dev"
+                  clearable
+                />
+              </el-form-item>
+              <p class="text-xs text-gray-500 dark:text-gray-400 mt-2">
+                填写 Cloudflare Pages 代理地址，用于转发 API 请求
+              </p>
+            </div>
+          </div>
+        </div>
+
         <!-- 系统管理（仅管理员可见） -->
         <div v-if="isAdmin" class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
           <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">系统管理</h3>
@@ -188,12 +222,14 @@ import { ref, reactive, onMounted, computed } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { useAuthStore } from '@/stores/auth'
 import { useThemeStore } from '@/stores/theme'
+import { useSettingsStore } from '@/stores/settings'
 import { getCurrentUser, updateCurrentUser, changePassword, exportConfig, importConfig, getRegistrationSetting, updateRegistrationSetting } from '@/api/user'
 import { fetchVersionFromServer } from '@/utils/version'
-import { User, Sun, Moon, Monitor, Download, Upload, Shield } from 'lucide-vue-next'
+import { User, Sun, Moon, Monitor, Download, Upload, Shield, Globe } from 'lucide-vue-next'
 
 const authStore = useAuthStore()
 const themeStore = useThemeStore()
+const settingsStore = useSettingsStore()
 
 const profileFormRef = ref(null)
 const passwordFormRef = ref(null)
