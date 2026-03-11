@@ -1,10 +1,28 @@
 <div align="center">
   <img src="public/logo.png" alt="测试logo" width="256px">
   <h1 align="center">MagicPush</h1> 
+  <p>一个支持多种消息渠道的推送服务管理平台，用户可以通过标准化的REST API接口将消息推送到多种通知渠道。</p>
+  <p>
+    <a href="./LICENSE">
+      <img alt="MIT License"
+        src="https://img.shields.io/github/license/magiccode1412/magicpush">
+    </a>
+    <a href="./version.json">
+      <img alt="Latest Version"
+        src="https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Fmagiccode1412%2Fmagicpush%2Frefs%2Fheads%2Fmain%2Fversion.json&query=%24.version&prefix=v&style=flat&label=version&labelColor=orange">
+    </a>
+    <a href="https://hub.docker.com/r/magiccode1412/magicpush" target="_blank">
+      <img alt="Docker Pulls"
+        src="https://img.shields.io/docker/pulls/magiccode1412/magicpush?labelColor=%20%23528bff&color=%20%23155EEF">
+    </a>
+    <a href="https://hub.docker.com/r/magiccode1412/magicpush" target="_blank">
+      <img alt="Docker Image Size"
+        src="https://img.shields.io/docker/image-size/magiccode1412/magicpush">
+    </a>
+  </p>
 </div>
 
 
-一个支持多种消息渠道的推送服务管理平台，用户可以通过标准化的REST API接口将消息推送到多种通知渠道。
 
 ## 项目地址
 + [CNB云原生构建](https://cnb.cool/magiccode1412/magicpush)
@@ -84,7 +102,7 @@
 
 ## 测试
 
-[![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/magiccode1412/magicpush)
+[![Open in Gitpod](./public/image/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/magiccode1412/magicpush)
 
 ## 🐳 Docker 部署
 
@@ -92,9 +110,9 @@
 
 ### 点击下面任一按钮一键部署
 
-[![Deploy on Zeabur](https://zeabur.com/button.svg)](https://zeabur.com/templates/GGBDF1?referralCode=nixingshiguang)
+[![Deploy on Zeabur](./public/image/depoly_to_zeabur.svg)](https://zeabur.com/templates/GGBDF1?referralCode=nixingshiguang)
 
-[![Deploy on Railway](https://railway.com/button.svg)](https://railway.com/deploy/JbNI4y?referralCode=85Y1W5&utm_medium=integration&utm_source=template&utm_campaign=generic)
+[![Deploy on Railway](./public/image/deploy_on_railway.svg)](https://railway.com/deploy/JbNI4y?referralCode=85Y1W5&utm_medium=integration&utm_source=template&utm_campaign=generic)
 
 + 先用30天免费试用，5美元积分，然后每月1美元
 + 每个服务最多支持1个vCPU / 0.5GB RAM
