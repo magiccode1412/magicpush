@@ -1,6 +1,6 @@
 {
   "name": "magicpush",
-  "version": "1.2.4",
+  "version": "1.2.5",
   "displayName": "MagicPush",
   "description": "支持多渠道消息推送的统一管理平台",
   "repository": {
@@ -8,6 +8,14 @@
     "url": "https://github.com/magiccode1412/magicpush"
   },
   "changelog": [
+    {
+      "version": "1.2.5",
+      "date": "2026-03-11",
+      "type": "release",
+      "changes": [
+        "修复入站配置保存时错误触发接口令牌重新生成的问题"
+      ]
+    },
     {
       "version": "1.2.4",
       "date": "2026-03-10",

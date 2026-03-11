@@ -14,28 +14,28 @@
 查看 [CHANGELOG.md](docs/CHANGELOG.md) 了解版本更新记录。
 
 ## 🌐 在线测试（自行注册即可）
-+ 网址一：https://magicpush.up.railway.app/
-+ 网址二：https://rurvbrlarizv.ap-northeast-1.clawcloudrun.com/
++ 开发版：https://magicpush.up.railway.app/
++ 稳定版：https://rurvbrlarizv.ap-northeast-1.clawcloudrun.com/
 
 > 提示：演示环境仅作测试使用，请勿发送违规信息，数据会定期重置，请勿存储重要信息。
 
 ## 预览
 
-<detail>
+<details>
   <summary>点击查看预览图</summary>
   <div>
-  <img src="./public/image/1.webp" alt="preview"></img>
-  <img src="./public/image/2.webp" alt="preview"></img>
-  <img src="./public/image/3.webp" alt="preview"></img>
-  <img src="./public/image/4.webp" alt="preview"></img>
-  <img src="./public/image/5.webp" alt="preview"></img>
-  <img src="./public/image/6.webp" alt="preview"></img>
-  <img src="./public/image/7.webp" alt="preview"></img>
-  <img src="./public/image/8.webp" alt="preview"></img>
-  <img src="./public/image/9.webp" alt="preview"></img>
-  <img src="./public/image/10.webp" alt="preview"></img>
+    <img src="./public/image/1.webp" alt="preview">
+    <img src="./public/image/2.webp" alt="preview">
+    <img src="./public/image/3.webp" alt="preview">
+    <img src="./public/image/4.webp" alt="preview">
+    <img src="./public/image/5.webp" alt="preview">
+    <img src="./public/image/6.webp" alt="preview">
+    <img src="./public/image/7.webp" alt="preview">
+    <img src="./public/image/8.webp" alt="preview">
+    <img src="./public/image/9.webp" alt="preview">
+    <img src="./public/image/10.webp" alt="preview">
   </div>
-</detail>
+</details>
 
 ## 困境
 
