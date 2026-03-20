@@ -1,5 +1,5 @@
 appname               = magicpush
-version               = 1.2.4
+version               = 1.3.0
 display_name          = 魔法推送
 desc                  = 一个支持多种消息渠道的统一推送服务管理平台，支持企业微信、钉钉、飞书、Telegram、微信公众号、WxPusher、PushPlus、Server酱、Webhook等渠道，通过标准化的REST API接口实现消息推送
 platform              = x86
@@ -9,4 +9,4 @@ maintainer_url        = https://github.com/magiccode1412/magicpush
 desktop_uidir         = ui
 desktop_applaunchname = magicpush.Application
 service_port          = "${wizard_app_port}"
-changelog             = "新增API接口CF代理支持\n新增通知渠道代理功能（支持Telegram等需要代理的渠道）"
+changelog             = "新增SMTP邮件通知渠道，支持QQ邮箱、163邮箱、Gmail等主流邮箱服务/n修复入站配置保存时错误触发接口令牌重新生成的问题"

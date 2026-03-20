@@ -1,6 +1,6 @@
 {
   "name": "magicpush-server",
-  "version": "1.2.4",
+  "version": "1.3.0",
   "description": "MagicPush 后端服务",
   "main": "src/app.js",
   "scripts": {
@@ -9,18 +9,19 @@
     "init-db": "node src/database/init.js"
   },
   "dependencies": {
-    "express": "^4.18.2",
-    "better-sqlite3": "^9.4.3",
-    "jsonwebtoken": "^9.0.2",
+    "axios": "^1.6.7",
     "bcryptjs": "^2.4.3",
-    "express-validator": "^7.0.1",
+    "better-sqlite3": "^9.4.3",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
-    "winston": "^3.12.0",
-    "axios": "^1.6.7",
-    "uuid": "^9.0.1",
+    "express": "^4.18.2",
+    "express-validator": "^7.0.1",
     "https-proxy-agent": "^7.0.2",
-    "socks-proxy-agent": "^8.0.2"
+    "jsonwebtoken": "^9.0.2",
+    "nodemailer": "^8.0.3",
+    "socks-proxy-agent": "^8.0.2",
+    "uuid": "^9.0.1",
+    "winston": "^3.12.0"
   },
   "devDependencies": {
     "nodemon": "^3.1.0"

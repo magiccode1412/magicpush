@@ -88,6 +88,7 @@
 - **微信公众号** (模板消息推送，支持测试号)
 - **Server酱** (微信推送服务)
 - **Webhook** (通用 HTTP 推送，支持自定义 URL/Headers/Body)
+- **SMTP邮件** (支持QQ邮箱、163邮箱、Gmail等)
 
 ### 核心功能
 - 多渠道消息同时推送
@@ -336,6 +337,7 @@ curl -X POST http://localhost:3000/api/push \
 | 微信公众号 | appId, appSecret, templateId, openIds (多个用逗号分隔) |
 | Server酱 | sendKey (可选: channel) |
 | Webhook | url, method (可选: headers, bodyTemplate) |
+| SMTP邮件 | host, port, user, pass, to (可选: secure, from) |
 
 ## 🔐 环境变量
 

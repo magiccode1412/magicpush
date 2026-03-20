@@ -18,7 +18,7 @@
         <div class="text-sm text-blue-700 dark:text-blue-300">
           <p class="font-medium mb-1">支持的渠道类型</p>
           <p class="opacity-80">
-            企业微信 · 钉钉 · 飞书 · Telegram · 微信公众号 · WxPusher · PushPlus · Server酱 · Webhook
+            企业微信 · 钉钉 · 飞书 · Telegram · 微信公众号 · WxPusher · PushPlus · Server酱 · Webhook · SMTP邮件
           </p>
         </div>
       </div>
@@ -194,6 +194,18 @@
               type="password"
               show-password
             />
+            <!-- 开关 -->
+            <el-switch
+              v-else-if="field.type === 'switch'"
+              v-model="form.config[field.name]"
+            />
+            <!-- 数字输入 -->
+            <el-input
+              v-else-if="field.type === 'number'"
+              v-model="form.config[field.name]"
+              :placeholder="field.placeholder"
+              type="number"
+            />
             <!-- 普通文本 -->
             <el-input
               v-else
@@ -276,6 +288,7 @@ const getChannelColor = (type) => {
     webhook: 'bg-purple-500',
     wechat_official: 'bg-green-600',
     serverchan: 'bg-amber-500',
+    smtp: 'bg-red-500',
   }
   return colors[type] || 'bg-gray-500'
 }
@@ -291,6 +304,7 @@ const getChannelIcon = (type) => {
     webhook: Webhook,
     wechat_official: MessageCircle,
     serverchan: Send,
+    smtp: MessageCircle,
   }
   return icons[type] || Share2
 }

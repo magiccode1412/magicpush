@@ -1,7 +1,7 @@
 // 版本信息
 export const VERSION = {
   name: 'MagicPush',
-  version: '1.2.4',
+  version: '1.3.0',
   get displayName() {
     return `${this.name} v${this.version}`
   },

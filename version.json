@@ -1,6 +1,6 @@
 {
   "name": "magicpush",
-  "version": "1.2.5",
+  "version": "1.3.0",
   "displayName": "MagicPush",
   "description": "支持多渠道消息推送的统一管理平台",
   "repository": {
@@ -8,6 +8,14 @@
     "url": "https://github.com/magiccode1412/magicpush"
   },
   "changelog": [
+    {
+      "version": "1.3.0",
+      "date": "2026-03-20",
+      "type": "release",
+      "changes": [
+        "新增SMTP邮件通知渠道，支持QQ邮箱、163邮箱、Gmail等主流邮箱服务"
+      ]
+    },
     {
       "version": "1.2.5",
       "date": "2026-03-11",
