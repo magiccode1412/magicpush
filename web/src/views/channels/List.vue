@@ -18,7 +18,7 @@
         <div class="text-sm text-blue-700 dark:text-blue-300">
           <p class="font-medium mb-1">支持的渠道类型</p>
           <p class="opacity-80">
-            企业微信 · 钉钉 · 飞书 · Telegram · 微信公众号 · WxPusher · PushPlus · Server酱 · Webhook · SMTP邮件 · 微信龙虾机器人
+            微信龙虾机器人 · 企业微信 · 钉钉 · 飞书 · Telegram · 微信公众号 · WxPusher · PushPlus · Server酱 · Webhook · SMTP邮件
           </p>
         </div>
       </div>

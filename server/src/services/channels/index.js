@@ -1,4 +1,5 @@
 const BaseChannel = require('./base.channel');
+const WechatclawbotChannel = require('./wechatclawbot.channel');
 const WecomChannel = require('./wecom.channel');
 const TelegramChannel = require('./telegram.channel');
 const PushPlusChannel = require('./pushplus.channel');
@@ -9,10 +10,10 @@ const WebhookChannel = require('./webhook.channel');
 const WechatOfficialChannel = require('./wechat-official.channel');
 const ServerChanChannel = require('./serverchan.channel');
 const SmtpChannel = require('./smtp.channel');
-const WechatclawbotChannel = require('./wechatclawbot.channel');
 
 // 渠道类型到适配器的映射
 const channelAdapters = {
+  wechatclawbot: WechatclawbotChannel,
   wecom: WecomChannel,
   telegram: TelegramChannel,
   pushplus: PushPlusChannel,
@@ -23,7 +24,6 @@ const channelAdapters = {
   wechat_official: WechatOfficialChannel,
   serverchan: ServerChanChannel,
   smtp: SmtpChannel,
-  wechatclawbot: WechatclawbotChannel,
 };
 
 /**
@@ -69,6 +69,7 @@ function validateChannelConfig(type, config) {
 
 module.exports = {
   BaseChannel,
+  WechatclawbotChannel,
   WecomChannel,
   TelegramChannel,
   PushPlusChannel,
@@ -79,7 +80,6 @@ module.exports = {
   WechatOfficialChannel,
   ServerChanChannel,
   SmtpChannel,
-  WechatclawbotChannel,
   getChannelAdapter,
   getChannelTypes,
   validateChannelConfig,

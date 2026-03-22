@@ -100,6 +100,7 @@ import { Bell, Github, Zap, Shield, Database, Globe, Code, Layers, MessageSquare
 import { VERSION } from '@/utils/version'
 
 const supportedChannels = [
+  { name: '微信龙虾机器人', icon: Bot, bgColor: 'bg-orange-100 dark:bg-orange-900/30', iconColor: 'text-orange-600 dark:text-orange-400' },
   { name: '企业微信', icon: MessageSquare, bgColor: 'bg-blue-100 dark:bg-blue-900/30', iconColor: 'text-blue-600 dark:text-blue-400' },
   { name: 'Telegram', icon: Send, bgColor: 'bg-sky-100 dark:bg-sky-900/30', iconColor: 'text-sky-600 dark:text-sky-400' },
   { name: 'PushPlus', icon: Zap, bgColor: 'bg-green-100 dark:bg-green-900/30', iconColor: 'text-green-600 dark:text-green-400' },
