@@ -16,8 +16,9 @@ class ClawbotController {
       const result = await client.getQRCode();
       return ResponseUtil.success(res, result, '获取二维码成功');
     } catch (error) {
-      logger.error('获取 ClawBot 二维码失败:', error.message);
-      return ResponseUtil.serverError(res, '获取二维码失败: ' + error.message);
+      const msg = String(error.message || error);
+      logger.error('获取 ClawBot 二维码失败: %s', msg);
+      return ResponseUtil.serverError(res, '获取二维码失败: ' + msg);
     }
   }
 
@@ -34,8 +35,9 @@ class ClawbotController {
       const result = await client.pollQRStatus(qrcode);
       return ResponseUtil.success(res, result);
     } catch (error) {
-      logger.error('轮询 ClawBot 扫码状态失败:', error.message);
-      return ResponseUtil.serverError(res, '查询扫码状态失败: ' + error.message);
+      const msg = String(error.message || error);
+      logger.error('轮询 ClawBot 扫码状态失败: %s', msg);
+      return ResponseUtil.serverError(res, '查询扫码状态失败: ' + msg);
     }
   }
 

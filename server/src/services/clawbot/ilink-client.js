@@ -69,10 +69,12 @@ class IlinkClient {
     const { data } = await axios.get(`${this.baseUrl}/ilink/bot/get_qrcode_status`, {
       params: { qrcode },
       headers: this._headers(),
-      timeout: 15000,
+      timeout: 25000,
     });
 
-    const statusMap = {
+    logger.debug('ClawBot 轮询响应 qrcode=%s: %j', qrcode, data);
+
+    const numericStatusMap = {
       0: 'wait',
       1: 'scaned',
       2: 'confirmed',
@@ -80,9 +82,15 @@ class IlinkClient {
       4: 'canceled',
     };
 
-    const result = { status: statusMap[data.status] || 'wait' };
+    const validStatuses = ['wait', 'scaned', 'confirmed', 'expired', 'canceled'];
+    const rawStatus = data.status;
+    const normalizedStatus = (typeof rawStatus === 'number')
+      ? (numericStatusMap[rawStatus] || 'wait')
+      : (validStatuses.includes(rawStatus) ? rawStatus : 'wait');
 
-    if (data.status === 2) {
+    const result = { status: normalizedStatus };
+
+    if (normalizedStatus === 'confirmed') {
       logger.info('ClawBot 扫码绑定确认: %j', data);
       result.token = data.bot_token || data.token;
       result.botId = data.ilink_bot_id;

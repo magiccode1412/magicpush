@@ -109,40 +109,40 @@ async function fetchQRCode() {
 
 function startPolling() {
   cleanup()
-  pollTimer = setInterval(async () => {
-    try {
-      const res = await getClawbotQRStatus(qrcodeId.value)
-      if (!res.success || !res.data) return
+  pollTimer = null
+  doPoll()
+}
 
-      switch (res.data.status) {
-        case 'scaned':
-          status.value = 'scaned'
-          break
-        case 'confirmed':
-          status.value = 'confirmed'
-          clearInterval(pollTimer)
-          pollTimer = null
-          botData.value = res.data
-          await confirmBind()
-          break
-        case 'expired':
-          status.value = 'expired'
-          clearInterval(pollTimer)
-          pollTimer = null
-          break
-        case 'canceled':
-          status.value = 'expired'
-          clearInterval(pollTimer)
-          pollTimer = null
-          break
-      }
-    } catch (error) {
-      clearInterval(pollTimer)
-      pollTimer = null
-      status.value = 'error'
-      errorMsg.value = '轮询失败: ' + (error.message || '未知错误')
+async function doPoll() {
+  if (!qrcodeId.value) return
+  try {
+    const res = await getClawbotQRStatus(qrcodeId.value)
+    if (!res.success || !res.data) {
+      pollTimer = setTimeout(doPoll, 2000)
+      return
     }
-  }, 2000)
+
+    switch (res.data.status) {
+      case 'scaned':
+        status.value = 'scaned'
+        pollTimer = setTimeout(doPoll, 2000)
+        break
+      case 'confirmed':
+        status.value = 'confirmed'
+        botData.value = res.data
+        await confirmBind()
+        break
+      case 'expired':
+      case 'canceled':
+        status.value = 'expired'
+        break
+      default:
+        pollTimer = setTimeout(doPoll, 2000)
+        break
+    }
+  } catch (error) {
+    pollTimer = setTimeout(doPoll, 2000)
+  }
 }
 
 async function confirmBind() {
@@ -185,7 +185,7 @@ function handleClose() {
 
 function cleanup() {
   if (pollTimer) {
-    clearInterval(pollTimer)
+    clearTimeout(pollTimer)
     pollTimer = null
   }
 }
