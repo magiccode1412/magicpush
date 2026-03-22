@@ -18,7 +18,7 @@
         <div class="text-sm text-blue-700 dark:text-blue-300">
           <p class="font-medium mb-1">支持的渠道类型</p>
           <p class="opacity-80">
-            企业微信 · 钉钉 · 飞书 · Telegram · 微信公众号 · WxPusher · PushPlus · Server酱 · Webhook · SMTP邮件
+            企业微信 · 钉钉 · 飞书 · Telegram · 微信公众号 · WxPusher · PushPlus · Server酱 · Webhook · SMTP邮件 · 微信龙虾机器人
           </p>
         </div>
       </div>
@@ -57,6 +57,10 @@
                 <el-dropdown-item command="edit">
                   <Edit class="w-4 h-4 mr-2" />
                   编辑
+                </el-dropdown-item>
+                <el-dropdown-item v-if="channel.channel_type === 'wechatclawbot'" command="rebind">
+                  <RefreshCw class="w-4 h-4 mr-2" />
+                  重新绑定
                 </el-dropdown-item>
                 <el-dropdown-item command="test">
                   <TestTube class="w-4 h-4 mr-2" />
@@ -144,12 +148,22 @@
           </el-select>
         </el-form-item>
 
-        <el-form-item label="渠道名称" prop="name">
+        <!-- 微信龙虾机器人：扫码绑定提示 -->
+        <div v-if="form.channelType === 'wechatclawbot' && !editingChannel" class="text-center py-4">
+          <p class="text-sm text-gray-600 dark:text-gray-400">
+            微信龙虾机器人需要通过扫码方式绑定，点击下方按钮开始
+          </p>
+          <el-button type="primary" class="mt-3" @click="openClawbotBind">
+            扫码绑定
+          </el-button>
+        </div>
+
+        <el-form-item v-if="form.channelType !== 'wechatclawbot'" label="渠道名称" prop="name">
           <el-input v-model="form.name" placeholder="请输入渠道名称" />
         </el-form-item>
 
         <!-- 动态配置字段 -->
-        <template v-if="currentChannelType">
+        <template v-if="currentChannelType && form.channelType !== 'wechatclawbot'">
           <el-form-item
             v-for="field in currentChannelType.configFields"
             :key="field.name"
@@ -219,13 +233,21 @@
         </template>
       </el-form>
 
-      <template #footer>
+      <template v-if="form.channelType !== 'wechatclawbot'" #footer>
         <el-button @click="showCreateDialog = false">取消</el-button>
         <el-button type="primary" :loading="formLoading" @click="handleSubmit">
           {{ editingChannel ? '保存' : '绑定' }}
         </el-button>
       </template>
     </el-dialog>
+
+    <!-- 微信龙虾机器人扫码绑定弹窗 -->
+    <ClawbotBindDialog
+      v-model:visible="showClawbotDialog"
+      :mode="clawbotBindMode"
+      :channel-id="clawbotBindChannelId"
+      @success="handleClawbotBindSuccess"
+    />
   </div>
 </template>
 
@@ -248,13 +270,18 @@ import {
   Users,
   MessageSquare,
   Webhook,
+  RefreshCw,
 } from 'lucide-vue-next'
+import ClawbotBindDialog from '@/components/ClawbotBindDialog.vue'
 
 const channels = ref([])
 const channelTypes = ref([])
 const showCreateDialog = ref(false)
 const formLoading = ref(false)
 const editingChannel = ref(null)
+const showClawbotDialog = ref(false)
+const clawbotBindMode = ref('create')
+const clawbotBindChannelId = ref(null)
 
 const formRef = ref(null)
 const form = reactive({
@@ -289,6 +316,7 @@ const getChannelColor = (type) => {
     wechat_official: 'bg-green-600',
     serverchan: 'bg-amber-500',
     smtp: 'bg-red-500',
+    wechatclawbot: 'bg-rose-500',
   }
   return colors[type] || 'bg-gray-500'
 }
@@ -305,12 +333,18 @@ const getChannelIcon = (type) => {
     wechat_official: MessageCircle,
     serverchan: Send,
     smtp: MessageCircle,
+    wechatclawbot: RefreshCw,
   }
   return icons[type] || Share2
 }
 
 const getDisplayConfig = (channel) => {
   const displayConfig = {}
+  if (channel.channel_type === 'wechatclawbot') {
+    if (channel.config.toUserId) displayConfig['用户ID'] = channel.config.toUserId
+    if (channel.config.botId) displayConfig['BotID'] = channel.config.botId
+    return displayConfig
+  }
   const type = channelTypes.value.find(t => t.type === channel.channel_type)
   if (type) {
     type.configFields.forEach(field => {
@@ -357,6 +391,10 @@ const handleCommand = (command, channel) => {
     }
     form.config = processedConfig
     showCreateDialog.value = true
+  } else if (command === 'rebind') {
+    clawbotBindMode.value = 'rebind'
+    clawbotBindChannelId.value = channel.id
+    showClawbotDialog.value = true
   } else if (command === 'test') {
     handleTest(channel)
   } else if (command === 'delete') {
@@ -459,6 +497,18 @@ const resetForm = () => {
   form.channelType = ''
   form.name = ''
   form.config = {}
+}
+
+const openClawbotBind = () => {
+  clawbotBindMode.value = 'create'
+  clawbotBindChannelId.value = null
+  showClawbotDialog.value = true
+}
+
+const handleClawbotBindSuccess = () => {
+  showCreateDialog.value = false
+  resetForm()
+  loadData()
 }
 
 onMounted(() => {

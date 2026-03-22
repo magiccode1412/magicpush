@@ -9,6 +9,7 @@ const WebhookChannel = require('./webhook.channel');
 const WechatOfficialChannel = require('./wechat-official.channel');
 const ServerChanChannel = require('./serverchan.channel');
 const SmtpChannel = require('./smtp.channel');
+const WechatclawbotChannel = require('./wechatclawbot.channel');
 
 // 渠道类型到适配器的映射
 const channelAdapters = {
@@ -22,6 +23,7 @@ const channelAdapters = {
   wechat_official: WechatOfficialChannel,
   serverchan: ServerChanChannel,
   smtp: SmtpChannel,
+  wechatclawbot: WechatclawbotChannel,
 };
 
 /**
@@ -77,6 +79,7 @@ module.exports = {
   WechatOfficialChannel,
   ServerChanChannel,
   SmtpChannel,
+  WechatclawbotChannel,
   getChannelAdapter,
   getChannelTypes,
   validateChannelConfig,

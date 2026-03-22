@@ -10,6 +10,10 @@ const {
 // 所有渠道路由都需要认证
 router.use(authMiddleware);
 
+// 微信龙虾机器人绑定路由（必须在 /:id 之前，避免路径冲突）
+const clawbotRoutes = require('./clawbot.routes');
+router.use('/clawbot', clawbotRoutes);
+
 // 获取渠道列表
 router.get('/', channelController.getChannels);
 

@@ -27,3 +27,20 @@ export const deleteChannel = (id) => {
 export const testChannel = (id) => {
   return request.post(`/channels/${id}/test`)
 }
+
+// 微信龙虾机器人绑定
+export const getClawbotQRCode = () => {
+  return request.post('/channels/clawbot/bind/qrcode')
+}
+
+export const getClawbotQRStatus = (qrcode) => {
+  return request.get('/channels/clawbot/bind/status', { params: { qrcode } })
+}
+
+export const clawbotBindConfirm = (data) => {
+  return request.post('/channels/clawbot/bind/confirm', data)
+}
+
+export const clawbotRebind = (channelId, data) => {
+  return request.put(`/channels/clawbot/bind/${channelId}/rebind`, data)
+}

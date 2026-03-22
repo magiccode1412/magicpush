@@ -64,7 +64,7 @@ const createChannelValidation = [
   body('channelType')
     .notEmpty()
     .withMessage('渠道类型不能为空')
-    .isIn(['wecom', 'telegram', 'pushplus', 'wxpusher', 'feishu', 'dingtalk', 'webhook', 'wechat_official', 'serverchan', 'smtp'])
+    .isIn(['wecom', 'telegram', 'pushplus', 'wxpusher', 'feishu', 'dingtalk', 'webhook', 'wechat_official', 'serverchan', 'smtp', 'wechatclawbot'])
     .withMessage('不支持的渠道类型'),
   body('name')
     .trim()
