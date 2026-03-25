@@ -5,9 +5,21 @@
     <link rel="icon" type="image/png" href="/favicon.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>MagicPush</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
   </head>
   <body>
     <div id="app"></div>
+    <script>
+      // 在Vue加载前设置主题，避免闪烁
+      (function() {
+        const theme = localStorage.getItem('themeMode') || 'dark';
+        if (theme === 'dark') {
+          document.documentElement.classList.add('dark');
+        }
+      })();
+    </script>
     <script type="module" src="/src/main.js"></script>
   </body>
 </html>

@@ -2,8 +2,8 @@
   <div class="space-y-6 animate-fade-in">
     <div class="flex items-center justify-between">
       <div>
-        <h2 class="text-2xl font-bold text-gray-900 dark:text-white">渠道管理</h2>
-        <p class="text-gray-500 dark:text-gray-400 mt-1">绑定和管理您的消息推送渠道</p>
+        <h2 class="font-display text-2xl font-bold text-primary">渠道管理</h2>
+        <p class="text-secondary mt-1">绑定和管理您的消息推送渠道</p>
       </div>
       <el-button type="primary" @click="showCreateDialog = true">
         <Plus class="w-4 h-4 mr-1" />
@@ -12,12 +12,12 @@
     </div>
 
     <!-- 渠道类型说明 -->
-    <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl p-4">
+    <div class="glass-panel p-4 border-l-4" style="border-color: var(--accent-primary);">
       <div class="flex items-start gap-3">
-        <Info class="w-5 h-5 text-blue-600 dark:text-blue-400 mt-0.5" />
-        <div class="text-sm text-blue-700 dark:text-blue-300">
-          <p class="font-medium mb-1">支持的渠道类型</p>
-          <p class="opacity-80">
+        <Info class="w-5 h-5 flex-shrink-0 mt-0.5" style="color: var(--accent-primary);" />
+        <div class="text-sm">
+          <p class="font-medium text-primary mb-1">支持的渠道类型</p>
+          <p class="text-secondary">
             微信龙虾机器人 · 企业微信 · 钉钉 · 飞书 · Telegram · 微信公众号 · WxPusher · PushPlus · Server酱 · Webhook · SMTP邮件
           </p>
         </div>
@@ -29,7 +29,7 @@
       <div
         v-for="channel in channels"
         :key="channel.id"
-        class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-5 hover:shadow-md transition-shadow"
+        class="glass-card p-5"
       >
         <div class="flex items-start justify-between mb-4">
           <div class="flex items-center gap-3">
@@ -42,8 +42,8 @@
               <component :is="getChannelIcon(channel.channel_type)" class="w-5 h-5 text-white" />
             </div>
             <div>
-              <h3 class="font-semibold text-gray-900 dark:text-white">{{ channel.name }}</h3>
-              <p class="text-xs text-gray-500 dark:text-gray-400">
+              <h3 class="font-semibold text-primary">{{ channel.name }}</h3>
+              <p class="text-xs text-muted">
                 {{ getChannelTypeName(channel.channel_type) }}
               </p>
             </div>
@@ -82,8 +82,8 @@
             :key="key"
             class="flex items-center text-sm"
           >
-            <span class="text-gray-500 dark:text-gray-400 w-16">{{ key }}:</span>
-            <span class="text-gray-700 dark:text-gray-300 truncate">{{ value }}</span>
+            <span class="text-muted w-16">{{ key }}:</span>
+            <span class="text-secondary truncate">{{ value }}</span>
           </div>
         </div>
 
@@ -104,11 +104,11 @@
 
     <!-- 空状态 -->
     <div v-if="channels.length === 0" class="text-center py-16">
-      <div class="w-20 h-20 mx-auto rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center mb-4">
-        <Share2 class="w-10 h-10 text-gray-400" />
+      <div class="w-20 h-20 mx-auto rounded-full glass-card flex items-center justify-center mb-4">
+        <Share2 class="w-10 h-10 text-muted" />
       </div>
-      <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">暂无渠道</h3>
-      <p class="text-gray-500 dark:text-gray-400 mb-4">绑定您的第一个消息推送渠道</p>
+      <h3 class="text-lg font-medium text-primary mb-2">暂无渠道</h3>
+      <p class="text-secondary mb-4">绑定您的第一个消息推送渠道</p>
       <el-button type="primary" @click="showCreateDialog = true">
         <Plus class="w-4 h-4 mr-1" />
         绑定渠道

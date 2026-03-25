@@ -7,6 +7,10 @@ export default {
   darkMode: 'class',
   theme: {
     extend: {
+      fontFamily: {
+        display: ['Playfair Display', 'serif'],
+        body: ['Inter', 'sans-serif'],
+      },
       colors: {
         primary: {
           50: '#eff6ff',

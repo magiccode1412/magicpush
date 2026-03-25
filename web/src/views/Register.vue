@@ -1,113 +1,118 @@
 <template>
-  <div class="min-h-screen flex items-center justify-center gradient-bg-light dark:bg-gray-900 p-4">
+  <div class="min-h-screen flex items-center justify-center p-4" style="background: var(--bg-primary);">
     <div class="w-full max-w-md">
       <!-- Logo -->
-      <div class="text-center mb-8">
-        <div class="w-16 h-16 mx-auto rounded-2xl flex items-center justify-center mb-4 shadow-lg shadow-blue-500/30">
-          <!-- <Bell class="w-8 h-8 text-white" /> -->
-          <img src="/favicon.png" alt="MagicPush" />
+      <div class="text-center mb-10 fade-in">
+        <div class="w-20 h-20 mx-auto rounded-2xl glass-card flex items-center justify-center mb-6" style="box-shadow: var(--shadow-glow);">
+          <img src="/favicon.png" alt="MagicPush" class="w-12 h-12">
         </div>
-        <h1 class="text-2xl font-bold text-gray-900 dark:text-white mb-2">创建账户</h1>
-        <p class="text-gray-500 dark:text-gray-400">开始您的 魔法推送 之旅</p>
+        <h1 class="font-display text-4xl font-bold text-primary mb-3">MagicPush</h1>
+        <p class="text-secondary text-sm">开始您的推送之旅</p>
       </div>
 
-      <!-- 注册卡片 -->
-      <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-6 sm:p-8">
-        <!-- 检查状态中 -->
-        <div v-if="checkingStatus" class="py-12 text-center">
-          <el-loading />
-          <p class="text-gray-500 dark:text-gray-400 mt-4">正在检查注册状态...</p>
-        </div>
-
-        <!-- 注册已关闭 -->
-        <div v-else-if="!registrationEnabled" class="py-8 text-center">
-          <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center">
-            <Lock class="w-8 h-8 text-gray-400" />
+      <!-- 注册卡片 - 液态玻璃效果 -->
+      <div class="glass-card p-8 fade-in delay-200">
+        <template v-if="checkingStatus">
+          <div class="py-12 text-center">
+            <el-loading />
+            <p class="text-secondary mt-4">正在检查注册状态...</p>
           </div>
-          <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-            注册已关闭
-          </h3>
-          <p class="text-sm text-gray-500 dark:text-gray-400 mb-6">
-            当前系统暂不开放注册，请联系管理员获取账号
-          </p>
-          <router-link to="/login">
-            <el-button type="primary" size="large" class="w-full">
-              返回登录
-            </el-button>
-          </router-link>
-        </div>
+        </template>
 
-        <!-- 注册表单 -->
+        <template v-else-if="!registrationEnabled">
+          <div class="py-8 text-center">
+            <div class="w-16 h-16 mx-auto mb-4 rounded-full glass-card flex items-center justify-center">
+              <svg class="w-8 h-8 text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z"/>
+              </svg>
+            </div>
+            <h3 class="font-display text-lg font-semibold text-primary mb-2">
+              注册已关闭
+            </h3>
+            <p class="text-secondary text-sm mb-6">
+              当前系统暂不开放注册，请联系管理员获取账号
+            </p>
+            <router-link to="/login">
+              <el-button type="primary" size="large" class="w-full">
+                返回登录
+              </el-button>
+            </router-link>
+          </div>
+        </template>
+
         <template v-else>
+          <h2 class="font-display text-2xl font-semibold text-primary mb-2">创建账户</h2>
+          <p class="text-secondary text-sm mb-8">开始您的 MagicPush 之旅</p>
+
           <el-form
             ref="formRef"
             :model="form"
             :rules="rules"
             @keyup.enter="handleRegister"
           >
-            <el-form-item prop="username">
+            <div class="mb-5">
+              <label class="block text-sm text-secondary mb-2">用户名</label>
               <el-input
                 v-model="form.username"
                 placeholder="请输入用户名"
                 size="large"
-                :prefix-icon="User"
+                class="custom-input"
               />
-            </el-form-item>
+            </div>
 
-            <el-form-item prop="email">
+            <div class="mb-5">
+              <label class="block text-sm text-secondary mb-2">邮箱地址</label>
               <el-input
                 v-model="form.email"
                 placeholder="请输入邮箱"
                 size="large"
-                :prefix-icon="MessageCircle"
+                class="custom-input"
               />
-            </el-form-item>
+            </div>
 
-            <el-form-item prop="password">
+            <div class="mb-5">
+              <label class="block text-sm text-secondary mb-2">密码</label>
               <el-input
                 v-model="form.password"
                 type="password"
                 placeholder="请输入密码"
                 size="large"
                 show-password
-                :prefix-icon="Lock"
+                class="custom-input"
               />
-            </el-form-item>
+            </div>
 
-            <el-form-item prop="confirmPassword">
+            <div class="mb-6">
+              <label class="block text-sm text-secondary mb-2">确认密码</label>
               <el-input
                 v-model="form.confirmPassword"
                 type="password"
                 placeholder="请确认密码"
                 size="large"
                 show-password
-                :prefix-icon="Lock"
+                class="custom-input"
               />
-            </el-form-item>
+            </div>
 
-            <el-form-item>
-              <el-button
-                type="primary"
-                size="large"
-                class="w-full"
-                :loading="loading"
-                @click="handleRegister"
-              >
-                注册
-              </el-button>
-            </el-form-item>
+            <el-button
+              type="primary"
+              size="large"
+              class="w-full btn-primary"
+              :loading="loading"
+              @click="handleRegister"
+            >
+              注 册
+            </el-button>
           </el-form>
 
-          <!-- 分割线 -->
-          <div class="flex items-center gap-4 my-6">
-            <div class="flex-1 h-px bg-gray-200 dark:bg-gray-700"></div>
-            <span class="text-sm text-gray-400">已有账户？</span>
-            <div class="flex-1 h-px bg-gray-200 dark:bg-gray-700"></div>
+          <div class="flex items-center gap-4 my-8">
+            <div class="flex-1 h-px" style="background: var(--border-default);"></div>
+            <span class="text-muted text-sm">已有账户？</span>
+            <div class="flex-1 h-px" style="background: var(--border-default);"></div>
           </div>
 
-          <!-- 登录按钮 -->
           <router-link to="/login">
-            <el-button size="large" class="w-full">
+            <el-button size="large" class="w-full btn-secondary">
               返回登录
             </el-button>
           </router-link>
@@ -123,7 +128,6 @@ import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import { useAuthStore } from '@/stores/auth'
 import { checkRegistrationStatus } from '@/api/auth'
-import { Bell, User, MessageCircle, Lock } from 'lucide-vue-next'
 
 const router = useRouter()
 const authStore = useAuthStore()
@@ -138,23 +142,6 @@ const form = reactive({
   password: '',
   confirmPassword: '',
 })
-
-// 检查注册状态
-const checkStatus = async () => {
-  checkingStatus.value = true
-  try {
-    const res = await checkRegistrationStatus()
-    if (res.success) {
-      registrationEnabled.value = res.data.enabled
-    }
-  } catch (error) {
-    console.error('检查注册状态失败:', error)
-    // 默认允许注册
-    registrationEnabled.value = true
-  } finally {
-    checkingStatus.value = false
-  }
-}
 
 const validateConfirmPassword = (rule, value, callback) => {
   if (value !== form.password) {
@@ -181,6 +168,21 @@ const rules = {
     { required: true, message: '请确认密码', trigger: 'blur' },
     { validator: validateConfirmPassword, trigger: 'blur' },
   ],
+}
+
+const checkStatus = async () => {
+  checkingStatus.value = true
+  try {
+    const res = await checkRegistrationStatus()
+    if (res.success) {
+      registrationEnabled.value = res.data.enabled
+    }
+  } catch (error) {
+    console.error('检查注册状态失败:', error)
+    registrationEnabled.value = true
+  } finally {
+    checkingStatus.value = false
+  }
 }
 
 const handleRegister = async () => {
@@ -211,3 +213,31 @@ onMounted(() => {
   checkStatus()
 })
 </script>
+
+<style scoped>
+.custom-input :deep(.el-input__wrapper) {
+  background: var(--bg-glass);
+  border: 1px solid var(--border-default);
+  box-shadow: none;
+  border-radius: var(--radius-md);
+  padding: 0.75rem 1rem;
+}
+
+.custom-input :deep(.el-input__inner) {
+  color: var(--text-primary);
+  font-size: 0.9375rem;
+}
+
+.custom-input :deep(.el-input__inner::placeholder) {
+  color: var(--text-muted);
+}
+
+.custom-input :deep(.el-input__wrapper:hover) {
+  border-color: var(--border-hover);
+}
+
+.custom-input :deep(.el-input__wrapper.is-focus) {
+  border-color: var(--accent-primary);
+  box-shadow: 0 0 0 3px var(--accent-bg) !important;
+}
+</style>

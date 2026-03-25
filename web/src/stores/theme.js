@@ -1,48 +1,48 @@
 import { defineStore } from 'pinia'
-import { ref, computed, watchEffect, onMounted, onUnmounted } from 'vue'
+import { ref, computed, watch } from 'vue'
 
 export const useThemeStore = defineStore('theme', () => {
-  // 主题模式: 'auto' | 'light' | 'dark'
-  const themeMode = ref(localStorage.getItem('themeMode') || 'auto')
-  const systemPrefersDark = ref(false)
+  // 主题模式: 'light' | 'dark'
+  const themeMode = ref(localStorage.getItem('themeMode') || 'dark')
 
   // 计算当前是否为深色模式
   const isDark = computed(() => {
-    if (themeMode.value === 'auto') {
-      return systemPrefersDark.value
-    }
     return themeMode.value === 'dark'
   })
 
-  // 监听系统主题变化
-  let mediaQuery = null
+  let isAnimating = false
 
-  const updateSystemTheme = (e) => {
-    systemPrefersDark.value = e.matches
-  }
+  // 切换主题模式 - 带圆形扩展 View Transition 动画
+  const toggleTheme = (event) => {
+    if (isAnimating) return
+    isAnimating = true
 
-  const initSystemThemeListener = () => {
-    if (typeof window !== 'undefined' && window.matchMedia) {
-      mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
-      systemPrefersDark.value = mediaQuery.matches
-      mediaQuery.addEventListener('change', updateSystemTheme)
-    }
-  }
+    // 获取点击位置
+    const x = event ? event.clientX : window.innerWidth / 2
+    const y = event ? event.clientY : window.innerHeight / 2
 
-  const cleanupSystemThemeListener = () => {
-    if (mediaQuery) {
-      mediaQuery.removeEventListener('change', updateSystemTheme)
-    }
-  }
+    // 确定目标主题
+    const targetTheme = themeMode.value === 'dark' ? 'light' : 'dark'
 
-  // 切换主题模式
-  const toggleTheme = () => {
-    if (themeMode.value === 'auto') {
-      themeMode.value = 'light'
-    } else if (themeMode.value === 'light') {
-      themeMode.value = 'dark'
+    // 在 :root 上设置 CSS 变量（View Transitions 会继承）
+    document.documentElement.style.setProperty('--click-x', `${x}px`)
+    document.documentElement.style.setProperty('--click-y', `${y}px`)
+
+    // 使用 View Transitions API
+    if (document.startViewTransition) {
+      document.startViewTransition(() => {
+        themeMode.value = targetTheme
+        localStorage.setItem('themeMode', themeMode.value)
+      }).finished.then(() => {
+        isAnimating = false
+      }).catch(() => {
+        isAnimating = false
+      })
     } else {
-      themeMode.value = 'auto'
+      // 不支持则直接切换
+      themeMode.value = targetTheme
+      localStorage.setItem('themeMode', themeMode.value)
+      isAnimating = false
     }
   }
 
@@ -57,23 +57,14 @@ export const useThemeStore = defineStore('theme', () => {
   }
 
   // 应用主题到 DOM
-  watchEffect(() => {
-    if (isDark.value) {
+  watch(isDark, (dark) => {
+    if (dark) {
       document.documentElement.classList.add('dark')
     } else {
       document.documentElement.classList.remove('dark')
     }
     localStorage.setItem('themeMode', themeMode.value)
-  })
-
-  // 生命周期
-  onMounted(() => {
-    initSystemThemeListener()
-  })
-
-  onUnmounted(() => {
-    cleanupSystemThemeListener()
-  })
+  }, { immediate: true })
 
   return {
     isDark,

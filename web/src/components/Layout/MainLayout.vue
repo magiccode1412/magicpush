@@ -1,43 +1,39 @@
 <template>
-  <div class="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
+  <div class="min-h-screen" style="background: var(--bg-primary); transition: background var(--transition-normal);">
     <!-- 移动端遮罩 -->
-    <div 
-      v-if="isMobileMenuOpen" 
+    <div
+      v-if="isMobileMenuOpen"
       class="fixed inset-0 bg-black/50 z-40 lg:hidden"
       @click="isMobileMenuOpen = false"
     ></div>
 
-    <!-- 侧边栏 -->
-    <aside 
+    <!-- 侧边栏 - 液态玻璃效果 -->
+    <aside
       :class="[
-        'fixed left-0 top-0 z-50 h-full w-64 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 transition-transform duration-300 lg:translate-x-0',
-        isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
+        'sidebar',
+        isMobileMenuOpen ? 'open' : ''
       ]"
     >
-      <div class="flex flex-col h-full">
+      <div class="flex flex-col h-full relative">
         <!-- Logo -->
-        <div class="flex items-center gap-3 px-6 py-5 border-gray-200 dark:border-gray-700">
-          <div class="w-10 h-10 rounded-xl flex items-center justify-center">
-          <!-- <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center"> -->
-            <!-- <Bell class="w-5 h-5 text-white" /> -->
-           <img src="/favicon.png" alt="LOGO">  
+        <div class="px-5 pt-6 pb-5 border-b" style="border-color: var(--border-subtle);">
+          <div class="flex items-center gap-3">
+            <img src="/favicon.png" alt="LOGO" class="w-12 h-12">
+            <span class="font-display text-xl font-bold text-transparent bg-clip-text" style="background: linear-gradient(to right, #2563eb, #9333ea); -webkit-background-clip: text;">
+              MagicPush
+            </span>
           </div>
-          <span class="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-            MagicPush
-          </span>
         </div>
 
         <!-- 导航菜单 -->
-        <nav class="flex-1 overflow-y-auto py-4 px-3">
+        <nav class="flex-1 overflow-y-auto py-4 px-4">
           <ul class="space-y-1">
             <li v-for="item in menuItems" :key="item.path">
               <router-link
                 :to="item.path"
                 :class="[
-                  'flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200',
-                  isActive(item.path)
-                    ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400'
-                    : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700/50'
+                  'sidebar-item',
+                  isActive(item.path) ? 'active' : ''
                 ]"
                 @click="isMobileMenuOpen = false"
               >
@@ -48,78 +44,67 @@
           </ul>
         </nav>
 
-        <!-- 底部信息 -->
-        <div class="p-4 border-gray-200 dark:border-gray-700">
-          <div class="text-xs text-gray-500 dark:text-gray-400 text-center">
-            {{ VERSION.displayName }}
+        <!-- 底部 - 账号信息、版本号、主题切换和退出登录 -->
+        <div class="px-5 py-4 border-t" style="border-color: var(--border-subtle);">
+          <!-- 账号信息 -->
+          <div class="flex items-center gap-2 mb-3">
+            <div class="w-8 h-8 rounded-full flex items-center justify-center text-xs font-semibold" style="background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary)); color: var(--bg-primary);">
+              {{ authStore.user?.username?.charAt(0)?.toUpperCase() || 'A' }}
+            </div>
+            <div class="flex-1 min-w-0">
+              <p class="text-sm text-primary font-medium truncate">{{ authStore.user?.username || '管理员' }}</p>
+              <p class="text-xs text-muted truncate">{{ authStore.user?.email || 'admin@magicpush.io' }}</p>
+            </div>
+          </div>
+
+          <!-- 版本号、主题切换和退出登录 -->
+          <div class="flex items-center justify-between">
+            <!-- 版本号 -->
+            <p class="text-xs text-muted">{{ VERSION.displayName }}</p>
+
+            <!-- 主题切换和退出登录 -->
+            <div class="flex items-center gap-1">
+              <!-- 主题切换图标 -->
+              <button
+                @click="themeStore.toggleTheme($event)"
+                class="p-2 rounded-lg transition-colors"
+                :class="themeStore.isDark ? 'text-amber-400 hover:bg-amber-400/10' : 'text-slate-600 hover:bg-slate-600/10'"
+                :title="themeStore.isDark ? '切换到浅色模式' : '切换到深色模式'"
+              >
+                <!-- 月亮 - 浅色模式显示，点击切换到深色 -->
+                <svg v-if="!themeStore.isDark" class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z"/>
+                </svg>
+                <!-- 太阳 - 深色模式显示，点击切换到浅色 -->
+                <svg v-else class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12 2.25a.75.75 0 01.75.75v2.25a.75.75 0 01-1.5 0V3a.75.75 0 01.75-.75zM7.5 12a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM18.894 6.166a.75.75 0 00-1.06-1.06l-1.591 1.59a.75.75 0 101.06 1.061l1.591-1.59zM21.75 12a.75.75 0 01-.75.75h-2.25a.75.75 0 010-1.5H21a.75.75 0 01.75.75zM17.834 18.894a.75.75 0 001.06-1.06l-1.59-1.591a.75.75 0 10-1.061 1.06l1.59 1.591zM12 18a.75.75 0 01.75.75V21a.75.75 0 01-1.5 0v-2.25A.75.75 0 0112 18zM7.758 17.303a.75.75 0 00-1.061-1.06l-1.591 1.59a.75.75 0 001.06 1.061l1.591-1.59zM6 12a.75.75 0 01-.75.75H3a.75.75 0 010-1.5h2.25A.75.75 0 016 12zM6.697 7.757a.75.75 0 001.06-1.06l-1.59-1.591a.75.75 0 00-1.061 1.06l1.59 1.591z"/>
+                </svg>
+              </button>
+
+              <!-- 退出登录 -->
+              <button @click="handleLogout" class="p-2 rounded-lg text-muted hover:text-error hover:bg-error/10 transition-colors" title="退出登录">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+                </svg>
+              </button>
+            </div>
           </div>
         </div>
       </div>
     </aside>
 
     <!-- 主内容区 -->
-    <div class="lg:ml-64 min-h-screen flex flex-col">
-      <!-- 顶部栏 -->
-      <header class="sticky top-0 z-30 bg-white/80 dark:bg-gray-800/80 backdrop-blur-md border-b border-gray-200 dark:border-gray-700">
-        <div class="flex items-center justify-between px-4 py-3">
-          <!-- 移动端菜单按钮 -->
-          <button
-            @click="isMobileMenuOpen = true"
-            class="lg:hidden p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
-          >
-            <Menu class="w-5 h-5 text-gray-600 dark:text-gray-400" />
-          </button>
-
-          <!-- 面包屑 -->
-          <div class="hidden md:flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
-            <span>首页</span>
-            <ChevronRight class="w-4 h-4" />
-            <span class="text-gray-900 dark:text-gray-100 font-medium">{{ currentPageName }}</span>
-          </div>
-
-          <!-- 右侧操作区 -->
-          <div class="flex items-center gap-3">
-            <!-- 主题切换 -->
-            <button
-              @click="themeStore.toggleTheme"
-              class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-              :title="themeStore.themeMode === 'auto' ? '跟随系统' : themeStore.isDark ? '深色模式' : '浅色模式'"
-            >
-              <Monitor v-if="themeStore.themeMode === 'auto'" class="w-5 h-5 text-blue-500" />
-              <Sun v-else-if="themeStore.isDark" class="w-5 h-5 text-yellow-500" />
-              <Moon v-else class="w-5 h-5 text-gray-600" />
-            </button>
-
-            <!-- 用户菜单 -->
-            <el-dropdown @command="handleCommand">
-              <div class="flex items-center gap-2 p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer">
-                <el-avatar :size="32" :src="authStore.user?.avatar">
-                  <User class="w-4 h-4" />
-                </el-avatar>
-                <span class="hidden sm:block text-sm font-medium text-gray-700 dark:text-gray-300">
-                  {{ authStore.user?.username }}
-                </span>
-                <ChevronDown class="w-4 h-4 text-gray-400" />
-              </div>
-              <template #dropdown>
-                <el-dropdown-menu>
-                  <el-dropdown-item command="settings">
-                    <Settings class="w-4 h-4 mr-2" />
-                    个人设置
-                  </el-dropdown-item>
-                  <el-dropdown-item divided command="logout">
-                    <LogOut class="w-4 h-4 mr-2" />
-                    退出登录
-                  </el-dropdown-item>
-                </el-dropdown-menu>
-              </template>
-            </el-dropdown>
-          </div>
-        </div>
-      </header>
+    <div class="main-content">
+      <!-- 移动端菜单按钮 -->
+      <button
+        @click="isMobileMenuOpen = true"
+        class="lg:hidden p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 mb-4"
+      >
+        <Menu class="w-5 h-5 text-secondary" />
+      </button>
 
       <!-- 页面内容 -->
-      <main class="flex-1 p-4 lg:p-6">
+      <main class="page-content">
         <router-view v-slot="{ Component }">
           <transition name="fade" mode="out-in">
             <component :is="Component" />
@@ -137,25 +122,17 @@ import { useAuthStore } from '@/stores/auth'
 import { useThemeStore } from '@/stores/theme'
 import { VERSION } from '@/utils/version'
 import {
-  Bell,
   Menu,
-  ChevronRight,
-  ChevronDown,
-  User,
-  Users,
-  Settings,
-  LogOut,
-  Sun,
-  Moon,
-  Monitor,
   LayoutDashboard,
   Link,
   Share2,
   FileText,
   BookOpen,
   Bug,
+  Settings,
   Info,
   History,
+  Users,
 } from 'lucide-vue-next'
 
 const route = useRoute()
@@ -194,18 +171,9 @@ const isActive = (path) => {
   return route.path.startsWith(path)
 }
 
-const currentPageName = computed(() => {
-  const item = menuItems.value.find(item => isActive(item.path))
-  return item?.name || ''
-})
-
-const handleCommand = (command) => {
-  if (command === 'settings') {
-    router.push('/settings')
-  } else if (command === 'logout') {
-    authStore.logout()
-    router.push('/login')
-  }
+const handleLogout = () => {
+  authStore.logout()
+  router.push('/login')
 }
 </script>
 
