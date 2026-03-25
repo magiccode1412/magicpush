@@ -1,12 +1,17 @@
 <template>
-  <router-view v-slot="{ Component }">
-    <transition name="page-transition" mode="out-in">
-      <component :is="Component" />
-    </transition>
-  </router-view>
+  <el-config-provider :theme="themeStore.isDark ? 'dark' : 'light'">
+    <router-view v-slot="{ Component }">
+      <transition name="page-transition" mode="out-in">
+        <component :is="Component" />
+      </transition>
+    </router-view>
+  </el-config-provider>
 </template>
 
 <script setup>
+import { useThemeStore } from '@/stores/theme'
+
+const themeStore = useThemeStore()
 </script>
 
 <style>
