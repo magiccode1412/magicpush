@@ -14,4 +14,7 @@ router.post('/bind/confirm', clawbotController.bindChannel);
 // 重新绑定已有渠道
 router.put('/bind/:channelId/rebind', clawbotController.rebindChannel);
 
+// 检查 context_token 是否就绪
+router.get('/bind/:channelId/context-status', clawbotController.checkContextStatus);
+
 module.exports = router;

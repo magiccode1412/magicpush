@@ -44,3 +44,7 @@ export const clawbotBindConfirm = (data) => {
 export const clawbotRebind = (channelId, data) => {
   return request.put(`/channels/clawbot/bind/${channelId}/rebind`, data)
 }
+
+export const checkClawbotContextStatus = (channelId) => {
+  return request.get(`/channels/clawbot/bind/${channelId}/context-status`)
+}

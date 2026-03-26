@@ -131,7 +131,49 @@ class IlinkClient {
       timeout: 15000,
     });
 
+    logger.debug('ClawBot 发送消息响应: %j', data);
+
+    // ret 字段存在且非 0 表示失败（成功时返回空对象 {}）
+    if (data.ret !== undefined && data.ret !== 0) {
+      const errMsg = this._getRetErrorMessage(data.ret);
+      const error = new Error(`发送失败: ${errMsg} (ret: ${data.ret})`);
+      error.retCode = data.ret;
+      throw error;
+    }
+
     return data;
+  }
+
+  /**
+   * 长轮询获取新消息
+   * POST ilink/bot/getupdates
+   * @param {Object} params
+   * @param {string} [params.getUpdatesBuf] - 上次返回的游标，首次传空
+   * @returns {Promise<Object>} { ret, msgs, get_updates_buf, longpolling_timeout_ms }
+   */
+  async getUpdates({ getUpdatesBuf = '' }) {
+    const body = {
+      get_updates_buf: getUpdatesBuf,
+      base_info: { channel_version: '1.0.0' },
+    };
+
+    const { data } = await axios.post(`${this.baseUrl}/ilink/bot/getupdates`, body, {
+      headers: this._headers(),
+      timeout: 60000,
+    });
+
+    return data;
+  }
+
+  /**
+   * ret 错误码转中文描述
+   */
+  _getRetErrorMessage(ret) {
+    const messages = {
+      '-2': '对话上下文已过期，请向机器人主动发送一条消息以重新激活',
+      '-1': '系统错误',
+    };
+    return messages[String(ret)] || `未知错误 (ret: ${ret})`;
   }
 }
 
