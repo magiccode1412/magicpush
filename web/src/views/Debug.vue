@@ -186,7 +186,13 @@
 
           <div class="space-y-3">
             <div class="p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
-              <span class="text-xs text-gray-500 dark:text-gray-400 block mb-1">请求 URL</span>
+              <div class="flex items-center justify-between mb-1">
+                <span class="text-xs text-gray-500 dark:text-gray-400">请求 URL</span>
+                <el-button link size="small" @click="copyUrl">
+                  <Copy class="w-3 h-3 mr-1" />
+                  复制
+                </el-button>
+              </div>
               <code class="text-sm text-gray-700 dark:text-gray-300 break-all">{{ requestUrl }}</code>
             </div>
 
@@ -627,6 +633,11 @@ const fillInboundExample = (type) => {
 const clearInboundForm = () => {
   inboundBody.value = ''
   response.value = null
+}
+
+const copyUrl = () => {
+  navigator.clipboard.writeText(requestUrl.value)
+  ElMessage.success('请求 URL 已复制')
 }
 
 const copyCurl = () => {

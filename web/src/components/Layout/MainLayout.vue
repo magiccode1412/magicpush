@@ -34,10 +34,10 @@
               <router-link
                 :to="item.path"
                 :class="[
-                  'flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200',
+                  'nav-item flex items-center gap-3 px-4 py-3 rounded-lg',
                   isActive(item.path)
-                    ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400'
-                    : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700/50'
+                    ? 'nav-active bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400'
+                    : 'text-gray-600 dark:text-gray-400'
                 ]"
                 @click="isMobileMenuOpen = false"
               >
@@ -48,10 +48,44 @@
           </ul>
         </nav>
 
-        <!-- 底部信息 -->
-        <div class="p-4 border-gray-200 dark:border-gray-700">
-          <div class="text-xs text-gray-500 dark:text-gray-400 text-center">
-            {{ VERSION.displayName }}
+        <!-- 底部：用户信息 + 操作 -->
+        <div class="p-3">
+          <div class="flex items-center gap-3 px-2 mb-3">
+            <el-avatar :size="32" :src="authStore.user?.avatar">
+              <User class="w-4 h-4" />
+            </el-avatar>
+            <div class="flex-1 min-w-0">
+              <div class="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
+                {{ authStore.user?.username }}
+              </div>
+              <div class="text-xs text-gray-500 dark:text-gray-400 truncate">
+                {{ authStore.user?.email }}
+              </div>
+            </div>
+          </div>
+
+          <div class="flex items-center justify-between px-2">
+            <span class="text-xs text-gray-500 dark:text-gray-400">
+              {{ VERSION.displayName }}
+            </span>
+            <div class="flex items-center gap-1">
+              <button
+                @click="themeStore.toggleTheme"
+                class="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                :title="themeStore.themeMode === 'auto' ? '跟随系统' : themeStore.isDark ? '深色模式' : '浅色模式'"
+              >
+                <Monitor v-if="themeStore.themeMode === 'auto'" class="w-4 h-4 text-blue-500" />
+                <Sun v-else-if="themeStore.isDark" class="w-4 h-4 text-yellow-500" />
+                <Moon v-else class="w-4 h-4 text-gray-600" />
+              </button>
+              <button
+                @click="handleLogout"
+                class="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                title="退出登录"
+              >
+                <LogOut class="w-4 h-4 text-gray-500" />
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -59,62 +93,15 @@
 
     <!-- 主内容区 -->
     <div class="lg:ml-64 min-h-screen flex flex-col">
-      <!-- 顶部栏 -->
-      <header class="sticky top-0 z-30 bg-white/80 dark:bg-gray-800/80 backdrop-blur-md border-b border-gray-200 dark:border-gray-700">
-        <div class="flex items-center justify-between px-4 py-3">
-          <!-- 移动端菜单按钮 -->
+      <!-- 移动端菜单按钮 -->
+      <header class="sticky top-0 z-30 lg:hidden bg-white/80 dark:bg-gray-800/80 backdrop-blur-md border-b border-gray-200 dark:border-gray-700">
+        <div class="flex items-center px-4 py-3">
           <button
             @click="isMobileMenuOpen = true"
-            class="lg:hidden p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
+            class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
           >
             <Menu class="w-5 h-5 text-gray-600 dark:text-gray-400" />
           </button>
-
-          <!-- 面包屑 -->
-          <div class="hidden md:flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
-            <span>首页</span>
-            <ChevronRight class="w-4 h-4" />
-            <span class="text-gray-900 dark:text-gray-100 font-medium">{{ currentPageName }}</span>
-          </div>
-
-          <!-- 右侧操作区 -->
-          <div class="flex items-center gap-3">
-            <!-- 主题切换 -->
-            <button
-              @click="themeStore.toggleTheme"
-              class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-              :title="themeStore.themeMode === 'auto' ? '跟随系统' : themeStore.isDark ? '深色模式' : '浅色模式'"
-            >
-              <Monitor v-if="themeStore.themeMode === 'auto'" class="w-5 h-5 text-blue-500" />
-              <Sun v-else-if="themeStore.isDark" class="w-5 h-5 text-yellow-500" />
-              <Moon v-else class="w-5 h-5 text-gray-600" />
-            </button>
-
-            <!-- 用户菜单 -->
-            <el-dropdown @command="handleCommand">
-              <div class="flex items-center gap-2 p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer">
-                <el-avatar :size="32" :src="authStore.user?.avatar">
-                  <User class="w-4 h-4" />
-                </el-avatar>
-                <span class="hidden sm:block text-sm font-medium text-gray-700 dark:text-gray-300">
-                  {{ authStore.user?.username }}
-                </span>
-                <ChevronDown class="w-4 h-4 text-gray-400" />
-              </div>
-              <template #dropdown>
-                <el-dropdown-menu>
-                  <el-dropdown-item command="settings">
-                    <Settings class="w-4 h-4 mr-2" />
-                    个人设置
-                  </el-dropdown-item>
-                  <el-dropdown-item divided command="logout">
-                    <LogOut class="w-4 h-4 mr-2" />
-                    退出登录
-                  </el-dropdown-item>
-                </el-dropdown-menu>
-              </template>
-            </el-dropdown>
-          </div>
         </div>
       </header>
 
@@ -139,8 +126,6 @@ import { VERSION } from '@/utils/version'
 import {
   Bell,
   Menu,
-  ChevronRight,
-  ChevronDown,
   User,
   Users,
   Settings,
@@ -194,18 +179,10 @@ const isActive = (path) => {
   return route.path.startsWith(path)
 }
 
-const currentPageName = computed(() => {
-  const item = menuItems.value.find(item => isActive(item.path))
-  return item?.name || ''
-})
-
-const handleCommand = (command) => {
-  if (command === 'settings') {
-    router.push('/settings')
-  } else if (command === 'logout') {
-    authStore.logout()
-    router.push('/login')
-  }
+const handleLogout = () => {
+  isMobileMenuOpen.value = false
+  authStore.logout()
+  router.push('/login')
 }
 </script>
 
@@ -218,5 +195,34 @@ const handleCommand = (command) => {
 .fade-enter-from,
 .fade-leave-to {
   opacity: 0;
+}
+
+.nav-item {
+  position: relative;
+  overflow: hidden;
+}
+
+.nav-item > * {
+  position: relative;
+  z-index: 1;
+}
+
+.nav-item:not(.nav-active)::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-color: #eff6ffd0;
+  border-radius: inherit;
+  clip-path: inset(0 100% 0 0);
+  transition: clip-path 0.3s ease-out;
+}
+
+html.dark .nav-item:not(.nav-active)::before {
+  background-color: rgba(55, 65, 81, 0.3);
+}
+
+.nav-item:not(.nav-active):hover::before {
+  clip-path: inset(0 0 0 0);
+  transition: clip-path 0.3s ease-in;
 }
 </style>

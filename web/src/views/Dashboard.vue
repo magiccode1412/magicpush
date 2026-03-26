@@ -1,19 +1,13 @@
 <template>
   <div class="space-y-6 animate-fade-in">
     <!-- 欢迎语 -->
-    <div class="flex items-center justify-between">
-      <div>
-        <h2 class="text-2xl font-bold text-gray-900 dark:text-white">
-          欢迎回来，{{ authStore.user?.username }}
-        </h2>
-        <p class="text-gray-500 dark:text-gray-400 mt-1">
-          这里是您的推送服务仪表板
-        </p>
-      </div>
-      <el-button type="primary" @click="router.push('/endpoints')">
-        <Plus class="w-4 h-4 mr-1" />
-        新建接口
-      </el-button>
+    <div>
+      <h2 class="text-2xl font-bold text-gray-900 dark:text-white">
+        欢迎回来，<span class="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">{{ authStore.user?.username }}</span>
+      </h2>
+      <p class="text-gray-500 dark:text-gray-400 mt-1">
+        这里是您的推送服务仪表板
+      </p>
     </div>
 
     <!-- 统计卡片 -->
@@ -139,7 +133,6 @@ import { useAuthStore } from '@/stores/auth'
 import { getUserStats } from '@/api/user'
 import { getLogs } from '@/api/log'
 import {
-  Plus,
   Link,
   Share2,
   Send,

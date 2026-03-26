@@ -424,6 +424,10 @@ const PRESET_TEMPLATES = {
    - 检查 `server/src/app.js` 中的 CORS 配置
    - 生产环境确保设置了正确的 `FRONTEND_URL`
 
+## 感谢
+
+- [tt-haogege](（https://github.com/tt-haogege)的[pr](https://github.com/magiccode1412/magicpush/pull/2)提供UI灵感
+
 ## 📄 许可证
 
 MIT License
