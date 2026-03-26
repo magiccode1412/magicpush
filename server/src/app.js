@@ -12,6 +12,7 @@ const { errorMiddleware, notFoundMiddleware } = require('./middleware/error.midd
 const logger = require('./utils/logger');
 require('console');
 require('./models');
+const clawbotMonitor = require('./services/clawbot/clawbot-monitor');
 
 // 确保日志目录存在
 const logsDir = path.join(__dirname, '../logs');
@@ -97,6 +98,9 @@ app.use(errorMiddleware);
 app.listen(PORT, () => {
   logger.info(`服务器启动成功，监听端口: ${PORT}`);
   logger.info(`环境: ${process.env.NODE_ENV || 'development'}`);
+
+  // 启动 ClawBot 长轮询监控（自动获取 context_token）
+  clawbotMonitor.start();
 });
 
 module.exports = app;

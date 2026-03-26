@@ -1,5 +1,18 @@
 # 更新日志 (Changelog)
 
+## [1.4.2] - 2026-03-26
+
+### 新增 (Features)
+- 新增微信龙虾机器人getUpdates长轮询，自动获取并持久化context_token
+
+### 修复 (Fixes)
+- 修复发送消息时ret错误码未正确检测的问题
+
+### 改进 (Improvements)
+- 绑定流程优化：点击我已发送后自动检测context_token获取状态
+
+---
+
 ## [1.4.1] - 2026-03-26
 
 ### 改进 (Improvements)

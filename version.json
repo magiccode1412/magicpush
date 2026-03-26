@@ -1,6 +1,6 @@
 {
   "name": "magicpush",
-  "version": "1.4.1",
+  "version": "1.4.2",
   "displayName": "MagicPush",
   "description": "支持多渠道消息推送的统一管理平台",
   "repository": {
@@ -8,6 +8,16 @@
     "url": "https://github.com/magiccode1412/magicpush"
   },
   "changelog": [
+    {
+      "version": "1.4.2",
+      "date": "2026-03-26",
+      "type": "release",
+      "changes": [
+        "新增微信龙虾机器人getUpdates长轮询，自动获取并持久化context_token",
+        "修复发送消息时ret错误码未正确检测的问题",
+        "绑定流程优化：点击我已发送后自动检测context_token获取状态"
+      ]
+    },
     {
       "version": "1.4.1",
       "date": "2026-03-26",

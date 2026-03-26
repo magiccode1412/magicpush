@@ -1,5 +1,7 @@
 const IlinkClient = require('../services/clawbot/ilink-client');
 const ChannelService = require('../services/channel.service');
+const clawbotMonitor = require('../services/clawbot/clawbot-monitor');
+const { ChannelModel } = require('../models');
 const ResponseUtil = require('../utils/response');
 const logger = require('../utils/logger');
 
@@ -62,6 +64,9 @@ class ClawbotController {
         },
       });
 
+      // 启动该渠道的长轮询监控
+      clawbotMonitor.addChannel(channel.id);
+
       return ResponseUtil.created(res, channel, '绑定成功');
     } catch (error) {
       logger.error('ClawBot 绑定创建渠道失败:', error.message);
@@ -89,6 +94,9 @@ class ClawbotController {
         },
       });
 
+      // 重新启动该渠道的长轮询监控
+      clawbotMonitor.addChannel(channelId);
+
       return ResponseUtil.success(res, channel, '重新绑定成功');
     } catch (error) {
       if (error.message === '渠道不存在') {
@@ -97,6 +105,24 @@ class ClawbotController {
       logger.error('ClawBot 重新绑定失败:', error.message);
       return ResponseUtil.badRequest(res, error.message);
     }
+  }
+
+  /**
+   * 检查渠道是否已获取到 context_token
+   */
+  static async checkContextStatus(req, res) {
+  try {
+    const channelId = parseInt(req.params.channelId);
+    const channel = ChannelModel.findById(channelId);
+    if (!channel) {
+      return ResponseUtil.notFound(res, '渠道不存在');
+    }
+
+    const ready = !!(channel.config && channel.config.contextToken);
+    return ResponseUtil.success(res, { ready });
+  } catch (error) {
+    return ResponseUtil.serverError(res, error.message);
+  }
   }
 }
 
