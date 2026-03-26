@@ -79,10 +79,10 @@
     <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
       <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">开源信息</h3>
       <div class="space-y-3 text-sm text-gray-600 dark:text-gray-400">
-        <p>本项目基于 MIT 协议开源，欢迎 Star、Fork 和 PR。</p>
+        <p>本项目基于 MIT 协议开源</p>
         <div class="flex items-center gap-4">
           <a
-            href="https://github.com/magiccode1412/magic-push"
+            href="https://github.com/magiccode1412/magicpush"
             target="_blank"
             class="inline-flex items-center gap-2 text-blue-600 dark:text-blue-400 hover:underline"
           >

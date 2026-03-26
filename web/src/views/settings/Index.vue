@@ -2,94 +2,87 @@
   <div class="space-y-6 animate-fade-in">
     <h2 class="text-2xl font-bold text-gray-900 dark:text-white">系统设置</h2>
 
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       <!-- 个人信息 -->
-      <div class="lg:col-span-2 space-y-6">
-        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
-          <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-6">个人信息</h3>
-          
-          <el-form
-            ref="profileFormRef"
-            :model="profileForm"
-            :rules="profileRules"
-            label-position="top"
-          >
-            <div class="flex flex-col sm:flex-row items-center sm:items-center gap-4 sm:gap-6 mb-6">
-              <el-avatar :size="80" :src="profileForm.avatar" class="flex-shrink-0">
-                <User class="w-8 h-8" />
-              </el-avatar>
-              <div class="w-full sm:w-auto">
-                <p class="text-sm text-gray-500 dark:text-gray-400 mb-2">头像设置</p>
-                <el-input v-model="profileForm.avatar" placeholder="输入头像URL" class="w-full sm:w-64" />
-              </div>
-            </div>
+      <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6 hover:shadow-md hover:-translate-y-0.5 hover:border-blue-200 dark:hover:border-blue-800 transition-all duration-300">
+        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-6">个人信息</h3>
 
-            <el-form-item label="用户名" prop="username">
-              <el-input v-model="profileForm.username" placeholder="请输入用户名" />
-            </el-form-item>
+        <el-form
+          ref="profileFormRef"
+          :model="profileForm"
+          :rules="profileRules"
+          label-position="top"
+        >
+          <div class="flex flex-col items-center gap-4 mb-6">
+            <el-avatar :size="64" :src="profileForm.avatar" class="flex-shrink-0">
+              <User class="w-6 h-6" />
+            </el-avatar>
+            <el-input v-model="profileForm.avatar" placeholder="输入头像URL" class="w-full" />
+          </div>
 
-            <el-form-item label="邮箱">
-              <el-input v-model="profileForm.email" disabled />
-            </el-form-item>
+          <el-form-item label="用户名" prop="username">
+            <el-input v-model="profileForm.username" placeholder="请输入用户名" />
+          </el-form-item>
 
-            <el-form-item>
-              <el-button type="primary" :loading="profileLoading" @click="handleUpdateProfile">
-                保存修改
-              </el-button>
-            </el-form-item>
-          </el-form>
-        </div>
+          <el-form-item label="邮箱">
+            <el-input v-model="profileForm.email" disabled />
+          </el-form-item>
 
-        <!-- 修改密码 -->
-        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
-          <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-6">修改密码</h3>
-          
-          <el-form
-            ref="passwordFormRef"
-            :model="passwordForm"
-            :rules="passwordRules"
-            label-position="top"
-          >
-            <el-form-item label="当前密码" prop="oldPassword">
-              <el-input
-                v-model="passwordForm.oldPassword"
-                type="password"
-                placeholder="请输入当前密码"
-                show-password
-              />
-            </el-form-item>
-
-            <el-form-item label="新密码" prop="newPassword">
-              <el-input
-                v-model="passwordForm.newPassword"
-                type="password"
-                placeholder="请输入新密码"
-                show-password
-              />
-            </el-form-item>
-
-            <el-form-item label="确认新密码" prop="confirmPassword">
-              <el-input
-                v-model="passwordForm.confirmPassword"
-                type="password"
-                placeholder="请确认新密码"
-                show-password
-              />
-            </el-form-item>
-
-            <el-form-item>
-              <el-button type="primary" :loading="passwordLoading" @click="handleChangePassword">
-                修改密码
-              </el-button>
-            </el-form-item>
-          </el-form>
-        </div>
+          <el-form-item>
+            <el-button type="primary" :loading="profileLoading" @click="handleUpdateProfile">
+              保存修改
+            </el-button>
+          </el-form-item>
+        </el-form>
       </div>
 
-      <!-- 右侧设置 -->
-      <div class="space-y-6">
-        <!-- 外观设置 -->
-        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
+      <!-- 修改密码 -->
+      <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6 hover:shadow-md hover:-translate-y-0.5 hover:border-blue-200 dark:hover:border-blue-800 transition-all duration-300">
+        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-6">修改密码</h3>
+
+        <el-form
+          ref="passwordFormRef"
+          :model="passwordForm"
+          :rules="passwordRules"
+          label-position="top"
+        >
+          <el-form-item label="当前密码" prop="oldPassword">
+            <el-input
+              v-model="passwordForm.oldPassword"
+              type="password"
+              placeholder="请输入当前密码"
+              show-password
+            />
+          </el-form-item>
+
+          <el-form-item label="新密码" prop="newPassword">
+            <el-input
+              v-model="passwordForm.newPassword"
+              type="password"
+              placeholder="请输入新密码"
+              show-password
+            />
+          </el-form-item>
+
+          <el-form-item label="确认新密码" prop="confirmPassword">
+            <el-input
+              v-model="passwordForm.confirmPassword"
+              type="password"
+              placeholder="请确认新密码"
+              show-password
+            />
+          </el-form-item>
+
+          <el-form-item>
+            <el-button type="primary" :loading="passwordLoading" @click="handleChangePassword">
+              修改密码
+            </el-button>
+          </el-form-item>
+        </el-form>
+      </div>
+
+      <!-- 外观设置 -->
+      <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6 hover:shadow-md hover:-translate-y-0.5 hover:border-blue-200 dark:hover:border-blue-800 transition-all duration-300">
           <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">外观设置</h3>
           
           <div class="space-y-4">
@@ -131,7 +124,7 @@
         </div>
 
         <!-- IPv4-to-IPv6 代理设置 -->
-        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6 hover:shadow-md hover:-translate-y-0.5 hover:border-blue-200 dark:hover:border-blue-800 transition-all duration-300">
           <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">代理转发</h3>
           <div class="space-y-4">
             <div class="flex items-center justify-between">
@@ -165,7 +158,7 @@
         </div>
 
         <!-- 系统管理（仅管理员可见） -->
-        <div v-if="isAdmin" class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
+        <div v-if="isAdmin" class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6 hover:shadow-md hover:-translate-y-0.5 hover:border-blue-200 dark:hover:border-blue-800 transition-all duration-300">
           <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">系统管理</h3>
           <div class="space-y-4">
             <div class="flex items-center justify-between">
@@ -191,7 +184,7 @@
         </div>
 
         <!-- 数据迁移 -->
-        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6 hover:shadow-md hover:-translate-y-0.5 hover:border-blue-200 dark:hover:border-blue-800 transition-all duration-300">
           <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">数据迁移</h3>
           <div class="space-y-3">
             <p class="text-sm text-gray-500 dark:text-gray-400">导出或导入您的配置数据</p>
@@ -214,7 +207,6 @@
         </div>
       </div>
     </div>
-  </div>
 </template>
 
 <script setup>
