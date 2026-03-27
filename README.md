@@ -103,7 +103,9 @@
 
 ## 测试
 
-[![Open in Gitpod](./public/image/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/magiccode1412/magicpush)
+[![Open in Gitpod](./public/image/open-in-gitpod.svg)](https://app.ona.com/#https://github.com/magiccode1412/magicpush)
+
+免费资源需要验证信用卡
 
 ## 🐳 Docker 部署
 
@@ -112,6 +114,7 @@
 ### 点击下面任一按钮一键部署
 
 [![Deploy on Zeabur](./public/image/depoly_to_zeabur.svg)](https://zeabur.com/templates/GGBDF1?referralCode=nixingshiguang)
+没有免费资源了
 
 [![Deploy on Railway](./public/image/deploy_on_railway.svg)](https://railway.com/deploy/JbNI4y?referralCode=85Y1W5&utm_medium=integration&utm_source=template&utm_campaign=generic)
 
@@ -153,7 +156,7 @@ services:
 
 **分离部署前后端**
 
-支持更灵活的配置，这种方法需要拉取项目自行构建
+支持更灵活的配置，这种方法需要**拉取项目自行构建**
 
 ```bash
 docker-compose up -d
