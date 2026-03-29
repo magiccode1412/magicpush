@@ -52,9 +52,20 @@
 
     <div v-else class="text-center">
       <!-- 提示文字 -->
-      <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">
+      <p class="text-sm text-gray-600 dark:text-gray-400 mb-3">
         请使用微信扫描下方二维码完成绑定
       </p>
+
+      <!-- 推送限制说明 -->
+      <div class="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-700 rounded-lg p-3 text-left mb-4">
+        <p class="text-sm font-medium text-amber-800 dark:text-amber-300 mb-1.5">⚠️ 推送限制说明</p>
+        <ul class="text-sm text-amber-700 dark:text-amber-400 space-y-1 list-disc list-inside">
+          <li>机器人连续主动发送 <strong>10 条</strong>消息后，需您主动发送一条消息才能继续推送</li>
+          <li>自您上次主动发消息起 <strong>24 小时</strong>后，也需主动发消息才能继续推送</li>
+          <li>系统会在接近限额时自动在消息中提醒您</li>
+          <li>微信限制，暂无更好的解决方案，建议接口同时开启多个推送渠道</li>
+        </ul>
+      </div>
 
       <!-- 加载中 -->
       <div v-if="status === 'loading'" class="py-12">

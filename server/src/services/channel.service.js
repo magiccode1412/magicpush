@@ -106,7 +106,7 @@ class ChannelService {
       throw new Error('渠道已禁用');
     }
 
-    const adapter = getChannelAdapter(channel.channel_type, channel.config);
+    const adapter = getChannelAdapter(channel.channel_type, channel.config, channel.id);
     return await adapter.test();
   }
 }

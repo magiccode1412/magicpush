@@ -117,7 +117,7 @@ class PushService {
 
     try {
       // 获取适配器并发送
-      const adapter = getChannelAdapter(channel.channel_type, channel.config);
+      const adapter = getChannelAdapter(channel.channel_type, channel.config, channel.id);
       const result = await adapter.send({ title, content, type });
 
       // 更新记录为成功

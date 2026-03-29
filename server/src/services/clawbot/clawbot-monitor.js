@@ -128,12 +128,18 @@ class ClawbotMonitor {
             timeoutMs; // 可动态调整
           }
 
-          // 处理收到的消息，提取 context_token
+          // 处理收到的消息，提取 context_token 并重置推送计数
           if (result.msgs && result.msgs.length > 0) {
+            let needResetQuota = false;
             for (const msg of result.msgs) {
               if (msg.context_token) {
                 await this._saveContextToken(channelId, msg.context_token);
               }
+              // 检测到用户主动发消息，标记需要重置推送额度
+              needResetQuota = true;
+            }
+            if (needResetQuota) {
+              await this._resetPushQuota(channelId);
             }
           }
         } catch (err) {
@@ -164,6 +170,34 @@ class ClawbotMonitor {
       logger.info(`渠道 ${channelId} 已更新 context_token`);
     } catch (err) {
       logger.warn(`渠道 ${channelId} 保存 context_token 失败: ${err.message}`);
+    }
+  }
+
+  /**
+   * 重置推送额度（用户主动发消息时调用）
+   * 重置 sendCount 为 0，更新 lastUserMsgTime 为当前时间
+   */
+  async _resetPushQuota(channelId) {
+    try {
+      const channel = ChannelModel.findById(channelId);
+      if (!channel) return;
+
+      const config = channel.config;
+      const now = Date.now();
+      const countBefore = config.sendCount || 0;
+
+      // 仅当计数不为0或时间有变化时才更新，减少无效写库
+      if (countBefore !== 0 || !config.lastUserMsgTime) {
+        config.sendCount = 0;
+        config.lastUserMsgTime = now;
+        ChannelModel.update(channelId, { config });
+        logger.info(`渠道 ${channelId} 用户活跃，推送额度已重置（之前已发送 ${countBefore} 条）`);
+      } else {
+        config.lastUserMsgTime = now;
+        ChannelModel.update(channelId, { config });
+      }
+    } catch (err) {
+      logger.warn(`渠道 ${channelId} 重置推送额度失败: ${err.message}`);
     }
   }
 

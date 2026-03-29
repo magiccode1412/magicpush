@@ -32,12 +32,12 @@ const channelAdapters = {
  * @param {Object} config - 渠道配置
  * @returns {BaseChannel} - 渠道适配器实例
  */
-function getChannelAdapter(type, config) {
+function getChannelAdapter(type, config, channelId) {
   const AdapterClass = channelAdapters[type];
   if (!AdapterClass) {
     throw new Error(`不支持的渠道类型: ${type}`);
   }
-  return new AdapterClass(config);
+  return new AdapterClass(config, channelId);
 }
 
 /**
