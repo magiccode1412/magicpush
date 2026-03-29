@@ -31,9 +31,8 @@
 ## 📝 更新日志
 查看 [CHANGELOG.md](docs/CHANGELOG.md) 了解版本更新记录。
 
-## 🌐 在线测试（自行注册即可）
-+ 开发版：https://magicpush.up.railway.app/
-+ 稳定版：https://rurvbrlarizv.ap-northeast-1.clawcloudrun.com/
+## 🌐 [点此跳转到Demo站试用](https://rurvbrlarizv.ap-northeast-1.clawcloudrun.com/)
+自行注册即可
 
 > 提示：演示环境仅作测试使用，请勿发送违规信息，数据会定期重置，请勿存储重要信息。
 
@@ -61,6 +60,7 @@
   + Telegram ➡️ 最优秀的消息推送服务,但是需要魔法
   + 企业微信/钉钉/飞书 ➡️ 消息仅限于企业内部
   + 微信服务号 ➡️ 模板消息限制太多
+  + 微信龙虾机器人 ➡️ 支持直接推送到个人微信，但有10条/24小时限制
 
 也有一些开发者,开始转向App推送,更甚者,开始支持手机系统底层推送,例如:
 + pushplus: 支持多渠道推送,包括微信服务号/App/webhook
@@ -79,6 +79,7 @@
 ## ✨ 功能特性
 
 ### 消息渠道支持
+- **微信龙虾机器人** (扫码绑定，直接推送到个人微信，有10条/24小时限制)
 - 企业微信机器人
 - Telegram Bot
 - PushPlus
@@ -331,6 +332,7 @@ curl -X POST http://localhost:3000/api/push \
 
 | 渠道 | 必需配置 |
 |------|---------|
+| 微信龙虾机器人 | 扫码绑定 (自动获取配置) |
 | 企业微信 | key (机器人Key) |
 | Telegram | botToken, chatId |
 | PushPlus | token (可选: topic) |
@@ -342,6 +344,8 @@ curl -X POST http://localhost:3000/api/push \
 | Webhook | url, method (可选: headers, bodyTemplate) |
 | SMTP邮件 | host, port, user, pass, to (可选: secure, from) |
 
+> **微信龙虾机器人限制说明：** 机器人连续主动发送 10 条消息后，需用户主动发送一条消息才能继续推送；自用户上次主动发消息起 24 小时后，也需主动发消息才能继续推送。系统会在接近限额时自动在消息中提醒用户。
+
 ## 🔐 环境变量
 
 后端 `.env` 配置：
@@ -349,13 +353,11 @@ curl -X POST http://localhost:3000/api/push \
 ```env
 NODE_ENV=development
 # JWT_SECRET=your-secret-key        # 可选，不设置则自动生成安全密钥
-JWT_ACCESS_EXPIRES_IN=15m
-JWT_REFRESH_EXPIRES_IN=7d
-DB_PATH=./data/push_service.db
-LOG_LEVEL=info
+JWT_ACCESS_EXPIRES_IN=15m           # 可选，默认 15 分钟
+JWT_REFRESH_EXPIRES_IN=7d           # 可选，默认 7 天
+DB_PATH=./data/push_service.db      # 可选
+LOG_LEVEL=info                      # 可选，默认 info
 ```
-
-> **注意**：`JWT_SECRET` 为可选项。如果不设置，系统会在首次运行时自动生成一个 128 位的安全密钥并存储到数据库中。
 
 ## 📝 开发说明
 
