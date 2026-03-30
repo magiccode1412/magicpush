@@ -1,6 +1,6 @@
 {
   "name": "magicpush",
-  "version": "1.4.3",
+  "version": "1.5.0",
   "displayName": "MagicPush",
   "description": "支持多渠道消息推送的统一管理平台",
   "repository": {
@@ -8,6 +8,16 @@
     "url": "https://github.com/magiccode1412/magicpush"
   },
   "changelog": [
+    {
+      "version": "1.5.0",
+      "date": "2026-03-30",
+      "type": "release",
+      "changes": [
+        "新增 Gotify 推送渠道",
+        "新增 Meow 推送渠道（鸿蒙系统）",
+        "新增企业微信应用推送渠道"
+      ]
+    },
     {
       "version": "1.4.3",
       "date": "2026-03-29",
