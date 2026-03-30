@@ -12,6 +12,7 @@ const ServerChanChannel = require('./serverchan.channel');
 const SmtpChannel = require('./smtp.channel');
 const GotifyChannel = require('./gotify.channel');
 const MeowChannel = require('./meow.channel');
+const WecomappChannel = require('./wecomapp.channel');
 // TODO: QQ 机器人渠道开发中，待测试后启用
 // const QqbotChannel = require('./qqbot.channel');
 
@@ -30,6 +31,7 @@ const channelAdapters = {
   smtp: SmtpChannel,
   gotify: GotifyChannel,
   meow: MeowChannel,
+  wecomapp: WecomappChannel,
   // qqbot: QqbotChannel, // TODO: 待测试后启用
 };
 
@@ -89,6 +91,7 @@ module.exports = {
   SmtpChannel,
   GotifyChannel,
   MeowChannel,
+  WecomappChannel,
   // QqbotChannel, // TODO: 待测试后启用
   getChannelAdapter,
   getChannelTypes,
