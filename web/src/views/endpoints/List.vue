@@ -53,8 +53,9 @@
           </el-dropdown>
         </div>
 
-        <p v-if="endpoint.description" class="text-sm text-gray-500 dark:text-gray-400 mb-4 line-clamp-2">
-          {{ endpoint.description }}
+        <!-- 描述 / 占位 -->
+        <p class="text-sm text-gray-500 dark:text-gray-400 mb-4 line-clamp-2 min-h-[2.5rem]">
+          {{ endpoint.description || '暂无描述' }}
         </p>
 
         <!-- Token -->
@@ -69,15 +70,21 @@
           <code class="text-xs text-gray-700 dark:text-gray-300 break-all">{{ endpoint.token }}</code>
         </div>
 
-        <!-- 绑定的渠道 -->
-        <div v-if="endpoint.channels && endpoint.channels.length > 0" class="mb-4">
+        <!-- 绑定的渠道 / 占位 -->
+        <div class="mb-4">
           <div class="flex flex-wrap gap-2">
             <span
-              v-for="channel in endpoint.channels"
+              v-for="channel in (endpoint.channels || [])"
               :key="channel.id"
               class="inline-flex items-center px-2 py-1 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-md text-xs"
             >
               {{ channel.name }}
+            </span>
+            <span
+              v-if="!endpoint.channels || endpoint.channels.length === 0"
+              class="inline-flex items-center px-2 py-1 text-xs text-gray-400 dark:text-gray-500"
+            >
+              暂未绑定渠道
             </span>
           </div>
         </div>
