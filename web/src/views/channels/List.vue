@@ -18,7 +18,7 @@
         <div class="text-sm text-blue-700 dark:text-blue-300">
           <p class="font-medium mb-1">支持的渠道类型</p>
           <p class="opacity-80">
-            微信龙虾机器人 · 企业微信 · 钉钉 · 飞书 · Telegram · 微信公众号 · WxPusher · PushPlus · Server酱 · Webhook · SMTP邮件
+            微信龙虾机器人 · 企业微信 · 钉钉 · 飞书 · Telegram · 微信公众号 · WxPusher · PushPlus · Server酱 · Webhook · SMTP邮件 · Gotify
           </p>
         </div>
       </div>
@@ -342,6 +342,7 @@ const getChannelColor = (type) => {
     serverchan: 'bg-amber-500',
     smtp: 'bg-red-500',
     wechatclawbot: 'bg-rose-500',
+    gotify: 'bg-indigo-500',
     qqbot: 'bg-cyan-500',
   }
   return colors[type] || 'bg-gray-500'
@@ -360,6 +361,7 @@ const getChannelIcon = (type) => {
     serverchan: Send,
     smtp: MessageCircle,
     wechatclawbot: RefreshCw,
+    gotify: Bell,
     qqbot: MessageSquare,
   }
   return icons[type] || Share2
