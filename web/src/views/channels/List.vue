@@ -342,6 +342,7 @@ const getChannelColor = (type) => {
     serverchan: 'bg-amber-500',
     smtp: 'bg-red-500',
     wechatclawbot: 'bg-rose-500',
+    qqbot: 'bg-cyan-500',
   }
   return colors[type] || 'bg-gray-500'
 }
@@ -359,6 +360,7 @@ const getChannelIcon = (type) => {
     serverchan: Send,
     smtp: MessageCircle,
     wechatclawbot: RefreshCw,
+    qqbot: MessageSquare,
   }
   return icons[type] || Share2
 }

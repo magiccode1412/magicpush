@@ -10,6 +10,8 @@ const WebhookChannel = require('./webhook.channel');
 const WechatOfficialChannel = require('./wechat-official.channel');
 const ServerChanChannel = require('./serverchan.channel');
 const SmtpChannel = require('./smtp.channel');
+// TODO: QQ 机器人渠道开发中，待测试后启用
+// const QqbotChannel = require('./qqbot.channel');
 
 // 渠道类型到适配器的映射
 const channelAdapters = {
@@ -24,6 +26,7 @@ const channelAdapters = {
   wechat_official: WechatOfficialChannel,
   serverchan: ServerChanChannel,
   smtp: SmtpChannel,
+  // qqbot: QqbotChannel, // TODO: 待测试后启用
 };
 
 /**
@@ -80,6 +83,7 @@ module.exports = {
   WechatOfficialChannel,
   ServerChanChannel,
   SmtpChannel,
+  // QqbotChannel, // TODO: 待测试后启用
   getChannelAdapter,
   getChannelTypes,
   validateChannelConfig,
