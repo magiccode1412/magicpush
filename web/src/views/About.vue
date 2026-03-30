@@ -96,7 +96,7 @@
 </template>
 
 <script setup>
-import { Bell, Github, Zap, Shield, Database, Globe, Code, Layers, MessageSquare, Send, Bot, Radio, MessageCircle, Link, Mail } from 'lucide-vue-next'
+import { Bell, Github, Zap, Shield, Database, Globe, Code, Layers, MessageSquare, Send, Bot, Radio, MessageCircle, Link, Mail, Cat } from 'lucide-vue-next'
 import { VERSION } from '@/utils/version'
 
 const supportedChannels = [
@@ -112,10 +112,11 @@ const supportedChannels = [
   { name: 'Webhook', icon: Link, bgColor: 'bg-indigo-100 dark:bg-indigo-900/30', iconColor: 'text-indigo-600 dark:text-indigo-400' },
   { name: 'SMTP邮件', icon: Mail, bgColor: 'bg-red-100 dark:bg-red-900/30', iconColor: 'text-red-600 dark:text-red-400' },
   { name: 'Gotify', icon: Bell, bgColor: 'bg-indigo-100 dark:bg-indigo-900/30', iconColor: 'text-indigo-600 dark:text-indigo-400' },
+  { name: 'Meow', icon: Cat, bgColor: 'bg-orange-100 dark:bg-orange-900/30', iconColor: 'text-orange-600 dark:text-orange-400' },
 ]
 
 const features = [
-  { title: '多渠道支持', description: '支持企业微信、Telegram、飞书、钉钉、SMTP邮件、Gotify等多种推送渠道', icon: Layers },
+  { title: '多渠道支持', description: '支持企业微信、Telegram、飞书、钉钉、SMTP邮件、Gotify、Meow等多种推送渠道', icon: Layers },
   { title: '统一 API', description: '通过统一的 REST API 接口发送消息，简化集成流程', icon: Code },
   { title: '接口管理', description: '灵活管理推送接口和访问令牌', icon: Shield },
   { title: '推送记录', description: '完整的推送历史记录，方便追踪和排查问题', icon: Database },
