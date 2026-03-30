@@ -90,6 +90,9 @@
 - **Server酱** (微信推送服务)
 - **Webhook** (通用 HTTP 推送，支持自定义 URL/Headers/Body)
 - **SMTP邮件** (支持QQ邮箱、163邮箱、Gmail等)
+- **Gotify** (开源自托管推送服务)
+- **Meow** (鸿蒙系统推送应用)
+- **企业微信应用** (企业微信应用消息推送)
 
 ### 核心功能
 - 多渠道消息同时推送
@@ -343,6 +346,9 @@ curl -X POST http://localhost:3000/api/push \
 | Server酱 | sendKey (可选: channel) |
 | Webhook | url, method (可选: headers, bodyTemplate) |
 | SMTP邮件 | host, port, user, pass, to (可选: secure, from) |
+| Gotify | serverUrl, token (可选: priority) |
+| Meow | nickname (可选: type) |
+| 企业微信应用 | corpid, corpsecret, agentid, touser (可选: type) |
 
 > **微信龙虾机器人限制说明：** 机器人连续主动发送 10 条消息后，需用户主动发送一条消息才能继续推送；自用户上次主动发消息起 24 小时后，也需主动发消息才能继续推送。系统会在接近限额时自动在消息中提醒用户。
 
