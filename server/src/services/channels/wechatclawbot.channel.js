@@ -7,7 +7,7 @@ const logger = require('../../utils/logger');
 const MAX_SEND_COUNT = 10;           // 最大主动推送消息数
 const REMIND_COUNT_THRESHOLD = 9;    // 第几条时追加提醒
 const WINDOW_HOURS = 24;             // 24小时窗口
-const REMIND_BEFORE_EXPIRE_MIN = 2;  // 过期前多少分钟追加提醒
+const REMIND_BEFORE_EXPIRE_MIN = 10;  // 过期前多少分钟追加提醒
 
 /**
  * 微信龙虾机器人渠道适配器
@@ -82,7 +82,7 @@ class WechatclawbotChannel extends BaseChannel {
     }
   }
 
-  async send(message, { skipQuota = false } = {}) {
+  async send(message, { skipReminder = false, skipCount = false } = {}) {
     const { title, content, type = 'text' } = message;
     let text = title ? `${title}\n\n${content}` : content;
 
@@ -92,8 +92,8 @@ class WechatclawbotChannel extends BaseChannel {
       text = this._stripHtml(text);
     }
 
-    // 检查是否需要追加额度提醒（测试消息跳过）
-    if (!skipQuota && this._shouldRemind()) {
+    // 检查是否需要追加额度提醒
+    if (!skipReminder && this._shouldRemind()) {
       text += this._buildRemindText();
     }
 
@@ -104,8 +104,8 @@ class WechatclawbotChannel extends BaseChannel {
       contextToken: this.contextToken,
     });
 
-    // 发送成功后递增计数（测试消息跳过）
-    if (!skipQuota) {
+    // 发送成功后递增计数
+    if (!skipCount) {
       this._incrementSendCount();
     }
 
@@ -124,7 +124,7 @@ class WechatclawbotChannel extends BaseChannel {
         title: '测试消息',
         content: '这是一条来自魔法推送的测试消息',
         type: 'text',
-      }, { skipQuota: true });
+      }, { skipReminder: true });
       return { success: true, message: '测试消息发送成功' };
     } catch (error) {
       logger.error('微信龙虾机器人测试失败:', error.message);

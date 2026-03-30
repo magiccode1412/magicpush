@@ -2,18 +2,26 @@ const { ChannelModel } = require('../../models');
 const IlinkClient = require('./ilink-client');
 const logger = require('../../utils/logger');
 
+// 主动提醒阈值：距离上次用户活跃多久后主动推送提醒（毫秒）
+const INACTIVE_REMIND_THRESHOLD = 23 * 3600 * 1000 + 50 * 60 * 1000;
+// 定时检查间隔（毫秒）
+const CHECK_INTERVAL = 600 * 1000; // 每分钟检查一次
+
 /**
  * ClawBot context_token 长轮询监控服务
  * 通过 getUpdates 长轮询获取用户发给 Bot 的消息，提取 context_token 并持久化
+ * 同时定时检测用户不活跃状态，主动推送提醒消息
  */
 class ClawbotMonitor {
   constructor() {
     this.pollingMap = new Map(); // channelId -> { abort, token }
+    this.remindedSet = new Set(); // 已提醒的渠道ID，避免重复发送
+    this._checkTimer = null;
     this.started = false;
   }
 
   /**
-   * 启动监控，为所有已激活的 wechatclawbot 渠道开启长轮询
+   * 启动监控，为所有已激活的 wechatclawbot 渠道开启长轮询 + 不活跃提醒
    */
   start() {
     if (this.started) return;
@@ -24,13 +32,25 @@ class ClawbotMonitor {
       this._startPolling(channel);
     }
 
-    logger.info(`ClawBot 监控服务已启动，共 ${channels.length} 个渠道`);
+    // 启动定时不活跃检测
+    this._checkTimer = setInterval(() => {
+      this._checkInactiveChannels().catch(err => {
+        logger.error('不活跃渠道检测异常:', err.message);
+      });
+    }, CHECK_INTERVAL);
+
+    logger.info(`ClawBot 监控服务已启动，共 ${channels.length} 个渠道（不活跃提醒阈值: ${INACTIVE_REMIND_THRESHOLD / 60000} 分钟）`);
   }
 
   /**
    * 停止所有监控
    */
   stop() {
+    if (this._checkTimer) {
+      clearInterval(this._checkTimer);
+      this._checkTimer = null;
+    }
+    this.remindedSet.clear();
     for (const [channelId, entry] of this.pollingMap) {
       entry.abort = true;
     }
@@ -196,8 +216,75 @@ class ClawbotMonitor {
         config.lastUserMsgTime = now;
         ChannelModel.update(channelId, { config });
       }
+      // 用户活跃后清除已提醒标记，允许下一次不活跃时再次提醒
+      this.remindedSet.delete(channelId);
     } catch (err) {
       logger.warn(`渠道 ${channelId} 重置推送额度失败: ${err.message}`);
+    }
+  }
+
+  /**
+   * 定时检查所有渠道，对不活跃超过阈值的渠道主动推送提醒
+   * 同时兼容服务重启场景：通过 DB 中的 lastRemindTime 避免重复发送
+   */
+  async _checkInactiveChannels() {
+    const channels = this._getActiveChannels();
+    const now = Date.now();
+
+    for (const channel of channels) {
+      const { id: channelId, config } = channel;
+      if (!config.lastUserMsgTime) continue;
+
+      const elapsed = now - config.lastUserMsgTime;
+
+      // 超过阈值且尚未提醒过（内存标记 + DB 兜底）
+      const alreadyReminded = this.remindedSet.has(channelId) ||
+        (config.lastRemindTime && config.lastRemindTime > config.lastUserMsgTime);
+
+      if (elapsed >= INACTIVE_REMIND_THRESHOLD && !alreadyReminded) {
+        logger.info(`渠道 ${channelId} 用户已 ${Math.round(elapsed / 60000)} 分钟未活跃，发送主动提醒`);
+        await this._sendInactiveReminder(channel);
+        this.remindedSet.add(channelId);
+      }
+    }
+  }
+
+  /**
+   * 向不活跃渠道发送主动提醒消息
+   */
+  async _sendInactiveReminder(channel) {
+    const { id: channelId, config } = channel;
+    const { token, baseUrl, toUserId, contextToken } = config;
+
+    if (!token || !toUserId) {
+      logger.warn(`渠道 ${channelId} 配置不完整，跳过主动提醒`);
+      return;
+    }
+
+    try {
+      const client = new IlinkClient({ baseUrl, token });
+      await client.sendTextMessage({
+        toUserId,
+        text: '⚠️会话即将到期，请回复任意消息即可保持机器人推送畅通',
+        contextToken,
+      });
+
+      // 发送成功后更新提醒时间，避免重复发送
+      const channel = ChannelModel.findById(channelId);
+      if (channel) {
+        channel.config.lastRemindTime = Date.now();
+        ChannelModel.update(channelId, { config: channel.config });
+      }
+
+      logger.info(`渠道 ${channelId} 主动提醒发送成功`);
+    } catch (err) {
+      // ret=-2 表示上下文已过期，无需重试
+      if (err.retCode === -2) {
+        logger.warn(`渠道 ${channelId} 上下文已过期，跳过主动提醒`);
+        this.remindedSet.add(channelId);
+        return;
+      }
+      logger.warn(`渠道 ${channelId} 主动提醒发送失败: ${err.message}`);
     }
   }
 

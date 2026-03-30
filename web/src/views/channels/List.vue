@@ -87,6 +87,21 @@
           </div>
         </div>
 
+        <!-- 微信龙虾机器人额度状态 -->
+        <div
+          v-if="channel.channel_type === 'wechatclawbot' && getClawbotQuota(channel)"
+          class="flex items-center gap-4 text-xs text-gray-500 dark:text-gray-400 mb-3 px-3 py-2 rounded-lg bg-gray-50 dark:bg-gray-700/50"
+        >
+          <span class="flex items-center gap-1">
+            <Send class="w-3.5 h-3.5" />
+            已发 {{ getClawbotQuota(channel).sendCount }}/10
+          </span>
+          <span class="flex items-center gap-1">
+            <Clock class="w-3.5 h-3.5" />
+            {{ getClawbotQuota(channel).remainText }}
+          </span>
+        </div>
+
         <!-- 状态 -->
         <div class="flex items-center justify-between">
           <el-tag :type="channel.is_active ? 'success' : 'info'" size="small">
@@ -280,6 +295,7 @@ import {
   MessageSquare,
   Webhook,
   RefreshCw,
+  Clock,
 } from 'lucide-vue-next'
 import ClawbotBindDialog from '@/components/ClawbotBindDialog.vue'
 
@@ -364,6 +380,18 @@ const getDisplayConfig = (channel) => {
     })
   }
   return displayConfig
+}
+
+const getClawbotQuota = (channel) => {
+  const config = channel.config
+  if (!config.lastUserMsgTime) return null
+  const remainMs = 24 * 3600 * 1000 - (Date.now() - config.lastUserMsgTime)
+  if (remainMs <= 0) return { sendCount: config.sendCount || 0, remainText: '窗口已过期，需回复消息' }
+  const remainMin = Math.round(remainMs / 60000)
+  const h = Math.floor(remainMin / 60)
+  const m = remainMin % 60
+  const remainText = h > 0 ? `剩余 ${h}小时${m}分钟` : `剩余 ${m}分钟`
+  return { sendCount: config.sendCount || 0, remainText }
 }
 
 const loadData = async () => {
