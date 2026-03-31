@@ -1,6 +1,6 @@
 {
   "name": "magicpush",
-  "version": "1.6.0",
+  "version": "1.6.1",
   "displayName": "MagicPush",
   "description": "支持多渠道消息推送的统一管理平台",
   "repository": {
@@ -8,6 +8,16 @@
     "url": "https://github.com/magiccode1412/magicpush"
   },
   "changelog": [
+    {
+      "version": "1.6.1",
+      "date": "2026-03-31",
+      "type": "release",
+      "changes": [
+        "修正前端企业微信机器人通知渠道名",
+        "企业微信机器人渠道新增支持填写完整webhook地址",
+        "接口新增url参数，方便对接支持点击消息跳转指定url的通知渠道，例如gotify"
+      ]
+    },
     {
       "version": "1.6.0",
       "date": "2026-03-31",
