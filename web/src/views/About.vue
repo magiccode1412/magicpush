@@ -89,6 +89,14 @@
             <Github class="w-4 h-4" />
             GitHub 仓库
           </a>
+          <a
+            href="https://cnb.cool/magiccode1412/magicpush"
+            target="_blank"
+            class="inline-flex items-center gap-2 text-blue-600 dark:text-blue-400 hover:underline"
+          >
+            <Globe class="w-4 h-4" />
+            CNB 仓库
+          </a>
         </div>
       </div>
     </div>

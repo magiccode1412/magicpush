@@ -87,40 +87,60 @@
           查看全部
         </router-link>
       </div>
-      <div class="divide-y divide-gray-100 dark:divide-gray-700">
-        <div
-          v-for="log in recentLogs"
-          :key="log.id"
-          class="px-6 py-4 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
-        >
-          <div class="flex items-center justify-between">
-            <div class="flex items-center gap-4">
-              <div
-                :class="[
-                  'w-2 h-2 rounded-full',
-                  log.status === 'success' ? 'bg-green-500' : 'bg-red-500'
-                ]"
-              ></div>
-              <div>
-                <p class="text-sm font-medium text-gray-900 dark:text-white">
-                  {{ log.title || '无标题' }}
-                </p>
-                <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
-                  {{ log.channel_type }} · {{ formatDate(log.created_at) }}
-                </p>
-              </div>
+      <el-table :data="recentLogs" style="width: 100%" @row-click="goToLogDetail" class="cursor-pointer">
+        <el-table-column label="消息" min-width="200">
+          <template #default="{ row }">
+            <div>
+              <p class="font-medium text-gray-900 dark:text-white">{{ row.title || '无标题' }}</p>
+              <p class="text-sm text-gray-500 dark:text-gray-400 line-clamp-1">{{ row.content }}</p>
             </div>
-            <el-tag
-              :type="log.status === 'success' ? 'success' : 'danger'"
-              size="small"
-            >
-              {{ log.status === 'success' ? '成功' : '失败' }}
+          </template>
+        </el-table-column>
+
+        <el-table-column label="渠道" width="120">
+          <template #default="{ row }">
+            <el-tag v-if="row.channel_type" size="small" effect="plain">
+              {{ getChannelTypeName(row.channel_type) }}
             </el-tag>
-          </div>
-        </div>
-        <div v-if="recentLogs.length === 0" class="px-6 py-8 text-center text-gray-500 dark:text-gray-400">
-          暂无推送记录
-        </div>
+            <span v-else class="text-gray-400">-</span>
+          </template>
+        </el-table-column>
+
+        <el-table-column label="类型" width="100">
+          <template #default="{ row }">
+            <span class="text-sm text-gray-600 dark:text-gray-400">
+              {{ row.message_type === 'markdown' ? 'Markdown' : row.message_type === 'html' ? 'HTML' : '文本' }}
+            </span>
+          </template>
+        </el-table-column>
+
+        <el-table-column label="请求IP" width="150">
+          <template #default="{ row }">
+            <span class="text-sm text-gray-600 dark:text-gray-400 font-mono">
+              {{ row.ip || '-' }}
+            </span>
+          </template>
+        </el-table-column>
+
+        <el-table-column label="状态" width="100">
+          <template #default="{ row }">
+            <el-tag :type="row.status === 'success' ? 'success' : 'danger'" size="small">
+              {{ row.status === 'success' ? '成功' : '失败' }}
+            </el-tag>
+          </template>
+        </el-table-column>
+
+        <el-table-column label="时间" width="180">
+          <template #default="{ row }">
+            <span class="text-sm text-gray-500 dark:text-gray-400">
+              {{ formatDate(row.created_at) }}
+            </span>
+          </template>
+        </el-table-column>
+      </el-table>
+
+      <div v-if="recentLogs.length === 0" class="px-6 py-8 text-center text-gray-500 dark:text-gray-400">
+        暂无推送记录
       </div>
     </div>
   </div>
@@ -132,6 +152,7 @@ import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { getUserStats } from '@/api/user'
 import { getLogs } from '@/api/log'
+import { getChannelTypes } from '@/api/channel'
 import {
   Link,
   Share2,
@@ -148,6 +169,7 @@ const authStore = useAuthStore()
 
 const stats = ref({})
 const recentLogs = ref([])
+const channelTypes = ref([])
 
 const quickActions = [
   { name: '新建接口', icon: PlusCircle, path: '/endpoints' },
@@ -160,16 +182,30 @@ const formatDate = (date) => {
   return new Date(date).toLocaleString('zh-CN')
 }
 
+const getChannelTypeName = (type) => {
+  const found = channelTypes.value.find((ct) => ct.type === type)
+  return found ? found.name : type
+}
+
+const goToLogDetail = (row) => {
+  router.push({ name: 'Logs', query: { logId: row.id } })
+}
+
 const loadData = async () => {
   try {
-    const statsRes = await getUserStats()
+    const [statsRes, logsRes, typesRes] = await Promise.all([
+      getUserStats(),
+      getLogs({ pageSize: 5 }),
+      getChannelTypes(),
+    ])
     if (statsRes.success) {
       stats.value = statsRes.data
     }
-
-    const logsRes = await getLogs({ pageSize: 5 })
     if (logsRes.success) {
       recentLogs.value = logsRes.data.list || []
+    }
+    if (typesRes.success) {
+      channelTypes.value = typesRes.data || []
     }
   } catch (error) {
     console.error('加载数据失败:', error)
