@@ -1,6 +1,6 @@
 {
   "name": "magicpush",
-  "version": "1.5.0",
+  "version": "1.6.0",
   "displayName": "MagicPush",
   "description": "支持多渠道消息推送的统一管理平台",
   "repository": {
@@ -8,6 +8,14 @@
     "url": "https://github.com/magiccode1412/magicpush"
   },
   "changelog": [
+    {
+      "version": "1.6.0",
+      "date": "2026-03-31",
+      "type": "release",
+      "changes": [
+        "新增Bark推送渠道"
+      ]
+    },
     {
       "version": "1.5.0",
       "date": "2026-03-30",
