@@ -1,5 +1,5 @@
 appname               = magicpush
-version               = 1.4.0
+version               = 1.6.2
 display_name          = 魔法推送
 desc                  = """一个支持多种消息渠道的统一推送服务管理平台
 支持微信龙虾机器人、企业微信、钉钉、飞书、Telegram、微信公众号、WxPusher、PushPlus、Server酱、Webhook等渠道
@@ -11,6 +11,13 @@ maintainer_url        = https://github.com/magiccode1412/magicpush
 desktop_uidir         = ui
 desktop_applaunchname = magicpush.Application
 service_port          = "${wizard_app_port}"
-changelog             = """新增微信龙虾机器人通知渠道，实现微信原生消息推送
-新增SMTP邮件通知渠道，支持QQ邮箱、163邮箱、Gmail等主流邮箱服务
-修复入站配置保存时错误触发接口令牌重新生成的问题"""
+changelog             = """添加限流配置，防止接口被刷
+修正前端企业微信机器人通知渠道名
+企业微信机器人渠道新增支持填写完整webhook地址
+明确提示微信龙虾机器人限制，建议一个接口对接多个渠道，防止微信渠道被限制
+接口新增url参数，方便对接支持点击消息跳转指定url的通知渠道，例如gotify
+新增Bark推送渠道——iOS系统专用
+新增 Gotify 推送渠道——自托管
+新增企业微信应用推送渠道
+新增 Meow 推送渠道——鸿蒙系统专用
+"""
