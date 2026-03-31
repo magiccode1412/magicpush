@@ -24,12 +24,8 @@ if (!fs.existsSync(logsDir)) {
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// 信任反向代理，使 req.ip 返回真实客户端 IP
-// 当使用 Nginx 反向代理或 CDN（如 Cloudflare）时需要设置为 1
-// all-in-one 镜像直接对外暴露时无需设置，避免客户端伪造 IP 绕过限流
-if (process.env.TRUST_PROXY) {
-  app.set('trust proxy', parseInt(process.env.TRUST_PROXY, 10) || 1);
-}
+// 信任第一跳反向代理，使 req.ip 返回真实客户端 IP
+app.set('trust proxy', 1);
 
 // 初始化数据库
 initDatabase().catch(err => {
@@ -115,19 +111,18 @@ app.listen(PORT, () => {
 });
 
 // ── 内存监控 ──────────────────────────────────────────────────
-// 每 60 秒记录一次内存使用情况，超过 80% 时告警
+// V8 堆渐进式增长，仅在堆总量 > 50MB 且使用率 > 80% 时告警
 const MEMORY_SAMPLE_INTERVAL = 60 * 1000;
+const HEAP_MIN_THRESHOLD = 50 * 1024 * 1024; // 50MB
 setInterval(() => {
   const mem = process.memoryUsage();
-  const heapUsedMB = (mem.heapUsed / 1024 / 1024).toFixed(1);
-  const heapTotalMB = (mem.heapTotal / 1024 / 1024).toFixed(1);
-  const rssMB = (mem.rss / 1024 / 1024).toFixed(1);
-  const usagePercent = ((mem.heapUsed / mem.heapTotal) * 100).toFixed(1);
+  const usagePercent = mem.heapUsed / mem.heapTotal;
 
-  if (parseFloat(usagePercent) > 80) {
-    logger.warn(`内存使用过高: heap ${heapUsedMB}/${heapTotalMB}MB (${usagePercent}%), rss ${rssMB}MB`);
-  } else {
-    logger.info(`内存: heap ${heapUsedMB}/${heapTotalMB}MB (${usagePercent}%), rss ${rssMB}MB`);
+  if (mem.heapTotal > HEAP_MIN_THRESHOLD && usagePercent > 0.8) {
+    const heapUsedMB = (mem.heapUsed / 1024 / 1024).toFixed(1);
+    const heapTotalMB = (mem.heapTotal / 1024 / 1024).toFixed(1);
+    const rssMB = (mem.rss / 1024 / 1024).toFixed(1);
+    logger.warn(`内存使用过高: heap ${heapUsedMB}/${heapTotalMB}MB (${(usagePercent * 100).toFixed(1)}%), rss ${rssMB}MB`);
   }
 }, MEMORY_SAMPLE_INTERVAL);
 
