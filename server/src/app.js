@@ -24,6 +24,13 @@ if (!fs.existsSync(logsDir)) {
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// 信任反向代理，使 req.ip 返回真实客户端 IP
+// 当使用 Nginx 反向代理或 CDN（如 Cloudflare）时需要设置为 1
+// all-in-one 镜像直接对外暴露时无需设置，避免客户端伪造 IP 绕过限流
+if (process.env.TRUST_PROXY) {
+  app.set('trust proxy', parseInt(process.env.TRUST_PROXY, 10) || 1);
+}
+
 // 初始化数据库
 initDatabase().catch(err => {
   logger.error('数据库初始化失败:', err);

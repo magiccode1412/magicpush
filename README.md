@@ -106,6 +106,17 @@
 - 响应式Web管理界面
 - 深浅色主题切换
 
+### 安全防护
+- **三层限流防护**
+  - Nginx 层：IP 级请求频率限制 + 并发连接控制（兜底保护）
+  - Express 全局：按 IP 限制每分钟总请求数
+  - Express 接口级：针对登录、注册、推送、入站等接口独立限流
+- **动态限流配置**：管理员可在前端「安全设置」页面实时调整所有限流额度，修改立即生效，无需重启服务
+- **推送接口双重限流**：同时按来源 IP 和推送 Token 限流，防止 Token 泄露后被滥用
+- 限流触发时自动记录日志，方便排查异常请求
+
+> **注意：** 预构建的 Docker 镜像（`magiccode1412/magicpush:latest`）为 All-in-One 模式（Express 直接提供静态文件），不包含 Nginx，因此仅具备 Express 层的两层限流。如需启用 Nginx 层的兜底限流，请使用 `docker-compose up -d` 自行构建前后端分离镜像。
+
 ## 测试
 
 [![Open in Gitpod](./public/image/open-in-gitpod.svg)](https://app.ona.com/#https://github.com/magiccode1412/magicpush)
@@ -182,6 +193,7 @@ docker build -t magicpush .
 - SQLite3 (better-sqlite3)
 - JWT (jsonwebtoken)
 - bcryptjs (密码加密)
+- express-rate-limit (API 限流)
 
 ### 前端
 - Vue 3 (Composition API)
@@ -200,10 +212,12 @@ docker build -t magicpush .
 │   │   ├── config/      # 配置文件
 │   │   ├── controllers/ # 控制器
 │   │   ├── middleware/  # 中间件
+│   │   │   └── rateLimit.middleware.js # 限流中间件
 │   │   ├── models/      # 数据模型
 │   │   ├── routes/      # 路由定义
 │   │   ├── services/    # 业务服务
-│   │   │   └── channels/# 渠道适配器
+│   │   │   ├── channels/# 渠道适配器
+│   │   │   └── rateLimitConfig.service.js # 限流配置服务
 │   │   ├── utils/       # 工具函数
 │   │   └── database/    # 数据库初始化
 │   ├── Dockerfile       # 后端 Dockerfile
@@ -217,6 +231,7 @@ docker build -t magicpush .
 │   │   ├── router/      # 路由
 │   │   ├── stores/      # 状态管理
 │   │   ├── views/       # 页面视图
+│   │   │   └── settings/ # 设置页面（含安全设置）
 │   │   └── styles/      # 样式文件
 │   ├── Dockerfile       # 前端 Dockerfile
 │   ├── nginx.conf       # 前端 nginx 配置

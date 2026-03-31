@@ -18,6 +18,7 @@ services:
       - DB_PATH=./data/push_service.db # 可选项,默认./data/push_service.db
       - LOG_LEVEL=info # 可选项,默认info
       - TZ=Asia/Shanghai # 可选项,默认东八区(北京时间),可设置为其他时区如 UTC, America/New_York 等
+      - TRUST_PROXY=1 # 信任 Nginx 反向代理获取真实客户端IP，启用限流需开启
     networks:
       - magicpush-network
 
