@@ -31,7 +31,7 @@ class GotifyChannel extends BaseChannel {
   }
 
   async send(message) {
-    const { title, content, type = 'text' } = message;
+    const { title, content, type = 'text', url } = message;
     let text = content;
 
     if (type === 'html') {
@@ -44,10 +44,15 @@ class GotifyChannel extends BaseChannel {
       priority: this.priority,
     };
 
+    const extras = {};
     if (type === 'markdown') {
-      body.extras = {
-        'client::display': { contentType: 'text/markdown' },
-      };
+      extras['client::display'] = { contentType: 'text/markdown' };
+    }
+    if (url) {
+      extras['client::notification::click'] = { url };
+    }
+    if (Object.keys(extras).length > 0) {
+      body.extras = extras;
     }
 
     logger.info(`Gotify 发送消息: server=${this.serverUrl}, priority=${this.priority}`);
