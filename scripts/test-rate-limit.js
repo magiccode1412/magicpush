@@ -7,12 +7,28 @@
  *   - 全局限流、登录/注册/刷新/健康检查接口限流
  *   - 推送接口（IP + Token 双重限流）、入站接口（Token 限流）
  *   - 429 响应格式、RateLimit-* 标准头
- *
- * 用法:
- *   node scripts/test-rate-limit.js                         # 测试默认地址 http://localhost:3000
- *   node scripts/test-rate-limit.js http://192.168.1.1:3000  # 测试指定地址
- *   node scripts/test-rate-limit.js --only health           # 仅运行指定测试
  */
+
+function showUsage() {
+  console.log(`
+用法:
+  node scripts/test-rate-limit.js                         # 测试默认地址 http://localhost:3000
+  node scripts/test-rate-limit.js http://192.168.1.1:3000  # 测试指定地址
+  node scripts/test-rate-limit.js --only health           # 仅运行指定测试
+  node scripts/test-rate-limit.js -h|--help               # 显示帮助信息
+
+测试选项:
+  --only=测试名    仅运行指定的测试，可用的测试名:
+                   connectivity, 429-format, login, register,
+                   refresh, push-ip, push-get, inbound,
+                   inbound-isolation, reset
+`);
+}
+
+if (process.argv.includes('-h') || process.argv.includes('--help')) {
+  showUsage();
+  process.exit(0);
+}
 
 const BASE_URL = process.argv[2] && !process.argv[2].startsWith('--')
   ? process.argv[2]

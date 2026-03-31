@@ -114,4 +114,21 @@ app.listen(PORT, () => {
   clawbotMonitor.start();
 });
 
+// ── 内存监控 ──────────────────────────────────────────────────
+// 每 60 秒记录一次内存使用情况，超过 80% 时告警
+const MEMORY_SAMPLE_INTERVAL = 60 * 1000;
+setInterval(() => {
+  const mem = process.memoryUsage();
+  const heapUsedMB = (mem.heapUsed / 1024 / 1024).toFixed(1);
+  const heapTotalMB = (mem.heapTotal / 1024 / 1024).toFixed(1);
+  const rssMB = (mem.rss / 1024 / 1024).toFixed(1);
+  const usagePercent = ((mem.heapUsed / mem.heapTotal) * 100).toFixed(1);
+
+  if (parseFloat(usagePercent) > 80) {
+    logger.warn(`内存使用过高: heap ${heapUsedMB}/${heapTotalMB}MB (${usagePercent}%), rss ${rssMB}MB`);
+  } else {
+    logger.info(`内存: heap ${heapUsedMB}/${heapTotalMB}MB (${usagePercent}%), rss ${rssMB}MB`);
+  }
+}, MEMORY_SAMPLE_INTERVAL);
+
 module.exports = app;

@@ -3,6 +3,15 @@ const ResponseUtil = require('../utils/response');
 const RateLimitConfigService = require('../services/rateLimitConfig.service');
 const logger = require('../utils/logger');
 
+// ── 限流日志采样 ────────────────────────────────────────────────
+// 高频攻击时避免日志被刷屏，同一 IP 在同一分钟内仅记录首次限流
+const rateLimitLogCache = new Map();
+const RATE_LOG_TTL = 60 * 1000; // 60 秒内同一 IP 不重复记录
+
+setInterval(() => {
+  rateLimitLogCache.clear();
+}, RATE_LOG_TTL);
+
 /**
  * 创建动态限流器工厂函数
  * 每次请求时从数据库读取最新配置
@@ -13,12 +22,16 @@ const createDynamicLimiter = (configKey, options = {}, message) => {
     windowMs: 60 * 1000,
     max: () => RateLimitConfigService.get(configKey),
     handler: (req, res) => {
-      logger.warn('请求被限流', {
-        ip: req.ip,
-        path: req.path,
-        method: req.method,
-        configKey,
-      });
+      const logKey = `${req.ip}:${configKey}`;
+      if (!rateLimitLogCache.has(logKey)) {
+        logger.warn('请求被限流', {
+          ip: req.ip,
+          path: req.path,
+          method: req.method,
+          configKey,
+        });
+        rateLimitLogCache.set(logKey, true);
+      }
       return ResponseUtil.tooManyRequests(res, message || '请求过于频繁，请稍后再试');
     },
     standardHeaders: true,
