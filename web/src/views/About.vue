@@ -101,7 +101,7 @@ import { VERSION } from '@/utils/version'
 
 const supportedChannels = [
   { name: '微信龙虾机器人', icon: Bot, bgColor: 'bg-orange-100 dark:bg-orange-900/30', iconColor: 'text-orange-600 dark:text-orange-400' },
-  { name: '企业微信', icon: MessageSquare, bgColor: 'bg-blue-100 dark:bg-blue-900/30', iconColor: 'text-blue-600 dark:text-blue-400' },
+  { name: '企业微信群机器人', icon: MessageSquare, bgColor: 'bg-blue-100 dark:bg-blue-900/30', iconColor: 'text-blue-600 dark:text-blue-400' },
   { name: 'Telegram', icon: Send, bgColor: 'bg-sky-100 dark:bg-sky-900/30', iconColor: 'text-sky-600 dark:text-sky-400' },
   { name: 'PushPlus', icon: Zap, bgColor: 'bg-green-100 dark:bg-green-900/30', iconColor: 'text-green-600 dark:text-green-400' },
   { name: 'WxPusher', icon: Bot, bgColor: 'bg-orange-100 dark:bg-orange-900/30', iconColor: 'text-orange-600 dark:text-orange-400' },
@@ -118,7 +118,7 @@ const supportedChannels = [
 ]
 
 const features = [
-  { title: '多渠道支持', description: '支持企业微信、Telegram、飞书、钉钉、SMTP邮件、Gotify、Bark、Meow、企业微信应用等多种推送渠道', icon: Layers },
+  { title: '多渠道支持', description: '支持企业微信群机器人、Telegram、飞书、钉钉、SMTP邮件、Gotify、Bark、Meow、企业微信应用等多种推送渠道', icon: Layers },
   { title: '统一 API', description: '通过统一的 REST API 接口发送消息，简化集成流程', icon: Code },
   { title: '接口管理', description: '灵活管理推送接口和访问令牌', icon: Shield },
   { title: '推送记录', description: '完整的推送历史记录，方便追踪和排查问题', icon: Database },

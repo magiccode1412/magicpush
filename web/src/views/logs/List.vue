@@ -40,7 +40,7 @@
         </el-select>
         
         <el-select v-model="filter.channelType" placeholder="渠道类型" clearable class="w-40">
-          <el-option label="企业微信" value="wecom" />
+          <el-option label="企业微信群机器人" value="wecom" />
           <el-option label="Telegram" value="telegram" />
           <el-option label="PushPlus" value="pushplus" />
           <el-option label="WxPusher" value="wxpusher" />
@@ -220,7 +220,7 @@ const pagination = reactive({
 })
 
 const channelTypeNames = {
-  wecom: '企业微信',
+  wecom: '企业微信群机器人',
   telegram: 'Telegram',
   pushplus: 'PushPlus',
   wxpusher: 'WxPusher',

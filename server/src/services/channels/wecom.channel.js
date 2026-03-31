@@ -85,7 +85,7 @@ class WecomChannel extends BaseChannel {
   }
 
   static getName() {
-    return '企业微信';
+    return '企业微信群机器人';
   }
 
   static getDescription() {

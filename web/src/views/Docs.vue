@@ -19,7 +19,7 @@
         </p>
         <ol class="list-decimal list-inside space-y-2 text-gray-600 dark:text-gray-300">
           <li>在<strong>接口管理</strong>页面创建一个推送接口</li>
-          <li>在<strong>渠道管理</strong>页面配置消息渠道（企业微信、Telegram 等）</li>
+          <li>在<strong>渠道管理</strong>页面配置消息渠道（企业微信群机器人、Telegram 等）</li>
           <li>将渠道绑定到接口，然后使用接口令牌调用 API 发送消息</li>
         </ol>
       </div>
@@ -350,7 +350,7 @@ const successResponse = JSON.stringify({
         success: true,
         channelId: 1,
         channelType: "wecom",
-        channelName: "企业微信"
+        channelName: "企业微信群机器人"
       }
     ]
   }
