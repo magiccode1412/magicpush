@@ -11,13 +11,14 @@ const inboundRoutes = require('./inbound.routes');
 const logRoutes = require('./log.routes');
 const adminRoutes = require('./admin.routes');
 const authenticate = require('../middleware/auth.middleware');
+const { healthLimiter } = require('../middleware/rateLimit.middleware');
 const logger = require('../utils/logger');
 const db = require('../config/database');
 const { UserModel, SettingsModel } = require('../models');
 const { getVersion, getDisplayName } = require('../config/version');
 
-// 健康检查接口（公开接口，无需认证）
-router.get('/health', (req, res) => {
+// 健康检查接口（公开接口，限流）
+router.get('/health', healthLimiter, (req, res) => {
   const startTime = Date.now();
   let dbStatus = 'ok';
   let dbError = null;

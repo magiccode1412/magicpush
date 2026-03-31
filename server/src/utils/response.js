@@ -71,6 +71,13 @@ class ResponseUtil {
   }
 
   /**
+   * 请求过于频繁响应 (429)
+   */
+  static tooManyRequests(res, message = '请求过于频繁') {
+    return this.error(res, message, 429, 429);
+  }
+
+  /**
    * 服务器错误响应
    */
   static serverError(res, message = '服务器内部错误') {

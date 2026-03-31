@@ -13,4 +13,9 @@ router.put('/users/:id', AdminController.updateUser);
 router.delete('/users/:id', AdminController.deleteUser);
 router.put('/users/:id/password', AdminController.resetPassword);
 
+// 限流配置管理
+router.get('/rate-limit', AdminController.getRateLimitConfig);
+router.put('/rate-limit', AdminController.updateRateLimitConfig);
+router.post('/rate-limit/reset', AdminController.resetRateLimitConfig);
+
 module.exports = router;

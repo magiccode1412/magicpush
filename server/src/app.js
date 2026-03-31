@@ -5,6 +5,7 @@ const cors = require('cors');
 const path = require('path');
 const fs = require('fs');
 
+const { globalLimiter } = require('./middleware/rateLimit.middleware');
 const initDatabase = require('./database/init');
 require('./config/version');
 const routes = require('./routes');
@@ -69,6 +70,9 @@ app.use((req, res, next) => {
   });
   next();
 });
+
+// 全局限流
+app.use(globalLimiter);
 
 // API路由
 app.use('/api', routes);
