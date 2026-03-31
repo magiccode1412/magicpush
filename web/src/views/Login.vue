@@ -99,7 +99,7 @@
 
       <!-- 页脚 -->
       <p class="text-center text-sm text-gray-500 dark:text-gray-400 mt-8">
-        支持多种消息渠道：微信龙虾机器人 · 企业微信 · 钉钉 · 飞书 · Telegram · 微信公众号 · WxPusher · PushPlus · Server酱 · Webhook · SMTP邮件 · Gotify · Meow · 企业微信应用
+        支持多种消息渠道：微信龙虾机器人 · 企业微信 · 钉钉 · 飞书 · Telegram · 微信公众号 · WxPusher · PushPlus · Server酱 · Webhook · SMTP邮件 · Gotify · Bark · Meow · 企业微信应用
       </p>
     </div>
   </div>

@@ -91,6 +91,7 @@
 - **Webhook** (通用 HTTP 推送，支持自定义 URL/Headers/Body)
 - **SMTP邮件** (支持QQ邮箱、163邮箱、Gmail等)
 - **Gotify** (开源自托管推送服务)
+- **Bark** (iOS 自定义推送通知)
 - **Meow** (鸿蒙系统推送应用)
 - **企业微信应用** (企业微信应用消息推送)
 
@@ -347,6 +348,7 @@ curl -X POST http://localhost:3000/api/push \
 | Webhook | url, method (可选: headers, bodyTemplate) |
 | SMTP邮件 | host, port, user, pass, to (可选: secure, from) |
 | Gotify | serverUrl, token (可选: priority) |
+| Bark | serverUrl, deviceKey (可选: group, sound, level, icon) |
 | Meow | nickname (可选: type) |
 | 企业微信应用 | corpid, corpsecret, agentid, touser (可选: type) |
 
