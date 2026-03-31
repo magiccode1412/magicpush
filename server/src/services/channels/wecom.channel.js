@@ -7,7 +7,12 @@ const BaseChannel = require('./base.channel');
 class WecomChannel extends BaseChannel {
   constructor(config) {
     super(config);
-    this.webhookUrl = `https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=${config.key}`;
+    const key = config.key.trim();
+    if (key.startsWith('https://') || key.startsWith('http://')) {
+      this.webhookUrl = key;
+    } else {
+      this.webhookUrl = `https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=${key}`;
+    }
   }
 
   async send(message) {
@@ -52,6 +57,17 @@ class WecomChannel extends BaseChannel {
     if (!config.key || config.key.trim() === '') {
       return { valid: false, message: '机器人Key不能为空' };
     }
+    const key = config.key.trim();
+    if (key.startsWith('https://') || key.startsWith('http://')) {
+      try {
+        const url = new URL(key);
+        if (!url.searchParams.get('key')) {
+          return { valid: false, message: 'URL中未找到key参数' };
+        }
+      } catch {
+        return { valid: false, message: '无效的URL格式' };
+      }
+    }
     return { valid: true, message: '' };
   }
 
@@ -69,7 +85,7 @@ class WecomChannel extends BaseChannel {
   }
 
   static getName() {
-    return '企业微信';
+    return '企业微信群机器人';
   }
 
   static getDescription() {
@@ -83,8 +99,8 @@ class WecomChannel extends BaseChannel {
         label: '机器人Key',
         type: 'text',
         required: true,
-        placeholder: '请输入企业微信机器人Key',
-        description: '在企业微信群中添加机器人后获取的Key',
+        placeholder: '请输入企业微信机器人Key或完整Webhook地址',
+        description: '在企业微信群中添加机器人后获取的Key，支持直接粘贴完整Webhook地址',
       },
     ];
   }

@@ -31,9 +31,8 @@
 ## 📝 更新日志
 查看 [CHANGELOG.md](docs/CHANGELOG.md) 了解版本更新记录。
 
-## 🌐 在线测试（自行注册即可）
-+ 开发版：https://magicpush.up.railway.app/
-+ 稳定版：https://rurvbrlarizv.ap-northeast-1.clawcloudrun.com/
+## 🌐 [点此跳转到Demo站试用](https://rurvbrlarizv.ap-northeast-1.clawcloudrun.com/)
+自行注册即可
 
 > 提示：演示环境仅作测试使用，请勿发送违规信息，数据会定期重置，请勿存储重要信息。
 
@@ -61,6 +60,7 @@
   + Telegram ➡️ 最优秀的消息推送服务,但是需要魔法
   + 企业微信/钉钉/飞书 ➡️ 消息仅限于企业内部
   + 微信服务号 ➡️ 模板消息限制太多
+  + 微信龙虾机器人 ➡️ 支持直接推送到个人微信，但有10条/24小时限制
 
 也有一些开发者,开始转向App推送,更甚者,开始支持手机系统底层推送,例如:
 + pushplus: 支持多渠道推送,包括微信服务号/App/webhook
@@ -79,6 +79,7 @@
 ## ✨ 功能特性
 
 ### 消息渠道支持
+- **微信龙虾机器人** (扫码绑定，直接推送到个人微信，有10条/24小时限制)
 - 企业微信机器人
 - Telegram Bot
 - PushPlus
@@ -89,6 +90,10 @@
 - **Server酱** (微信推送服务)
 - **Webhook** (通用 HTTP 推送，支持自定义 URL/Headers/Body)
 - **SMTP邮件** (支持QQ邮箱、163邮箱、Gmail等)
+- **Gotify** (开源自托管推送服务)
+- **Bark** (iOS 自定义推送通知)
+- **Meow** (鸿蒙系统推送应用)
+- **企业微信应用** (企业微信应用消息推送)
 
 ### 核心功能
 - 多渠道消息同时推送
@@ -101,9 +106,48 @@
 - 响应式Web管理界面
 - 深浅色主题切换
 
+### 安全防护
+- **三层限流防护**
+  - Nginx 层：IP 级请求频率限制 + 并发连接控制（兜底保护）
+  - Express 全局：按 IP 限制每分钟总请求数
+  - Express 接口级：针对登录、注册、推送、入站等接口独立限流
+- **动态限流配置**：管理员可在前端「安全设置」页面实时调整所有限流额度，修改立即生效，无需重启服务
+- **推送接口双重限流**：同时按来源 IP 和推送 Token 限流，防止 Token 泄露后被滥用
+- 限流触发时自动记录日志，方便排查异常请求
+
+> **注意：** 预构建的 Docker 镜像（`magiccode1412/magicpush:latest`）为 All-in-One 模式（Express 直接提供静态文件），不包含 Nginx，因此仅具备 Express 层的两层限流。如需启用 Nginx 层的兜底限流，请使用 `docker-compose up -d` 自行构建前后端分离镜像。
+
+## ⚠️ 各渠道消息发送频率限制
+
+本项目对各推送接口有默认的限流策略（可在管理后台「安全设置」中动态调整），同时各消息渠道平台自身也有频率限制，配置时需注意：
+
+| 渠道 | 平台频率限制 | 限制维度 | 说明 |
+|------|-------------|---------|------|
+| **企业微信群机器人** | 20 条/分钟 | 每个 Webhook | 官方文档明确标注，超限返回错误码 |
+| **企业微信应用** | ~200 次/分钟 | 每个应用 | 与接收人数相关 |
+| **Telegram Bot** | 1 条/秒（同群）<br>30 条/秒（不同群） | 每个群聊 / 全局 | 超限返回 429，需等待 retry-after |
+| **PushPlus** | 200 条/天<br>5 次/秒 | 每个 Token | 免费用户限制，会员可提升额度 |
+| **WxPusher** | 200 条/天 | 每个 AppToken | 免费限制 |
+| **飞书群机器人** | 50 次/分钟 | 每个 Webhook | 自定义机器人限制 |
+| **钉钉群机器人** | 20 条/分钟 | 每个机器人每群 | 超限被限流一段时间 |
+| **Server酱** | 5 次/秒 | 每个 SendKey | Turbo 版限制 |
+| **微信公众号** | 10 万 条/天 | 每个模板 | 认证服务号，测试号同样 10 万/天 |
+| **SMTP 邮件** | 因服务商而异 | 每个账号 | QQ 邮箱/163: 约 500/天，Gmail: 约 500/天 |
+| **QQ 机器人** | 20 条/秒 | 每个机器人 | 全局限速 |
+| **Bark** | 无限制 | - | 自建服务，无平台限制 |
+| **Gotify** | 无限制 | - | 自建服务，无平台限制 |
+| **Meow** | 无限制 | - | 自建服务，无平台限制 |
+| **Webhook** | 无限制 | - | 取决于目标服务器 |
+| **微信龙虾机器人** | 10 条/24 小时 | 每个微信号 | 连续发送 10 条后需用户主动发消息才能继续 |
+| **企业微信应用** | ~200 次/分钟 | 每个应用 | 与接收人数相关 |
+
+> **提示：** 以上为各平台官方公开的限制信息，具体限制可能随平台政策调整而变化，请以各平台最新文档为准。高频推送场景建议优先选择无平台限制的自建渠道（Bark/Gotify/Webhook）。
+
 ## 测试
 
-[![Open in Gitpod](./public/image/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/magiccode1412/magicpush)
+[![Open in Gitpod](./public/image/open-in-gitpod.svg)](https://app.ona.com/#https://github.com/magiccode1412/magicpush)
+
+免费资源需要验证信用卡
 
 ## 🐳 Docker 部署
 
@@ -112,6 +156,7 @@
 ### 点击下面任一按钮一键部署
 
 [![Deploy on Zeabur](./public/image/depoly_to_zeabur.svg)](https://zeabur.com/templates/GGBDF1?referralCode=nixingshiguang)
+没有免费资源了
 
 [![Deploy on Railway](./public/image/deploy_on_railway.svg)](https://railway.com/deploy/JbNI4y?referralCode=85Y1W5&utm_medium=integration&utm_source=template&utm_campaign=generic)
 
@@ -153,7 +198,7 @@ services:
 
 **分离部署前后端**
 
-支持更灵活的配置，这种方法需要拉取项目自行构建
+支持更灵活的配置，这种方法需要**拉取项目自行构建**
 
 ```bash
 docker-compose up -d
@@ -174,6 +219,7 @@ docker build -t magicpush .
 - SQLite3 (better-sqlite3)
 - JWT (jsonwebtoken)
 - bcryptjs (密码加密)
+- express-rate-limit (API 限流)
 
 ### 前端
 - Vue 3 (Composition API)
@@ -192,10 +238,12 @@ docker build -t magicpush .
 │   │   ├── config/      # 配置文件
 │   │   ├── controllers/ # 控制器
 │   │   ├── middleware/  # 中间件
+│   │   │   └── rateLimit.middleware.js # 限流中间件
 │   │   ├── models/      # 数据模型
 │   │   ├── routes/      # 路由定义
 │   │   ├── services/    # 业务服务
-│   │   │   └── channels/# 渠道适配器
+│   │   │   ├── channels/# 渠道适配器
+│   │   │   └── rateLimitConfig.service.js # 限流配置服务
 │   │   ├── utils/       # 工具函数
 │   │   └── database/    # 数据库初始化
 │   ├── Dockerfile       # 后端 Dockerfile
@@ -209,6 +257,7 @@ docker build -t magicpush .
 │   │   ├── router/      # 路由
 │   │   ├── stores/      # 状态管理
 │   │   ├── views/       # 页面视图
+│   │   │   └── settings/ # 设置页面（含安全设置）
 │   │   └── styles/      # 样式文件
 │   ├── Dockerfile       # 前端 Dockerfile
 │   ├── nginx.conf       # 前端 nginx 配置
@@ -328,6 +377,7 @@ curl -X POST http://localhost:3000/api/push \
 
 | 渠道 | 必需配置 |
 |------|---------|
+| 微信龙虾机器人 | 扫码绑定 (自动获取配置) |
 | 企业微信 | key (机器人Key) |
 | Telegram | botToken, chatId |
 | PushPlus | token (可选: topic) |
@@ -338,6 +388,12 @@ curl -X POST http://localhost:3000/api/push \
 | Server酱 | sendKey (可选: channel) |
 | Webhook | url, method (可选: headers, bodyTemplate) |
 | SMTP邮件 | host, port, user, pass, to (可选: secure, from) |
+| Gotify | serverUrl, token (可选: priority) |
+| Bark | serverUrl, deviceKey (可选: group, sound, level, icon) |
+| Meow | nickname (可选: type) |
+| 企业微信应用 | corpid, corpsecret, agentid, touser (可选: type) |
+
+> **微信龙虾机器人限制说明：** 机器人连续主动发送 10 条消息后，需用户主动发送一条消息才能继续推送；自用户上次主动发消息起 24 小时后，也需主动发消息才能继续推送。系统会在接近限额时自动在消息中提醒用户。
 
 ## 🔐 环境变量
 
@@ -346,13 +402,11 @@ curl -X POST http://localhost:3000/api/push \
 ```env
 NODE_ENV=development
 # JWT_SECRET=your-secret-key        # 可选，不设置则自动生成安全密钥
-JWT_ACCESS_EXPIRES_IN=15m
-JWT_REFRESH_EXPIRES_IN=7d
-DB_PATH=./data/push_service.db
-LOG_LEVEL=info
+JWT_ACCESS_EXPIRES_IN=15m           # 可选，默认 15 分钟
+JWT_REFRESH_EXPIRES_IN=7d           # 可选，默认 7 天
+DB_PATH=./data/push_service.db      # 可选
+LOG_LEVEL=info                      # 可选，默认 info
 ```
-
-> **注意**：`JWT_SECRET` 为可选项。如果不设置，系统会在首次运行时自动生成一个 128 位的安全密钥并存储到数据库中。
 
 ## 📝 开发说明
 

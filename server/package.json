@@ -1,6 +1,6 @@
 {
   "name": "magicpush-server",
-  "version": "1.4.2",
+  "version": "1.6.2",
   "description": "MagicPush 后端服务",
   "main": "src/app.js",
   "scripts": {
@@ -15,6 +15,7 @@
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "express": "^4.18.2",
+    "express-rate-limit": "^8.3.2",
     "express-validator": "^7.0.1",
     "https-proxy-agent": "^7.0.2",
     "jsonwebtoken": "^9.0.2",

@@ -1,6 +1,7 @@
 const bcrypt = require('bcryptjs');
 const { UserModel } = require('../models');
 const ResponseUtil = require('../utils/response');
+const RateLimitConfigService = require('../services/rateLimitConfig.service');
 const logger = require('../utils/logger');
 
 /**
@@ -195,6 +196,47 @@ class AdminController {
     } catch (error) {
       logger.error('重置密码失败:', error);
       return ResponseUtil.serverError(res, '重置密码失败');
+    }
+  }
+  /**
+   * 获取限流配置
+   */
+  static getRateLimitConfig(req, res) {
+    try {
+      const config = RateLimitConfigService.getAll();
+      const defaults = RateLimitConfigService.getDefaults();
+      const bounds = RateLimitConfigService.getBounds();
+      return ResponseUtil.success(res, { config, defaults, bounds });
+    } catch (error) {
+      logger.error('获取限流配置失败:', error);
+      return ResponseUtil.serverError(res, '获取限流配置失败');
+    }
+  }
+
+  /**
+   * 更新限流配置
+   */
+  static updateRateLimitConfig(req, res) {
+    try {
+      const results = RateLimitConfigService.setMany(req.body);
+      return ResponseUtil.success(res, results, '限流配置更新成功');
+    } catch (error) {
+      logger.error('更新限流配置失败:', error);
+      return ResponseUtil.badRequest(res, error.message);
+    }
+  }
+
+  /**
+   * 重置限流配置
+   */
+  static resetRateLimitConfig(req, res) {
+    try {
+      const config = RateLimitConfigService.reset();
+      logger.info(`管理员 ${req.user.userId} 重置限流配置`);
+      return ResponseUtil.success(res, config, '限流配置已重置为默认值');
+    } catch (error) {
+      logger.error('重置限流配置失败:', error);
+      return ResponseUtil.serverError(res, '重置限流配置失败');
     }
   }
 }

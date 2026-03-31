@@ -1,6 +1,6 @@
 {
   "name": "magicpush",
-  "version": "1.4.2",
+  "version": "1.6.2",
   "displayName": "MagicPush",
   "description": "支持多渠道消息推送的统一管理平台",
   "repository": {
@@ -8,6 +8,51 @@
     "url": "https://github.com/magiccode1412/magicpush"
   },
   "changelog": [
+    {
+      "version": "1.6.2",
+      "date": "2026-03-31",
+      "type": "release",
+      "changes": [
+        "添加限流配置，防止接口被刷",
+        "优化推送记录显示"
+      ]
+    },
+    {
+      "version": "1.6.1",
+      "date": "2026-03-31",
+      "type": "release",
+      "changes": [
+        "修正前端企业微信机器人通知渠道名",
+        "企业微信机器人渠道新增支持填写完整webhook地址",
+        "接口新增url参数，方便对接支持点击消息跳转指定url的通知渠道，例如gotify"
+      ]
+    },
+    {
+      "version": "1.6.0",
+      "date": "2026-03-31",
+      "type": "release",
+      "changes": [
+        "新增Bark推送渠道"
+      ]
+    },
+    {
+      "version": "1.5.0",
+      "date": "2026-03-30",
+      "type": "release",
+      "changes": [
+        "新增 Gotify 推送渠道",
+        "新增 Meow 推送渠道（鸿蒙系统）",
+        "新增企业微信应用推送渠道"
+      ]
+    },
+    {
+      "version": "1.4.3",
+      "date": "2026-03-29",
+      "type": "release",
+      "changes": [
+        "通过主动提醒用户回复消息的方式，暂时解决微信龙虾机器人的消息推送限制"
+      ]
+    },
     {
       "version": "1.4.2",
       "date": "2026-03-26",

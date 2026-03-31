@@ -40,12 +40,12 @@
         </el-select>
         
         <el-select v-model="filter.channelType" placeholder="渠道类型" clearable class="w-40">
-          <el-option label="企业微信" value="wecom" />
-          <el-option label="Telegram" value="telegram" />
-          <el-option label="PushPlus" value="pushplus" />
-          <el-option label="WxPusher" value="wxpusher" />
-          <el-option label="飞书" value="feishu" />
-          <el-option label="钉钉" value="dingtalk" />
+          <el-option
+            v-for="ct in channelTypes"
+            :key="ct.type"
+            :label="ct.name"
+            :value="ct.type"
+          />
         </el-select>
 
         <el-date-picker
@@ -67,7 +67,7 @@
 
     <!-- 记录列表 -->
     <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
-      <el-table :data="logs" v-loading="loading" stripe>
+      <el-table :data="logs" v-loading="loading" stripe class="cursor-pointer" @row-click="showDetail">
         <el-table-column label="消息" min-width="200">
           <template #default="{ row }">
             <div>
@@ -118,13 +118,6 @@
           </template>
         </el-table-column>
 
-        <el-table-column label="操作" width="120" fixed="right">
-          <template #default="{ row }">
-            <el-button link type="primary" @click="showDetail(row)">
-              详情
-            </el-button>
-          </template>
-        </el-table-column>
       </el-table>
 
       <!-- 分页 -->
@@ -196,16 +189,21 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, onMounted, watch } from 'vue'
+import { useRoute } from 'vue-router'
 import { getLogs, getStats, clearLogs } from '@/api/log'
+import { getChannelTypes } from '@/api/channel'
 import { Search, Trash2 } from 'lucide-vue-next'
 import { ElMessage, ElMessageBox } from 'element-plus'
+
+const route = useRoute()
 
 const logs = ref([])
 const stats = ref({})
 const loading = ref(false)
 const showDetailDialog = ref(false)
 const selectedLog = ref(null)
+const channelTypes = ref([])
 
 const filter = reactive({
   status: '',
@@ -219,17 +217,9 @@ const pagination = reactive({
   total: 0,
 })
 
-const channelTypeNames = {
-  wecom: '企业微信',
-  telegram: 'Telegram',
-  pushplus: 'PushPlus',
-  wxpusher: 'WxPusher',
-  feishu: '飞书',
-  dingtalk: '钉钉',
-}
-
 const getChannelTypeName = (type) => {
-  return channelTypeNames[type] || type
+  const found = channelTypes.value.find((ct) => ct.type === type)
+  return found ? found.name : type
 }
 
 const formatDate = (date) => {
@@ -257,9 +247,10 @@ const loadData = async () => {
       params.endDate = filter.dateRange[1]
     }
 
-    const [logsRes, statsRes] = await Promise.all([
+    const [logsRes, statsRes, typesRes] = await Promise.all([
       getLogs(params),
       getStats(),
+      getChannelTypes(),
     ])
 
     if (logsRes.success) {
@@ -270,10 +261,24 @@ const loadData = async () => {
     if (statsRes.success) {
       stats.value = statsRes.data
     }
+
+    if (typesRes.success) {
+      channelTypes.value = typesRes.data || []
+    }
   } catch (error) {
     console.error('加载数据失败:', error)
   } finally {
     loading.value = false
+  }
+}
+
+const openLogFromQuery = () => {
+  const logId = route.query.logId
+  if (!logId) return
+  const target = logs.value.find((l) => l.id == logId)
+  if (target) {
+    selectedLog.value = target
+    showDetailDialog.value = true
   }
 }
 
@@ -333,7 +338,8 @@ const handleClear = async () => {
   }
 }
 
-onMounted(() => {
-  loadData()
+onMounted(async () => {
+  await loadData()
+  openLogFromQuery()
 })
 </script>

@@ -12,7 +12,6 @@ services:
       - server-logs:/app/logs # 日志文件
     environment:
       - NODE_ENV=production # 可选项,默认production
-      # JWT_SECRET=${JWT_SECRET} # 可选，不设置则自动生成安全密钥
       - JWT_ACCESS_EXPIRES_IN=15m # 可选项,默认15分钟
       - JWT_REFRESH_EXPIRES_IN=7d # 可选项,默认7天
       - DB_PATH=./data/push_service.db # 可选项,默认./data/push_service.db

@@ -20,3 +20,16 @@ export const deleteUser = (id) => {
 export const resetPassword = (id, newPassword) => {
   return request.put(`/admin/users/${id}/password`, { newPassword })
 }
+
+// 限流配置管理
+export const getRateLimitConfig = () => {
+  return request.get('/admin/rate-limit')
+}
+
+export const updateRateLimitConfig = (data) => {
+  return request.put('/admin/rate-limit', data)
+}
+
+export const resetRateLimitConfig = () => {
+  return request.post('/admin/rate-limit/reset')
+}

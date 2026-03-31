@@ -5,6 +5,7 @@ const cors = require('cors');
 const path = require('path');
 const fs = require('fs');
 
+const { globalLimiter } = require('./middleware/rateLimit.middleware');
 const initDatabase = require('./database/init');
 require('./config/version');
 const routes = require('./routes');
@@ -22,6 +23,9 @@ if (!fs.existsSync(logsDir)) {
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+// 信任第一跳反向代理，使 req.ip 返回真实客户端 IP
+app.set('trust proxy', 1);
 
 // 初始化数据库
 initDatabase().catch(err => {
@@ -70,6 +74,9 @@ app.use((req, res, next) => {
   next();
 });
 
+// 全局限流
+app.use(globalLimiter);
+
 // API路由
 app.use('/api', routes);
 
@@ -102,5 +109,21 @@ app.listen(PORT, () => {
   // 启动 ClawBot 长轮询监控（自动获取 context_token）
   clawbotMonitor.start();
 });
+
+// ── 内存监控 ──────────────────────────────────────────────────
+// V8 堆渐进式增长，仅在堆总量 > 50MB 且使用率 > 80% 时告警
+const MEMORY_SAMPLE_INTERVAL = 60 * 1000;
+const HEAP_MIN_THRESHOLD = 50 * 1024 * 1024; // 50MB
+setInterval(() => {
+  const mem = process.memoryUsage();
+  const usagePercent = mem.heapUsed / mem.heapTotal;
+
+  if (mem.heapTotal > HEAP_MIN_THRESHOLD && usagePercent > 0.8) {
+    const heapUsedMB = (mem.heapUsed / 1024 / 1024).toFixed(1);
+    const heapTotalMB = (mem.heapTotal / 1024 / 1024).toFixed(1);
+    const rssMB = (mem.rss / 1024 / 1024).toFixed(1);
+    logger.warn(`内存使用过高: heap ${heapUsedMB}/${heapTotalMB}MB (${(usagePercent * 100).toFixed(1)}%), rss ${rssMB}MB`);
+  }
+}, MEMORY_SAMPLE_INTERVAL);
 
 module.exports = app;

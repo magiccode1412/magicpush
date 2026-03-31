@@ -10,6 +10,12 @@ const WebhookChannel = require('./webhook.channel');
 const WechatOfficialChannel = require('./wechat-official.channel');
 const ServerChanChannel = require('./serverchan.channel');
 const SmtpChannel = require('./smtp.channel');
+const GotifyChannel = require('./gotify.channel');
+const MeowChannel = require('./meow.channel');
+const WecomappChannel = require('./wecomapp.channel');
+const BarkChannel = require('./bark.channel');
+// TODO: QQ 机器人渠道开发中，待测试后启用
+// const QqbotChannel = require('./qqbot.channel');
 
 // 渠道类型到适配器的映射
 const channelAdapters = {
@@ -24,6 +30,11 @@ const channelAdapters = {
   wechat_official: WechatOfficialChannel,
   serverchan: ServerChanChannel,
   smtp: SmtpChannel,
+  gotify: GotifyChannel,
+  meow: MeowChannel,
+  wecomapp: WecomappChannel,
+  bark: BarkChannel,
+  // qqbot: QqbotChannel, // TODO: 待测试后启用
 };
 
 /**
@@ -32,12 +43,12 @@ const channelAdapters = {
  * @param {Object} config - 渠道配置
  * @returns {BaseChannel} - 渠道适配器实例
  */
-function getChannelAdapter(type, config) {
+function getChannelAdapter(type, config, channelId) {
   const AdapterClass = channelAdapters[type];
   if (!AdapterClass) {
     throw new Error(`不支持的渠道类型: ${type}`);
   }
-  return new AdapterClass(config);
+  return new AdapterClass(config, channelId);
 }
 
 /**
@@ -80,6 +91,11 @@ module.exports = {
   WechatOfficialChannel,
   ServerChanChannel,
   SmtpChannel,
+  GotifyChannel,
+  MeowChannel,
+  WecomappChannel,
+  BarkChannel,
+  // QqbotChannel, // TODO: 待测试后启用
   getChannelAdapter,
   getChannelTypes,
   validateChannelConfig,

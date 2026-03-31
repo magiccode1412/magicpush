@@ -3,6 +3,7 @@ const router = express.Router();
 const inboundController = require('../controllers/inbound.controller');
 const EndpointModel = require('../models/endpoint.model');
 const logger = require('../utils/logger');
+const { inboundLimiter } = require('../middleware/rateLimit.middleware');
 
 /**
  * 中间件：验证 token 并加载 endpoint
@@ -66,8 +67,8 @@ async function loadEndpoint(req, res, next) {
 }
 
 // 入站接收接口（支持 GET 和 POST）
-router.get('/:token', loadEndpoint, inboundController.handleInbound);
-router.post('/:token', loadEndpoint, inboundController.handleInbound);
+router.get('/:token', inboundLimiter, loadEndpoint, inboundController.handleInbound);
+router.post('/:token', inboundLimiter, loadEndpoint, inboundController.handleInbound);
 
 // 测试入站配置（需要认证，在认证路由中处理）
 router.post('/:token/test', loadEndpoint, inboundController.testInbound);

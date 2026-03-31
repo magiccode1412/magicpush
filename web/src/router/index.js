@@ -44,6 +44,12 @@ const routes = [
         component: () => import('@/views/settings/Index.vue'),
       },
       {
+        path: 'settings/security',
+        name: 'SecuritySettings',
+        component: () => import('@/views/settings/Security.vue'),
+        meta: { admin: true },
+      },
+      {
         path: 'users',
         name: 'Users',
         component: () => import('@/views/admin/Users.vue'),

@@ -183,6 +183,18 @@
           </div>
         </div>
 
+        <!-- 安全设置入口（仅管理员可见） -->
+        <div v-if="isAdmin" class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6 hover:shadow-md hover:-translate-y-0.5 hover:border-blue-200 dark:hover:border-blue-800 transition-all duration-300">
+          <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">安全设置</h3>
+          <div class="space-y-3">
+            <p class="text-sm text-gray-500 dark:text-gray-400">配置 API 请求频率限制，防止接口被滥用</p>
+            <el-button type="primary" plain class="w-full !ml-0" @click="$router.push('/settings/security')">
+              <Shield class="w-4 h-4 mr-1" />
+              进入安全设置
+            </el-button>
+          </div>
+        </div>
+
         <!-- 数据迁移 -->
         <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6 hover:shadow-md hover:-translate-y-0.5 hover:border-blue-200 dark:hover:border-blue-800 transition-all duration-300">
           <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">数据迁移</h3>

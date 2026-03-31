@@ -76,11 +76,11 @@ class PushService {
    * 推送到多个渠道
    */
   static async pushToChannels(userId, endpointId, channels, message, clientIp) {
-    const { title, content, type = 'text' } = message;
+    const { title, content, type = 'text', url } = message;
     const results = [];
 
     for (const channel of channels) {
-      const result = await this.pushToChannel(userId, endpointId, channel, { title, content, type }, clientIp);
+      const result = await this.pushToChannel(userId, endpointId, channel, { title, content, type, url }, clientIp);
       results.push(result);
     }
 
@@ -100,7 +100,7 @@ class PushService {
    * 推送到单个渠道
    */
   static async pushToChannel(userId, endpointId, channel, message, clientIp) {
-    const { title, content, type } = message;
+    const { title, content, type, url } = message;
 
     // 创建推送记录
     const log = await PushLogModel.create({
@@ -117,8 +117,8 @@ class PushService {
 
     try {
       // 获取适配器并发送
-      const adapter = getChannelAdapter(channel.channel_type, channel.config);
-      const result = await adapter.send({ title, content, type });
+      const adapter = getChannelAdapter(channel.channel_type, channel.config, channel.id);
+      const result = await adapter.send({ title, content, type, url });
 
       // 更新记录为成功
       await PushLogModel.updateStatus(log.id, 'success', result, null);
