@@ -17,18 +17,6 @@ $:
             chmod +x fnpack
             mv fnpack /usr/local/bin/fnpack
 
-  push:
-  - imports: https://cnb.cool/magiccode1412/secret/-/blob/main/env.yml
-    stages:
-      - name: sync_to_github
-        image: tencentcom/git-sync
-        settings:
-          target_url: https://github.com/${GITHUB_USERNAME}/${CNB_REPO_NAME_LOWERCASE}.git
-          auth_type: https
-          username: "${GITHUB_USERNAME}"
-          password: "${GITHUB_ACCESS_TOKEN}"
-          force: true  
-
 main:
   web_trigger_docker_cnb:
     - runner:
@@ -118,6 +106,18 @@ main:
               - latest-linux-amd64
               - latest-linux-arm64
             type: docker
+
+  push:
+  - imports: https://cnb.cool/magiccode1412/secret/-/blob/main/env.yml
+    stages:
+      - name: sync_to_github
+        image: tencentcom/git-sync
+        settings:
+          target_url: https://github.com/${GITHUB_USERNAME}/${CNB_REPO_NAME_LOWERCASE}.git
+          auth_type: https
+          username: "${GITHUB_USERNAME}"
+          password: "${GITHUB_ACCESS_TOKEN}"
+          force: true  
 
 dev:
   web_trigger_docker_dev:
