@@ -120,7 +120,7 @@ main:
             type: docker
 
 dev:
-  push:
+  web_trigger_docker_dev:
     - services:
         - docker
       imports: https://cnb.cool/magiccode1412/secret/-/blob/main/env.yml
