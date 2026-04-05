@@ -41,7 +41,12 @@
 <details>
   <summary>点击查看预览图</summary>
   <div>
-    <img src="./public/image/1.webp" alt="preview">
+    <img src="./public/image/intro/01.png" alt="preview">
+    <img src="./public/image/intro/02.png" alt="preview">
+    <img src="./public/image/intro/03.png" alt="preview">
+    <img src="./public/image/intro/04.png" alt="preview">
+    <img src="./public/image/intro/05.png" alt="preview">
+    <!-- <img src="./public/image/1.webp" alt="preview">
     <img src="./public/image/2.webp" alt="preview">
     <img src="./public/image/3.webp" alt="preview">
     <img src="./public/image/4.webp" alt="preview">
@@ -50,7 +55,7 @@
     <img src="./public/image/7.webp" alt="preview">
     <img src="./public/image/8.webp" alt="preview">
     <img src="./public/image/9.webp" alt="preview">
-    <img src="./public/image/10.webp" alt="preview">
+    <img src="./public/image/10.webp" alt="preview"> -->
   </div>
 </details>
 
@@ -142,12 +147,6 @@
 | **企业微信应用** | ~200 次/分钟 | 每个应用 | 与接收人数相关 |
 
 > **提示：** 以上为各平台官方公开的限制信息，具体限制可能随平台政策调整而变化，请以各平台最新文档为准。高频推送场景建议优先选择无平台限制的自建渠道（Bark/Gotify/Webhook）。
-
-## 测试
-
-[![Open in Gitpod](./public/image/open-in-gitpod.svg)](https://app.ona.com/#https://github.com/magiccode1412/magicpush)
-
-免费资源需要验证信用卡
 
 ## 🐳 Docker 部署
 
