@@ -1,11 +1,10 @@
-const html = `
 <!DOCTYPE html>
 <html lang="zh-CN">
 
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CFProxy - IPv4/IPv6 代理网关</title>
+  <title>ProxyGateway - IPv4/IPv6 代理网关</title>
   <style>
     * {
       margin: 0;
@@ -130,32 +129,35 @@ const html = `
 <body>
   <div class="container">
     <div class="logo">🌐</div>
-    <h1>CFProxy</h1>
+    <h1>ProxyGateway</h1>
     <p class="subtitle">MagicPush 专用转发服务</p>
 
     <div class="card">
       <h2>📖 项目用途</h2>
       <p>
         本服务专为 <a href="https://github.com/magiccode1412/magicpush" target="_blank"
-          style="color: #f97316; text-decoration: none; font-weight: 600;">MagicPush</a> 项目提供，部署在 <strong>Cloudflare
-          Pages</strong> 上，用于解决 IPv6-only 服务器无法被 IPv4-only 用户访问的问题。
+          style="color: #f97316; text-decoration: none; font-weight: 600;">MagicPush</a> 项目提供，部署在支持双栈 IP 协议的边缘节点上，用于解决不同 IP 协议之间的跨协议访问问题。
       </p>
       <p style="margin-top: 1rem;">
-        由于 Cloudflare 支持双栈 IP 协议（同时支持 IPv4 和 IPv6），本代理可将来自 IPv4 用户的请求转发至仅支持 IPv6 的 MagicPush 后端服务器，实现无缝访问。
+        由于边缘节点同时支持 IPv4 和 IPv6 双栈协议，本代理可实现双向转发：
       </p>
+      <ul style="margin-top: 0.5rem; color: #cbd5e1; line-height: 2; list-style: none; padding-left: 0;">
+        <li>IPv4 用户访问 IPv6-only 服务器</li>
+        <li>IPv6 用户访问 IPv4-only 服务器</li>
+      </ul>
     </div>
 
     <div class="card">
       <h2>⚡ 工作原理</h2>
       <p>
-        用户请求 → Cloudflare Edge (双栈) → IPv6 回源 → 您的服务器
+        用户请求 → 边缘节点 (双栈) → 按需回源 (IPv4/IPv6) → 您的服务器
       </p>
     </div>
 
     <div class="tech-stack">
-      <span class="tech-badge">Cloudflare Pages</span>
-      <span class="tech-badge">Workers Functions</span>
-      <span class="tech-badge">IPv6 回源</span>
+      <span class="tech-badge">边缘节点</span>
+      <span class="tech-badge">Serverless Functions</span>
+      <span class="tech-badge">双栈回源</span>
     </div>
 
     <div class="status">代理服务运行中</div>
@@ -168,12 +170,3 @@ const html = `
 </body>
 
 </html>
-`
-
-export function onRequest(){
-    return new Response(html, {
-        headers: {
-            "Content-Type": "text/html; charset=utf-8",
-        }
-    })
-}
