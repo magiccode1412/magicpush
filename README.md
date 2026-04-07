@@ -22,8 +22,6 @@
   </p>
 </div>
 
-
-
 ## 项目地址
 + [CNB云原生构建](https://cnb.cool/magiccode1412/magicpush)
 + [GitHub](https://github.com/magiccode1412/magicpush)
@@ -31,10 +29,15 @@
 ## 📝 更新日志
 查看 [CHANGELOG.md](docs/CHANGELOG.md) 了解版本更新记录。
 
-## 🌐 [点此跳转到Demo站试用](https://rurvbrlarizv.ap-northeast-1.clawcloudrun.com/)
+## 🌐 Demo站
+
 自行注册即可
 
-> 提示：演示环境仅作测试使用，请勿发送违规信息，数据会定期重置，请勿存储重要信息。
++ [最新版](https://rurvbrlarizv.ap-northeast-1.clawcloudrun.com)
++ [开发版](https://sdafhbaommsg.ap-northeast-1.clawcloudrun.com)
+
+> 演示环境仅作测试使用，请勿发送违规信息，数据会定期重置，请勿存储重要信息。
+> 演示环境部署在cloud claw，如果遇到无法访问，请自行部署试用
 
 ## 预览
 
