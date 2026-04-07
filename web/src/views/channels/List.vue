@@ -189,7 +189,7 @@
         <!-- 动态配置字段 -->
         <template v-if="currentChannelType && form.channelType !== 'wechatclawbot'">
           <el-form-item
-            v-for="field in currentChannelType.configFields"
+            v-for="field in visibleConfigFields"
             :key="field.name"
             :label="field.label"
             :required="field.required"
@@ -244,6 +244,20 @@
               :placeholder="field.placeholder"
               type="number"
             />
+            <!-- 官方链接 -->
+            <div v-else-if="field.type === 'links'" class="flex flex-wrap gap-3">
+              <a
+                v-for="link in field.links"
+                :key="link.url"
+                :href="link.url"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="text-sm text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 flex items-center gap-1"
+              >
+                <ExternalLink class="w-3.5 h-3.5" />
+                {{ link.label }}
+              </a>
+            </div>
             <!-- 普通文本 -->
             <el-input
               v-else
@@ -299,6 +313,7 @@ import {
   Cat,
   Building2,
   Clock,
+  ExternalLink,
 } from 'lucide-vue-next'
 import ClawbotBindDialog from '@/components/ClawbotBindDialog.vue'
 
@@ -325,6 +340,19 @@ const formRules = {
 
 const currentChannelType = computed(() => {
   return channelTypes.value.find(t => t.type === form.channelType)
+})
+
+/**
+ * 根据 visibleWhen 条件过滤出当前应显示的配置字段
+ * visibleWhen: { field: 'xxx', value: 'yyy' } 表示当 form.config[field] === value 时显示
+ */
+const visibleConfigFields = computed(() => {
+  const type = currentChannelType.value
+  if (!type || !type.configFields) return []
+  return type.configFields.filter(field => {
+    if (!field.visibleWhen) return true
+    return form.config[field.visibleWhen.field] === field.visibleWhen.value
+  })
 })
 
 const getChannelTypeName = (type) => {
