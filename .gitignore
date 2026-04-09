@@ -6,4 +6,3 @@ server/logs
 web/dist
 .codebuddy
 package-lock.json
-*.fpk
