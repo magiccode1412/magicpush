@@ -104,7 +104,7 @@
 </template>
 
 <script setup>
-import { Bell, Github, Zap, Shield, Database, Globe, Code, Layers, MessageSquare, Send, Bot, Radio, MessageCircle, Link, Mail, Cat, Building2 } from 'lucide-vue-next'
+import { Bell, Github, Zap, Shield, Database, Globe, Code, Layers, MessageSquare, Send, Bot, Radio, MessageCircle, Link, Mail, Cat, Building2, Smartphone } from 'lucide-vue-next'
 import { VERSION } from '@/utils/version'
 
 const supportedChannels = [
@@ -122,11 +122,12 @@ const supportedChannels = [
   { name: 'Gotify', icon: Bell, bgColor: 'bg-indigo-100 dark:bg-indigo-900/30', iconColor: 'text-indigo-600 dark:text-indigo-400' },
   { name: 'Bark', icon: Bell, bgColor: 'bg-orange-100 dark:bg-orange-900/30', iconColor: 'text-orange-600 dark:text-orange-400' },
   { name: 'Meow', icon: Cat, bgColor: 'bg-orange-100 dark:bg-orange-900/30', iconColor: 'text-orange-600 dark:text-orange-400' },
+  { name: 'PushMe', icon: Smartphone, bgColor: 'bg-emerald-100 dark:bg-emerald-900/30', iconColor: 'text-emerald-600 dark:text-emerald-400' },
   { name: '企业微信应用', icon: Building2, bgColor: 'bg-green-100 dark:bg-green-900/30', iconColor: 'text-green-600 dark:text-green-400' },
 ]
 
 const features = [
-  { title: '多渠道支持', description: '支持企业微信群机器人、Telegram、飞书、钉钉、SMTP邮件、Gotify、Bark、Meow、企业微信应用等多种推送渠道', icon: Layers },
+  { title: '多渠道支持', description: '支持企业微信群机器人、Telegram、飞书、钉钉、SMTP邮件、Gotify、Bark、Meow、PushMe、企业微信应用等多种推送渠道', icon: Layers },
   { title: '统一 API', description: '通过统一的 REST API 接口发送消息，简化集成流程', icon: Code },
   { title: '接口管理', description: '灵活管理推送接口和访问令牌', icon: Shield },
   { title: '推送记录', description: '完整的推送历史记录，方便追踪和排查问题', icon: Database },
