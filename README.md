@@ -33,7 +33,7 @@
 
 自行注册即可
 
-+ [最新版](https://rurvbrlarizv.ap-northeast-1.clawcloudrun.com)
++ [最新版](https://vsvglrxarxno.ap-northeast-1.clawcloudrun.com/)
 + [开发版](https://sdafhbaommsg.ap-northeast-1.clawcloudrun.com)
 
 > 演示环境仅作测试使用，请勿发送违规信息，数据会定期重置，请勿存储重要信息。

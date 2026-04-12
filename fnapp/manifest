@@ -1,13 +1,14 @@
 appname               = magicpush
 version               = 1.6.2
 display_name          = 魔法推送
-desc                  = """一个支持多种消息渠道的统一推送服务管理平台
-支持微信龙虾机器人、企业微信、钉钉、飞书、Telegram、微信公众号、WxPusher、PushPlus、Server酱、Webhook等渠道
-通过标准化的REST API接口实现消息推送"""
+desc                  = """一个支持多种消息渠道的统一推送服务管理平台，通过标准化的REST API接口实现消息推送
+支持渠道：微信龙虾机器人、企业微信、钉钉、飞书、Telegram、微信公众号、WxPusher、PushPlus、Server酱、Webhook等
+相关链接：<a href="https://github.com/magiccode1412/magicpush" target="_blank">Github仓库</a> | <a href="https://github.com/Sunanang/FNMessageBots/blob/main/docs/channels/magicpush.md" target="_blank">日志推送配置教程</a>
+"""
 platform              = all
 source                = thirdparty
 maintainer            = 魔法代码
-maintainer_url        = https://github.com/magiccode1412/magicpush
+maintainer_url        = https://github.com/magiccode1412
 desktop_uidir         = ui
 desktop_applaunchname = magicpush.Application
 service_port          = "${wizard_app_port}"
