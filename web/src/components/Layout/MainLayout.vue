@@ -94,16 +94,14 @@
     <!-- 主内容区 -->
     <div class="lg:ml-64 min-h-screen flex flex-col">
       <!-- 移动端菜单按钮 -->
-      <header class="sticky top-0 z-30 lg:hidden bg-white/80 dark:bg-gray-800/80 backdrop-blur-md border-b border-gray-200 dark:border-gray-700">
-        <div class="flex items-center px-4 py-3">
-          <button
-            @click="isMobileMenuOpen = true"
-            class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
-          >
-            <Menu class="w-5 h-5 text-gray-600 dark:text-gray-400" />
-          </button>
-        </div>
-      </header>
+      <div class="lg:hidden sticky top-0 z-30 p-3">
+        <button
+          @click="isMobileMenuOpen = true"
+          class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 bg-white/80 dark:bg-gray-700/80 shadow-sm"
+        >
+          <Menu class="w-5 h-5 text-gray-600 dark:text-gray-400" />
+        </button>
+      </div>
 
       <!-- 页面内容 -->
       <main class="flex-1 p-4 lg:p-6">

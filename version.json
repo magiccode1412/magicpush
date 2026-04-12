@@ -1,6 +1,6 @@
 {
   "name": "magicpush",
-  "version": "1.6.3",
+  "version": "1.7.0",
   "displayName": "MagicPush",
   "description": "支持多渠道消息推送的统一管理平台",
   "repository": {
@@ -8,6 +8,15 @@
     "url": "https://github.com/magiccode1412/magicpush"
   },
   "changelog": [
+    {
+      "version": "1.7.0",
+      "date": "2026-04-12",
+      "type": "release",
+      "changes": [
+        "新增PushMe推送渠道",
+        "移除移动端顶部空白导航栏"
+      ]
+    },
     {
       "version": "1.6.3",
       "date": "2026-04-07",
