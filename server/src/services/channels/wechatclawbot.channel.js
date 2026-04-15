@@ -86,9 +86,12 @@ class WechatclawbotChannel extends BaseChannel {
     const { title, content, type = 'text' } = message;
     let text = title ? `${title}\n\n${content}` : content;
 
-    if (type === 'markdown') {
-      text = this._stripMarkdown(text);
-    } else if (type === 'html') {
+    // 由于微信龙虾机器人开始支持markdown，所以暂不对其内容进行处理
+    // if (type === 'markdown') {
+    //   text = this._stripMarkdown(text);
+    // }
+    
+    if (type === 'html') {
       text = this._stripHtml(text);
     }
 

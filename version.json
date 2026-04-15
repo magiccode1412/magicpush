@@ -1,6 +1,6 @@
 {
   "name": "magicpush",
-  "version": "1.7.0",
+  "version": "1.7.1",
   "displayName": "MagicPush",
   "description": "支持多渠道消息推送的统一管理平台",
   "repository": {
@@ -8,6 +8,16 @@
     "url": "https://github.com/magiccode1412/magicpush"
   },
   "changelog": [
+    {
+      "version": "1.7.1",
+      "date": "2026-04-15",
+      "type": "release",
+      "changes": [
+        "微信龙虾机器人增加了对markdown部分支持：",
+        "标题：1-6级都一样，稍微粗了一点",
+        "超链接/列表/引用文本/粗体/删除线/有序列表/行内代码/代码块（用两条横线包裹）/表格"
+      ]
+    },
     {
       "version": "1.7.0",
       "date": "2026-04-12",
