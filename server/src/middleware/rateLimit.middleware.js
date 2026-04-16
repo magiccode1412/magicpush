@@ -18,7 +18,7 @@ setInterval(() => {
  * 不传 keyGenerator 时，库自动使用 req.ip（配合 app trust proxy 可获取真实 IP）
  */
 const createDynamicLimiter = (configKey, options = {}, message) => {
-  return rateLimit({
+  const limiter = rateLimit({
     windowMs: 60 * 1000,
     max: () => RateLimitConfigService.get(configKey),
     handler: (req, res) => {
@@ -38,6 +38,14 @@ const createDynamicLimiter = (configKey, options = {}, message) => {
     legacyHeaders: false,
     ...options,
   });
+
+  // 包装限流器：当限流被禁用时直接跳过
+  return (req, res, next) => {
+    if (!RateLimitConfigService.isEnabled()) {
+      return next();
+    }
+    return limiter(req, res, next);
+  };
 };
 
 // 按 IP 限流的限流器（使用库内置 IPv6 安全的 keyGenerator）

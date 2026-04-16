@@ -18,4 +18,8 @@ router.get('/rate-limit', AdminController.getRateLimitConfig);
 router.put('/rate-limit', AdminController.updateRateLimitConfig);
 router.post('/rate-limit/reset', AdminController.resetRateLimitConfig);
 
+// 限流开关
+router.get('/rate-limit/status', AdminController.getRateLimitStatus);
+router.put('/rate-limit/toggle', AdminController.toggleRateLimit);
+
 module.exports = router;

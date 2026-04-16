@@ -239,6 +239,37 @@ class AdminController {
       return ResponseUtil.serverError(res, '重置限流配置失败');
     }
   }
+
+  /**
+   * 获取限流开关状态
+   */
+  static getRateLimitStatus(req, res) {
+    try {
+      const enabled = RateLimitConfigService.isEnabled();
+      return ResponseUtil.success(res, { enabled });
+    } catch (error) {
+      logger.error('获取限流开关状态失败:', error);
+      return ResponseUtil.serverError(res, '获取限流开关状态失败');
+    }
+  }
+
+  /**
+   * 切换限流开关
+   */
+  static toggleRateLimit(req, res) {
+    try {
+      const { enabled } = req.body;
+      if (typeof enabled !== 'boolean') {
+        return ResponseUtil.badRequest(res, 'enabled 必须为布尔值');
+      }
+      const result = RateLimitConfigService.setEnabled(enabled);
+      logger.info(`管理员 ${req.user.userId} ${result ? '开启' : '关闭'}了限流`);
+      return ResponseUtil.success(res, { enabled: result }, result ? '限流已开启' : '限流已关闭');
+    } catch (error) {
+      logger.error('切换限流开关失败:', error);
+      return ResponseUtil.serverError(res, '切换限流开关失败');
+    }
+  }
 }
 
 module.exports = AdminController;
