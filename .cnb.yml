@@ -110,6 +110,26 @@ main:
             platforms:
               - linux/amd64
               - linux/arm64
+        - name: get_version
+          script: echo "APP_VERSION=$(jq -r '.version' version.json)" >> "$CNB_ENV_FILE"
+        - name: manifest_cnb_version
+          image: cnbcool/manifest
+          settings:
+            target: ${CNB_DOCKER_REGISTRY}/${CNB_REPO_SLUG_LOWERCASE}:${APP_VERSION}
+            template: ${CNB_IMAGE_TAG}-OS-ARCH
+            platforms:
+              - linux/amd64
+              - linux/arm64
+        - name: manifest_dockerhub_version
+          image: cnbcool/manifest
+          settings:
+            username: ${DOCKERHUB_USERNAME}
+            password: ${DOCKERHUB_TOKEN}
+            target: ${DOCKERHUB_USERNAME}/${CNB_REPO_NAME_LOWERCASE}:${APP_VERSION}
+            template: ${DOCKERHUB_IMAGE_TAG}-OS-ARCH
+            platforms:
+              - linux/amd64
+              - linux/arm64
         - name: remove tag
           type: artifact:remove-tag
           options:
@@ -117,6 +137,8 @@ main:
             tags:
               - latest-linux-amd64
               - latest-linux-arm64
+              - "${APP_VERSION}-linux-amd64"
+              - "${APP_VERSION}-linux-arm64"
             type: docker
 
 dev:

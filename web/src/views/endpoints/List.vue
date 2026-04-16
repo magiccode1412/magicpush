@@ -44,6 +44,10 @@
                   <Key class="w-4 h-4 mr-2" />
                   重新生成令牌
                 </el-dropdown-item>
+                <el-dropdown-item command="keywordFilter">
+                  <Shield class="w-4 h-4 mr-2" />
+                  关键词过滤
+                </el-dropdown-item>
                 <el-dropdown-item divided command="delete">
                   <Trash2 class="w-4 h-4 mr-2" />
                   删除
@@ -98,6 +102,23 @@
             </div>
             <el-button text size="small" @click="openInboundConfig(endpoint)">
               <span v-if="endpoint.inbound_config?.enabled" class="text-green-500">已配置</span>
+              <span v-else class="text-gray-400">未配置</span>
+            </el-button>
+          </div>
+        </div>
+
+        <!-- 关键词过滤状态 -->
+        <div class="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-3 mb-4">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <Shield class="w-4 h-4 text-gray-400" />
+              <span class="text-xs text-gray-500 dark:text-gray-400">关键词过滤</span>
+            </div>
+            <el-button text size="small" @click="openKeywordFilter(endpoint)">
+              <span v-if="endpoint.keyword_filter?.enabled"
+                    :class="endpoint.keyword_filter.mode === 'blacklist' ? 'text-orange-500' : 'text-blue-500'">
+                {{ endpoint.keyword_filter.mode === 'blacklist' ? '黑名单模式' : '白名单模式' }}
+              </span>
               <span v-else class="text-gray-400">未配置</span>
             </el-button>
           </div>
@@ -328,6 +349,149 @@
         </el-button>
       </template>
     </el-drawer>
+
+    <!-- 关键词过滤抽屉 -->
+    <el-drawer
+      v-model="showKeywordFilterDrawer"
+      title="关键词过滤"
+      direction="rtl"
+      size="450px"
+    >
+      <div class="p-4 space-y-6">
+        <!-- 启用开关 -->
+        <div class="flex items-center justify-between">
+          <div>
+            <div class="font-medium text-gray-900 dark:text-white">启用关键词过滤</div>
+            <div class="text-xs text-gray-500 dark:text-gray-400">开启后将对推送消息进行关键词过滤</div>
+          </div>
+          <el-switch v-model="keywordForm.enabled" />
+        </div>
+
+        <el-divider v-if="keywordForm.enabled" />
+
+        <!-- 过滤模式 -->
+        <div v-if="keywordForm.enabled">
+          <div class="font-medium text-gray-900 dark:text-white mb-3">过滤模式</div>
+          <div class="space-y-2">
+            <label
+              class="flex items-start gap-3 p-3 rounded-lg border cursor-pointer transition-colors"
+              :class="keywordForm.mode === 'blacklist'
+                ? 'border-orange-500 bg-orange-50 dark:bg-orange-900/20'
+                : 'border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500'"
+            >
+              <el-radio
+                v-model="keywordForm.mode"
+                value="blacklist"
+                class="mt-0.5 !mr-0"
+              />
+              <div>
+                <div class="font-medium text-gray-900 dark:text-white">黑名单模式（默认）</div>
+                <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                  消息标题或内容包含列表中任一关键词时将被拒绝发送，并返回"包含不合法内容"
+                </div>
+              </div>
+            </label>
+            <label
+              class="flex items-start gap-3 p-3 rounded-lg border cursor-pointer transition-colors"
+              :class="keywordForm.mode === 'whitelist'
+                ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
+                : 'border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500'"
+            >
+              <el-radio
+                v-model="keywordForm.mode"
+                value="whitelist"
+                class="mt-0.5 !mr-0"
+              />
+              <div>
+                <div class="font-medium text-gray-900 dark:text-white">白名单模式</div>
+                <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                  仅当消息标题或内容包含列表中至少一个关键词时才允许发送，否则拒绝
+                </div>
+              </div>
+            </label>
+          </div>
+        </div>
+
+        <el-divider v-if="keywordForm.enabled" />
+
+        <!-- 关键词列表 -->
+        <div v-if="keywordForm.enabled">
+          <div class="font-medium text-gray-900 dark:text-white mb-2">
+            关键词列表
+            <span class="text-xs font-normal text-gray-400 ml-2">
+              ({{ keywordForm.keywords.length }}/50)
+            </span>
+          </div>
+          <p class="text-xs text-gray-500 dark:text-gray-400 mb-3">
+            每行一个关键词，大小写不敏感，匹配到任一关键词即触发规则
+          </p>
+          <div class="space-y-2">
+            <div
+              v-for="(kw, index) in keywordForm.keywords"
+              :key="index"
+              class="flex items-center gap-2"
+            >
+              <el-input
+                v-model="keywordForm.keywords[index]"
+                placeholder="输入关键词"
+                maxlength="50"
+                show-word-limit
+                size="default"
+              />
+              <el-button
+                text
+                type="danger"
+                size="default"
+                @click="removeKeyword(index)"
+                :disabled="keywordForm.keywords.length <= 1"
+              >
+                <X class="w-4 h-4" />
+              </el-button>
+            </div>
+            <el-button
+              v-if="keywordForm.keywords.length < 50"
+              class="w-full"
+              plain
+              @click="addKeyword"
+            >
+              <Plus class="w-4 h-4 mr-1" />
+              添加关键词
+            </el-button>
+          </div>
+
+          <el-divider />
+
+          <!-- 说明区域 -->
+          <div class="rounded-lg p-3 space-y-3" :class="keywordForm.mode === 'blacklist' ? 'bg-orange-50 dark:bg-orange-900/10' : 'bg-blue-50 dark:bg-blue-900/10'">
+            <div class="flex gap-2">
+              <AlertTriangle v-if="keywordForm.mode === 'blacklist'" class="w-4 h-4 text-orange-500 flex-shrink-0 mt-0.5" />
+              <Info v-else class="w-4 h-4 text-blue-500 flex-shrink-0 mt-0.5" />
+              <div class="text-xs leading-relaxed" :class="keywordForm.mode === 'blacklist' ? 'text-orange-700 dark:text-orange-300' : 'text-blue-700 dark:text-blue-300'">
+                <p v-if="keywordForm.mode === 'blacklist'">
+                  <strong>黑名单说明：</strong><br/>
+                  当消息标题或内容包含上方列表中<strong>任意一个</strong>关键词时，
+                  该消息将被拦截并返回错误信息"包含不合法内容"，不会推送到任何渠道。
+                  适用于过滤垃圾广告、敏感词汇等场景。
+                </p>
+                <p v-else>
+                  <strong>白名单说明：</strong><br/>
+                  当消息标题或内容<strong>未包含</strong>上方列表中任何关键词时，
+                  该消息将被拦截。仅当包含至少一个关键词的消息才被放行推送。
+                  适用于只接收特定主题消息的场景。
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <template #footer>
+        <el-button @click="showKeywordFilterDrawer = false">取消</el-button>
+        <el-button type="primary" :loading="keywordSaving" @click="saveKeywordFilter">
+          保存配置
+        </el-button>
+      </template>
+    </el-drawer>
   </div>
 </template>
 
@@ -345,6 +509,7 @@ import {
   getEndpointChannels,
   updateInboundConfig,
   getInboundTemplates,
+  updateKeywordFilter,
 } from '@/api/endpoint'
 import { getChannels } from '@/api/channel'
 import {
@@ -357,6 +522,10 @@ import {
   Copy,
   RefreshCw,
   Settings2,
+  Shield,
+  X,
+  AlertTriangle,
+  Info,
 } from 'lucide-vue-next'
 
 const endpoints = ref([])
@@ -372,6 +541,17 @@ const inboundTemplates = ref([])
 const inboundSaving = ref(false)
 const inboundTestLoading = ref(false)
 const inboundTestData = ref('')
+
+// 关键词过滤相关
+const showKeywordFilterDrawer = ref(false)
+const keywordEditingEndpoint = ref(null)
+const keywordSaving = ref(false)
+
+const keywordForm = reactive({
+  enabled: false,
+  mode: 'blacklist',
+  keywords: [''],
+})
 
 // 各数据来源类型的示例数据
 const inboundExampleData = {
@@ -534,6 +714,8 @@ const handleCommand = async (command, endpoint) => {
     showCreateDialog.value = true
   } else if (command === 'token') {
     handleRegenerateToken(endpoint)
+  } else if (command === 'keywordFilter') {
+    openKeywordFilter(endpoint)
   } else if (command === 'delete') {
     handleDelete(endpoint)
   }
@@ -722,7 +904,7 @@ const testInbound = async () => {
     ElMessage.warning('请输入测试数据')
     return
   }
-  
+
   let testData
   try {
     testData = JSON.parse(inboundTestData.value)
@@ -730,7 +912,7 @@ const testInbound = async () => {
     ElMessage.error('JSON 格式错误')
     return
   }
-  
+
   inboundTestLoading.value = true
   try {
     // 直接调用入站接口
@@ -739,9 +921,9 @@ const testInbound = async () => {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(testData),
     })
-    
+
     const result = await response.json()
-    
+
     if (result.success) {
       ElMessage.success('测试推送成功')
     } else {
@@ -751,6 +933,79 @@ const testInbound = async () => {
     ElMessage.error(error.message || '测试失败')
   } finally {
     inboundTestLoading.value = false
+  }
+}
+
+// 关键词过滤相关方法
+const openKeywordFilter = (endpoint) => {
+  keywordEditingEndpoint.value = endpoint
+
+  // 重置表单并回填已有配置
+  if (endpoint.keyword_filter?.enabled) {
+    keywordForm.enabled = true
+    keywordForm.mode = endpoint.keyword_filter.mode || 'blacklist'
+    keywordForm.keywords = endpoint.keyword_filter.keywords?.length > 0
+      ? [...endpoint.keyword_filter.keywords]
+      : ['']
+  } else {
+    keywordForm.enabled = false
+    keywordForm.mode = 'blacklist'
+    keywordForm.keywords = ['']
+  }
+
+  showKeywordFilterDrawer.value = true
+}
+
+const addKeyword = () => {
+  if (keywordForm.keywords.length < 50) {
+    keywordForm.keywords.push('')
+  }
+}
+
+const removeKeyword = (index) => {
+  if (keywordForm.keywords.length > 1) {
+    keywordForm.keywords.splice(index, 1)
+  }
+}
+
+const saveKeywordFilter = async () => {
+  if (!keywordEditingEndpoint.value) return
+
+  // 启用时校验关键词
+  if (keywordForm.enabled) {
+    const validKeywords = keywordForm.keywords.filter(k => k && k.trim())
+    if (validKeywords.length === 0) {
+      ElMessage.warning('请至少输入一个有效关键词')
+      return
+    }
+  }
+
+  keywordSaving.value = true
+  try {
+    let config = null
+    if (keywordForm.enabled) {
+      const validKeywords = keywordForm.keywords.map(k => k.trim()).filter(k => k)
+      config = {
+        enabled: true,
+        mode: keywordForm.mode,
+        keywords: validKeywords,
+      }
+    }
+
+    const res = await updateKeywordFilter(keywordEditingEndpoint.value.id, { ...config })
+    if (res.success) {
+      ElMessage.success(keywordForm.enabled ? '关键词过滤已启用' : '关键词过滤已关闭')
+      // 更新本地数据
+      const index = endpoints.value.findIndex(e => e.id === keywordEditingEndpoint.value.id)
+      if (index !== -1) {
+        endpoints.value[index].keyword_filter = config
+      }
+      showKeywordFilterDrawer.value = false
+    }
+  } catch (error) {
+    ElMessage.error(error.message || '保存失败')
+  } finally {
+    keywordSaving.value = false
   }
 }
 

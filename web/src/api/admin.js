@@ -33,3 +33,12 @@ export const updateRateLimitConfig = (data) => {
 export const resetRateLimitConfig = () => {
   return request.post('/admin/rate-limit/reset')
 }
+
+// 限流开关
+export const getRateLimitStatus = () => {
+  return request.get('/admin/rate-limit/status')
+}
+
+export const toggleRateLimit = (enabled) => {
+  return request.put('/admin/rate-limit/toggle', { enabled })
+}

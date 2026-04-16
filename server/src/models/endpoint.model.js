@@ -10,11 +10,16 @@ class EndpointModel {
   static findById(id) {
     const stmt = db.prepare('SELECT * FROM endpoints WHERE id = ?');
     const endpoint = stmt.get(id);
-    if (endpoint && endpoint.inbound_config) {
+    if (endpoint) {
       try {
         endpoint.inbound_config = JSON.parse(endpoint.inbound_config);
       } catch (e) {
         endpoint.inbound_config = null;
+      }
+      try {
+        endpoint.keyword_filter = JSON.parse(endpoint.keyword_filter);
+      } catch (e) {
+        endpoint.keyword_filter = null;
       }
     }
     return endpoint;
@@ -26,11 +31,16 @@ class EndpointModel {
   static findByToken(token) {
     const stmt = db.prepare('SELECT * FROM endpoints WHERE token = ?');
     const endpoint = stmt.get(token);
-    if (endpoint && endpoint.inbound_config) {
+    if (endpoint) {
       try {
         endpoint.inbound_config = JSON.parse(endpoint.inbound_config);
       } catch (e) {
         endpoint.inbound_config = null;
+      }
+      try {
+        endpoint.keyword_filter = JSON.parse(endpoint.keyword_filter);
+      } catch (e) {
+        endpoint.keyword_filter = null;
       }
     }
     return endpoint;
@@ -58,13 +68,20 @@ class EndpointModel {
     const stmt = db.prepare(sql);
     const endpoints = stmt.all(...params);
 
-    // 解析每个 endpoint 的 inbound_config
+    // 解析每个 endpoint 的 inbound_config 和 keyword_filter
     return endpoints.map(endpoint => {
       if (endpoint.inbound_config) {
         try {
           endpoint.inbound_config = JSON.parse(endpoint.inbound_config);
         } catch (e) {
           endpoint.inbound_config = null;
+        }
+      }
+      if (endpoint.keyword_filter) {
+        try {
+          endpoint.keyword_filter = JSON.parse(endpoint.keyword_filter);
+        } catch (e) {
+          endpoint.keyword_filter = null;
         }
       }
       return endpoint;
@@ -75,7 +92,7 @@ class EndpointModel {
    * 创建接口
    */
   static create(endpointData) {
-    const { user_id, name, token, description, is_active } = endpointData;
+    const { user_id, name, token, description, is_active, inbound_config, keyword_filter } = endpointData;
     
     // 如果提供了 token，检查是否已存在
     if (token) {
@@ -86,14 +103,16 @@ class EndpointModel {
     }
     
     const stmt = db.prepare(
-      'INSERT INTO endpoints (user_id, name, token, description, is_active) VALUES (?, ?, ?, ?, ?)'
+      'INSERT INTO endpoints (user_id, name, token, description, is_active, inbound_config, keyword_filter) VALUES (?, ?, ?, ?, ?, ?, ?)'
     );
     const result = stmt.run(
       user_id,
       name,
       token,
       description || null,
-      is_active !== undefined ? (is_active ? 1 : 0) : 1
+      is_active !== undefined ? (is_active ? 1 : 0) : 1,
+      inbound_config ? JSON.stringify(inbound_config) : null,
+      keyword_filter ? JSON.stringify(keyword_filter) : null
     );
     return this.findById(result.lastInsertRowid);
   }
@@ -124,6 +143,10 @@ class EndpointModel {
     if (endpointData.inbound_config !== undefined) {
       fields.push('inbound_config = ?');
       values.push(endpointData.inbound_config ? JSON.stringify(endpointData.inbound_config) : null);
+    }
+    if (endpointData.keyword_filter !== undefined) {
+      fields.push('keyword_filter = ?');
+      values.push(endpointData.keyword_filter ? JSON.stringify(endpointData.keyword_filter) : null);
     }
 
     if (fields.length === 0) return null;
@@ -212,6 +235,20 @@ class EndpointModel {
   static findByUserIdAndName(userId, name) {
     const stmt = db.prepare('SELECT * FROM endpoints WHERE user_id = ? AND name = ?');
     return stmt.get(userId, name);
+  }
+
+  /**
+   * 更新关键词过滤配置
+   */
+  static updateKeywordFilter(endpointId, filterConfig) {
+    const stmt = db.prepare(
+      "UPDATE endpoints SET keyword_filter = ?, updated_at = datetime('now', 'localtime') WHERE id = ?"
+    );
+    stmt.run(
+      filterConfig ? JSON.stringify(filterConfig) : null,
+      endpointId
+    );
+    return this.findById(endpointId);
   }
 
   /**

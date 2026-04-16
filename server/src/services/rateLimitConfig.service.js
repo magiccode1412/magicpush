@@ -1,5 +1,8 @@
 const SettingsModel = require('../models/settings.model');
 
+// 限流开关配置键
+const ENABLED_KEY = 'rate_limit_enabled';
+
 // 默认配置
 const DEFAULTS = {
   rate_limit_global_max: 200,
@@ -106,6 +109,23 @@ class RateLimitConfigService {
       SettingsModel.set(key, value);
     }
     return this.getAll();
+  }
+
+  /**
+   * 获取限流是否启用（默认启用）
+   */
+  static isEnabled() {
+    const value = SettingsModel.get(ENABLED_KEY);
+    if (value === null) return true;
+    return value === 'true' || value === '1';
+  }
+
+  /**
+   * 设置限流开关状态
+   */
+  static setEnabled(enabled) {
+    SettingsModel.setBoolean(ENABLED_KEY, !!enabled);
+    return this.isEnabled();
   }
 }
 

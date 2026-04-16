@@ -1,4 +1,5 @@
 const EndpointService = require('../services/endpoint.service');
+const { EndpointModel } = require('../models');
 const ResponseUtil = require('../utils/response');
 const logger = require('../utils/logger');
 const { getAllPresetTemplates, getPresetTemplate } = require('../utils/jsonpath');
@@ -217,6 +218,52 @@ class EndpointController {
     } catch (error) {
       logger.error('获取入站模板失败:', error);
       return ResponseUtil.serverError(res, '获取入站模板失败');
+    }
+  }
+
+  /**
+   * 更新关键词过滤配置
+   */
+  static async updateKeywordFilter(req, res) {
+    try {
+      const { id } = req.params;
+      const { enabled, mode, keywords } = req.body;
+
+      let config = null;
+
+      if (enabled) {
+        if (!mode || !['blacklist', 'whitelist'].includes(mode)) {
+          return ResponseUtil.badRequest(res, '过滤模式必须是 blacklist 或 whitelist');
+        }
+        if (!Array.isArray(keywords) || keywords.length === 0 || keywords.length > 50) {
+          return ResponseUtil.badRequest(res, '关键词数量为 1~50 个');
+        }
+        for (const kw of keywords) {
+          if (typeof kw !== 'string' || kw.trim().length === 0 || kw.length > 50) {
+            return ResponseUtil.badRequest(res, '每个关键词为 1~50 个字符');
+          }
+        }
+        config = {
+          enabled: true,
+          mode,
+          keywords: keywords.map(k => k.trim()).filter(k => k),
+        };
+      }
+
+      // 校验接口是否存在且属于当前用户
+      const existing = await EndpointModel.findById(parseInt(id));
+      if (!existing || existing.user_id !== req.user.userId) {
+        return ResponseUtil.notFound(res, '接口不存在');
+      }
+
+      const endpoint = await EndpointModel.updateKeywordFilter(parseInt(id), config);
+
+      logger.info(`用户 ${req.user.userId} 更新接口 ${id} 关键词过滤配置`);
+      return ResponseUtil.success(res, { keyword_filter: config }, '关键词过滤配置已更新');
+
+    } catch (error) {
+      logger.error('更新关键词过滤失败:', error);
+      return ResponseUtil.serverError(res, error.message || '更新失败');
     }
   }
 }
