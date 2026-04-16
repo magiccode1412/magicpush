@@ -92,7 +92,7 @@ class EndpointModel {
    * 创建接口
    */
   static create(endpointData) {
-    const { user_id, name, token, description, is_active } = endpointData;
+    const { user_id, name, token, description, is_active, inbound_config, keyword_filter } = endpointData;
     
     // 如果提供了 token，检查是否已存在
     if (token) {
@@ -103,14 +103,16 @@ class EndpointModel {
     }
     
     const stmt = db.prepare(
-      'INSERT INTO endpoints (user_id, name, token, description, is_active) VALUES (?, ?, ?, ?, ?)'
+      'INSERT INTO endpoints (user_id, name, token, description, is_active, inbound_config, keyword_filter) VALUES (?, ?, ?, ?, ?, ?, ?)'
     );
     const result = stmt.run(
       user_id,
       name,
       token,
       description || null,
-      is_active !== undefined ? (is_active ? 1 : 0) : 1
+      is_active !== undefined ? (is_active ? 1 : 0) : 1,
+      inbound_config ? JSON.stringify(inbound_config) : null,
+      keyword_filter ? JSON.stringify(keyword_filter) : null
     );
     return this.findById(result.lastInsertRowid);
   }

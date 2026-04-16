@@ -143,6 +143,8 @@ class UserController {
           description: ep.description,
           token: ep.token,
           isActive: ep.is_active === 1,
+          inboundConfig: ep.inbound_config || null,
+          keywordFilter: ep.keyword_filter || null,
           channelIds: endpointChannels
             .filter(ec => ec.endpoint_id === ep.id)
             .map(ec => ec.channel_name),
@@ -216,6 +218,8 @@ class UserController {
             description: ep.description,
             token: ep.token || require('uuid').v4().replace(/-/g, ''),
             is_active: ep.isActive !== false,
+            inbound_config: ep.inboundConfig ? JSON.stringify(ep.inboundConfig) : null,
+            keyword_filter: ep.keywordFilter ? JSON.stringify(ep.keywordFilter) : null,
           });
 
           // 绑定渠道
