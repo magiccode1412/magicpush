@@ -111,16 +111,23 @@
           </transition>
         </router-view>
       </main>
+
+      <!-- 版本更新弹窗 -->
+      <VersionUpdateDialog
+        v-model:visible="showUpdateDialog"
+        :latest-changelog="latestChangelog"
+      />
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { useThemeStore } from '@/stores/theme'
-import { VERSION } from '@/utils/version'
+import { VERSION, fetchVersionFromServer } from '@/utils/version'
+import VersionUpdateDialog from '@/components/VersionUpdateDialog.vue'
 import {
   Bell,
   Menu,
@@ -147,6 +154,24 @@ const authStore = useAuthStore()
 const themeStore = useThemeStore()
 
 const isMobileMenuOpen = ref(false)
+const showUpdateDialog = ref(false)
+const latestChangelog = ref(null)
+
+// 版本更新检测
+onMounted(async () => {
+  const versionData = await fetchVersionFromServer()
+  if (!versionData || !versionData.changelog?.length) return
+
+  const currentVersion = VERSION.version
+  const lastSeenVersion = localStorage.getItem('mp_last_seen_version')
+  // 首次访问或版本号发生变化，显示更新弹窗
+  if (lastSeenVersion !== currentVersion) {
+    // 取最新一条 changelog
+    latestChangelog.value = versionData.changelog[0]
+    showUpdateDialog.value = true
+    localStorage.setItem('mp_last_seen_version', currentVersion)
+  }
+})
 
 // 根据用户角色动态生成菜单
 const menuItems = computed(() => {
