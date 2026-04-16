@@ -1,6 +1,6 @@
 {
   "name": "magicpush",
-  "version": "1.7.1",
+  "version": "1.7.2",
   "displayName": "MagicPush",
   "description": "支持多渠道消息推送的统一管理平台",
   "repository": {
@@ -8,6 +8,17 @@
     "url": "https://github.com/magiccode1412/magicpush"
   },
   "changelog": [
+    {
+      "version": "1.7.2",
+      "date": "2026-04-16",
+      "type": "release",
+      "changes": [
+        "增加限流开关功能",
+        "添加基于版本号的镜像",
+        "实现接口关键词过滤功能",
+        "数据导入导出功能补充必要字段"
+      ]
+    },
     {
       "version": "1.7.1",
       "date": "2026-04-15",
