@@ -84,6 +84,12 @@ main:
         CNB_IMAGE_TAG: ${CNB_DOCKER_REGISTRY}/${CNB_REPO_SLUG_LOWERCASE}:latest
         DOCKERHUB_IMAGE_TAG: ${DOCKERHUB_USERNAME}/${CNB_REPO_NAME_LOWERCASE}:latest
       stages:
+        - name: get_version
+          script: |
+            VERSION=$(jq -r '.version' /workspace/version.json)
+            echo "##[set-output app_version=$VERSION]"
+          exports:
+            app_version: APP_VERSION
         - name: await the amd64
           type: cnb:await
           options:
@@ -110,8 +116,6 @@ main:
             platforms:
               - linux/amd64
               - linux/arm64
-        - name: get_version
-          script: echo "APP_VERSION=$(jq -r '.version' version.json)" >> "$CNB_ENV_FILE"
         - name: manifest_cnb_version
           image: cnbcool/manifest
           settings:
