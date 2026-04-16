@@ -48,3 +48,8 @@ export const getInboundTemplates = () => {
 export const getInboundTemplate = (type) => {
   return request.get(`/endpoints/inbound-templates/${type}`)
 }
+
+// 关键词过滤相关 API
+export const updateKeywordFilter = (id, data) => {
+  return request.put(`/endpoints/${id}/keyword-filter`, data)
+}

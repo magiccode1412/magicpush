@@ -1,5 +1,6 @@
 const { EndpointModel, ChannelModel, PushLogModel } = require('../models');
 const { getChannelAdapter } = require('./channels');
+const KeywordFilterService = require('./keywordFilter.service');
 const logger = require('../utils/logger');
 
 /**
@@ -19,7 +20,15 @@ class PushService {
       throw new Error('接口已禁用');
     }
 
-    // 更新最后使用时间
+    // 关键词过滤检查
+    const filterResult = KeywordFilterService.check(endpoint.keyword_filter, message);
+    if (filterResult.blocked) {
+      logger.warn(`关键词过滤拦截 - 接口:${endpoint.id} IP:${clientIp} 模式:${filterResult.mode} 命中词:${filterResult.matchedKeyword || '(无)'}`);
+      const errorMsg = filterResult.mode === 'whitelist'
+        ? '未包含合法内容'
+        : '包含不合法内容';
+      throw new Error(errorMsg);
+    }
     await EndpointModel.updateLastUsed(endpoint.id);
 
     // 获取接口关联的渠道
@@ -44,7 +53,15 @@ class PushService {
       throw new Error('接口已禁用');
     }
 
-    // 更新最后使用时间
+    // 关键词过滤检查
+    const filterResult = KeywordFilterService.check(endpoint.keyword_filter, message);
+    if (filterResult.blocked) {
+      logger.warn(`关键词过滤拦截 - 接口:${endpoint.id} IP:${clientIp} 模式:${filterResult.mode} 命中词:${filterResult.matchedKeyword || '(无)'}`);
+      const errorMsg = filterResult.mode === 'whitelist'
+        ? '未包含合法内容'
+        : '包含不合法内容';
+      throw new Error(errorMsg);
+    }
     await EndpointModel.updateLastUsed(endpoint.id);
 
     // 获取接口关联的渠道

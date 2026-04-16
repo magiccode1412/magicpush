@@ -48,4 +48,7 @@ router.get('/:id/channels', endpointController.getEndpointChannels);
 // 更新入站配置
 router.put('/:id/inbound-config', endpointController.updateInboundConfig);
 
+// 更新关键词过滤配置
+router.put('/:id/keyword-filter', endpointController.updateKeywordFilter);
+
 module.exports = router;
