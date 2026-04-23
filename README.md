@@ -31,13 +31,20 @@
 
 ## 🌐 Demo站
 
-自行注册即可
+自行注册即可（邮箱可随便填，不需要验证）
 
-+ [最新版](https://vsvglrxarxno.ap-northeast-1.clawcloudrun.com/)
+由于zeabur和clawcloud run不再提供免费资源，所以demo站转到railway和huggingface
+
++ [最新版](https://magicpush-production-761c.up.railway.app/)
 + [开发版](https://sdafhbaommsg.ap-northeast-1.clawcloudrun.com)
 
-> 演示环境仅作测试使用，请勿发送违规信息，数据会定期重置，请勿存储重要信息。
-> 演示环境部署在cloud claw，如果遇到无法访问，请自行部署试用
+> 演示环境仅作测试使用，请勿发送违规信息
+
+> 切勿使用真实个人信息，体验完毕后可在设置页面手动注销账号
+
+> 数据会定期重置，请勿存储重要信息。
+
+> 演示环境部署在railway和huggingface，如果遇到无法访问，可能是在冷启动中
 
 ## 预览
 
