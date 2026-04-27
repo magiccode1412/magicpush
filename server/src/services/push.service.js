@@ -130,6 +130,7 @@ class PushService {
           const log = await PushLogModel.create({
             user_id: userId,
             endpoint_id: endpointId,
+            endpoint_name: endpoint.name,
             channel_id: channel.id,
             channel_type: channel.channel_type,
             title,
@@ -154,9 +155,18 @@ class PushService {
     }
 
     // 创建推送记录
+    // 获取接口名称（用于日志展示）
+    let endpointName = null;
+    if (endpointId) {
+      try {
+        const ep = await EndpointModel.findById(endpointId);
+        if (ep) endpointName = ep.name;
+      } catch (_) {}
+    }
     const log = await PushLogModel.create({
       user_id: userId,
       endpoint_id: endpointId,
+      endpoint_name: endpointName,
       channel_id: channel.id,
       channel_type: channel.channel_type,
       title,

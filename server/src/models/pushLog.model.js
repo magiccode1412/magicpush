@@ -84,6 +84,7 @@ class PushLogModel {
     const {
       user_id,
       endpoint_id,
+      endpoint_name,
       channel_id,
       channel_type,
       title,
@@ -96,14 +97,15 @@ class PushLogModel {
     } = logData;
 
     const stmt = db.prepare(`
-      INSERT INTO push_logs 
-      (user_id, endpoint_id, channel_id, channel_type, title, content, message_type, status, response, error_message, ip) 
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      INSERT INTO push_logs
+      (user_id, endpoint_id, endpoint_name, channel_id, channel_type, title, content, message_type, status, response, error_message, ip)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `);
 
     const result = stmt.run(
       user_id,
       endpoint_id || null,
+      endpoint_name || null,
       channel_id || null,
       channel_type || null,
       title || null,
