@@ -1,6 +1,8 @@
 <div align="center">
   <img src="public/logo.png" alt="测试logo" width="256px">
   <h1 align="center">MagicPush</h1> 
+  <span>项目地址：<a href="https://cnb.cool/magiccode1412/magicpush" target="_blank">CNB云原生构建</a> | <a href="https://github.com/magiccode1412/magicpush" target="_blank">GitHub</a>
+  </span>
   <p>一个支持多种消息渠道的推送服务管理平台，用户可以通过标准化的REST API接口将消息推送到多种通知渠道。</p>
   <p>
     <a href="./LICENSE">
@@ -22,10 +24,6 @@
   </p>
 </div>
 
-## 项目地址
-+ [CNB云原生构建](https://cnb.cool/magiccode1412/magicpush)
-+ [GitHub](https://github.com/magiccode1412/magicpush)
-
 ## 📝 更新日志
 查看 [CHANGELOG.md](docs/CHANGELOG.md) 了解版本更新记录。
 
@@ -36,13 +34,11 @@
 由于zeabur和clawcloud run不再提供免费资源，所以demo站转到railway和huggingface
 
 + [最新版](https://magicpush-production-761c.up.railway.app/)
-+ [开发版](https://sdafhbaommsg.ap-northeast-1.clawcloudrun.com)
++ [开发版](https://magiccode1412-magicpush.hf.space)
 
 > 演示环境仅作测试使用，请勿发送违规信息
 
-> 切勿使用真实个人信息，体验完毕后可在设置页面手动注销账号
-
-> 数据会定期重置，请勿存储重要信息。
+> 切勿使用真实个人信息，数据会定期重置，请勿存储重要信息。
 
 > 演示环境部署在railway和huggingface，如果遇到无法访问，可能是在冷启动中
 
@@ -95,12 +91,12 @@
 
 ### 消息渠道支持
 - **微信龙虾机器人** (扫码绑定，直接推送到个人微信，有10条/24小时限制)
-- 企业微信机器人
-- Telegram Bot
-- PushPlus
-- WxPusher
-- 飞书机器人
-- 钉钉机器人
+- **企业微信机器人**
+- **Telegram Bot**
+- **PushPlus**
+- **WxPusher**
+- **飞书机器人**
+- **钉钉机器人**
 - **微信公众号** (模板消息推送，支持测试号)
 - **Server酱** (微信推送服务)
 - **Webhook** (通用 HTTP 推送，支持自定义 URL/Headers/Body)
@@ -169,9 +165,6 @@
 **latest镜像已支持amd/armv8架构**
 
 ### 点击下面任一按钮一键部署
-
-[![Deploy on Zeabur](./public/image/depoly_to_zeabur.svg)](https://zeabur.com/templates/GGBDF1?referralCode=nixingshiguang)
-没有免费资源了
 
 [![Deploy on Railway](./public/image/deploy_on_railway.svg)](https://railway.com/deploy/JbNI4y?referralCode=85Y1W5&utm_medium=integration&utm_source=template&utm_campaign=generic)
 
@@ -414,8 +407,8 @@ curl -X POST http://localhost:3000/api/push \
 后端 `.env` 配置：
 
 ```env
-NODE_ENV=development
-# JWT_SECRET=your-secret-key        # 可选，不设置则自动生成安全密钥
+NODE_ENV=development                # 可选
+JWT_SECRET=your-secret-key          # 可选，不设置则自动生成安全密钥
 JWT_ACCESS_EXPIRES_IN=15m           # 可选，默认 15 分钟
 JWT_REFRESH_EXPIRES_IN=7d           # 可选，默认 7 天
 DB_PATH=./data/push_service.db      # 可选
