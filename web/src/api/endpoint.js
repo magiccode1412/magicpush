@@ -53,3 +53,8 @@ export const getInboundTemplate = (type) => {
 export const updateKeywordFilter = (id, data) => {
   return request.put(`/endpoints/${id}/keyword-filter`, data)
 }
+
+// 消息免打扰相关 API
+export const updateDoNotDisturb = (id, data) => {
+  return request.put(`/endpoints/${id}/do-not-disturb`, data)
+}

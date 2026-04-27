@@ -104,7 +104,8 @@
 
         <el-table-column label="状态" width="100">
           <template #default="{ row }">
-            <el-tag :type="row.status === 'success' ? 'success' : 'danger'" size="small">
+            <el-tag v-if="row.status === 'skipped_dnd'" type="info" size="small">已静默</el-tag>
+            <el-tag v-else :type="row.status === 'success' ? 'success' : 'danger'" size="small">
               {{ row.status === 'success' ? '成功' : '失败' }}
             </el-tag>
           </template>

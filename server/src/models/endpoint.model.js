@@ -21,6 +21,11 @@ class EndpointModel {
       } catch (e) {
         endpoint.keyword_filter = null;
       }
+      try {
+        endpoint.do_not_disturb = JSON.parse(endpoint.do_not_disturb);
+      } catch (e) {
+        endpoint.do_not_disturb = null;
+      }
     }
     return endpoint;
   }
@@ -41,6 +46,11 @@ class EndpointModel {
         endpoint.keyword_filter = JSON.parse(endpoint.keyword_filter);
       } catch (e) {
         endpoint.keyword_filter = null;
+      }
+      try {
+        endpoint.do_not_disturb = JSON.parse(endpoint.do_not_disturb);
+      } catch (e) {
+        endpoint.do_not_disturb = null;
       }
     }
     return endpoint;
@@ -68,7 +78,7 @@ class EndpointModel {
     const stmt = db.prepare(sql);
     const endpoints = stmt.all(...params);
 
-    // 解析每个 endpoint 的 inbound_config 和 keyword_filter
+    // 解析每个 endpoint 的 inbound_config、keyword_filter 和 do_not_disturb
     return endpoints.map(endpoint => {
       if (endpoint.inbound_config) {
         try {
@@ -84,6 +94,13 @@ class EndpointModel {
           endpoint.keyword_filter = null;
         }
       }
+      if (endpoint.do_not_disturb) {
+        try {
+          endpoint.do_not_disturb = JSON.parse(endpoint.do_not_disturb);
+        } catch (e) {
+          endpoint.do_not_disturb = null;
+        }
+      }
       return endpoint;
     });
   }
@@ -92,7 +109,7 @@ class EndpointModel {
    * 创建接口
    */
   static create(endpointData) {
-    const { user_id, name, token, description, is_active, inbound_config, keyword_filter } = endpointData;
+    const { user_id, name, token, description, is_active, inbound_config, keyword_filter, do_not_disturb } = endpointData;
     
     // 如果提供了 token，检查是否已存在
     if (token) {
@@ -103,7 +120,7 @@ class EndpointModel {
     }
     
     const stmt = db.prepare(
-      'INSERT INTO endpoints (user_id, name, token, description, is_active, inbound_config, keyword_filter) VALUES (?, ?, ?, ?, ?, ?, ?)'
+      'INSERT INTO endpoints (user_id, name, token, description, is_active, inbound_config, keyword_filter, do_not_disturb) VALUES (?, ?, ?, ?, ?, ?, ?, ?)'
     );
     const result = stmt.run(
       user_id,
@@ -112,7 +129,8 @@ class EndpointModel {
       description || null,
       is_active !== undefined ? (is_active ? 1 : 0) : 1,
       inbound_config ? JSON.stringify(inbound_config) : null,
-      keyword_filter ? JSON.stringify(keyword_filter) : null
+      keyword_filter ? JSON.stringify(keyword_filter) : null,
+      do_not_disturb ? JSON.stringify(do_not_disturb) : null
     );
     return this.findById(result.lastInsertRowid);
   }
@@ -147,6 +165,10 @@ class EndpointModel {
     if (endpointData.keyword_filter !== undefined) {
       fields.push('keyword_filter = ?');
       values.push(endpointData.keyword_filter ? JSON.stringify(endpointData.keyword_filter) : null);
+    }
+    if (endpointData.do_not_disturb !== undefined) {
+      fields.push('do_not_disturb = ?');
+      values.push(endpointData.do_not_disturb ? JSON.stringify(endpointData.do_not_disturb) : null);
     }
 
     if (fields.length === 0) return null;
@@ -246,6 +268,20 @@ class EndpointModel {
     );
     stmt.run(
       filterConfig ? JSON.stringify(filterConfig) : null,
+      endpointId
+    );
+    return this.findById(endpointId);
+  }
+
+  /**
+   * 更新消息免打扰配置
+   */
+  static updateDoNotDisturb(endpointId, dndConfig) {
+    const stmt = db.prepare(
+      "UPDATE endpoints SET do_not_disturb = ?, updated_at = datetime('now', 'localtime') WHERE id = ?"
+    );
+    stmt.run(
+      dndConfig ? JSON.stringify(dndConfig) : null,
       endpointId
     );
     return this.findById(endpointId);

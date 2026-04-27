@@ -48,6 +48,10 @@
                   <Shield class="w-4 h-4 mr-2" />
                   关键词过滤
                 </el-dropdown-item>
+                <el-dropdown-item command="doNotDisturb">
+                  <BellOff class="w-4 h-4 mr-2" />
+                  消息免打扰
+                </el-dropdown-item>
                 <el-dropdown-item divided command="delete">
                   <Trash2 class="w-4 h-4 mr-2" />
                   删除
@@ -118,6 +122,22 @@
               <span v-if="endpoint.keyword_filter?.enabled"
                     :class="endpoint.keyword_filter.mode === 'blacklist' ? 'text-orange-500' : 'text-blue-500'">
                 {{ endpoint.keyword_filter.mode === 'blacklist' ? '黑名单模式' : '白名单模式' }}
+              </span>
+              <span v-else class="text-gray-400">未配置</span>
+            </el-button>
+          </div>
+        </div>
+
+        <!-- 消息免打扰状态 -->
+        <div class="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-3 mb-4">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <BellOff class="w-4 h-4 text-gray-400" />
+              <span class="text-xs text-gray-500 dark:text-gray-400">消息免打扰</span>
+            </div>
+            <el-button text size="small" @click="openDoNotDisturb(endpoint)">
+              <span v-if="endpoint.do_not_disturb?.enabled" class="text-purple-500">
+                {{ endpoint.do_not_disturb.timeRanges?.length || 0 }} 个时段
               </span>
               <span v-else class="text-gray-400">未配置</span>
             </el-button>
@@ -492,6 +512,107 @@
         </el-button>
       </template>
     </el-drawer>
+
+    <!-- 消息免打扰抽屉 -->
+    <el-drawer
+      v-model="showDndDrawer"
+      title="消息免打扰"
+      direction="rtl"
+      size="450px"
+    >
+      <div class="p-4 space-y-6">
+        <!-- 启用开关 -->
+        <div class="flex items-center justify-between">
+          <div>
+            <div class="font-medium text-gray-900 dark:text-white">启用消息免打扰</div>
+            <div class="text-xs text-gray-500 dark:text-gray-400">在指定时间段内暂停推送，推送记录仍会正常保存</div>
+          </div>
+          <el-switch v-model="dndForm.enabled" />
+        </div>
+
+        <el-divider v-if="dndForm.enabled" />
+
+        <!-- 时间段列表 -->
+        <div v-if="dndForm.enabled">
+          <div class="font-medium text-gray-900 dark:text-white mb-2">
+            时间段设置
+            <span class="text-xs font-normal text-gray-400 ml-2">
+              ({{ dndForm.timeRanges.length }}/5)
+            </span>
+          </div>
+          <p class="text-xs text-gray-500 dark:text-gray-400 mb-3">
+            在以下时间段内的推送将被静默，支持跨天设置（如 22:00 ~ 08:00）
+          </p>
+
+          <div class="space-y-3">
+            <div
+              v-for="(range, index) in dndForm.timeRanges"
+              :key="index"
+              class="flex items-center gap-2"
+            >
+              <el-time-picker
+                v-model="range.start"
+                placeholder="开始"
+                format="HH:mm"
+                value-format="HH:mm"
+                class="flex-1"
+              />
+              <span class="text-gray-400 text-sm">至</span>
+              <el-time-picker
+                v-model="range.end"
+                placeholder="结束"
+                format="HH:mm"
+                value-format="HH:mm"
+                class="flex-1"
+              />
+              <el-button
+                type="danger"
+                :icon="Trash2"
+                circle
+                size="small"
+                @click="removeDndRange(index)"
+                :disabled="dndForm.timeRanges.length <= 1"
+              />
+            </div>
+
+            <el-button
+              v-if="dndForm.timeRanges.length < 5"
+              class="w-full !ml-0"
+              plain
+              size="small"
+              @click="addDndRange"
+            >
+              <Plus class="w-4 h-4 mr-1" />
+              添加时间段
+            </el-button>
+          </div>
+
+          <el-divider />
+
+          <!-- 说明区域 -->
+          <div class="rounded-lg p-3 bg-purple-50 dark:bg-purple-900/10">
+            <div class="flex gap-2">
+              <Clock class="w-4 h-4 text-purple-500 flex-shrink-0 mt-0.5" />
+              <div class="text-xs leading-relaxed text-purple-700 dark:text-purple-300">
+                <p><strong>免打扰说明：</strong></p>
+                <p class="mt-1">
+                  在设定的时间段内，推送到该接口的消息将不会被发送到任何渠道，
+                  但<strong>推送记录会正常保存</strong>，状态显示为「已静默」。
+                  适用于夜间休息、会议等不希望被消息打扰的场景。
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <template #footer>
+        <el-button @click="showDndDrawer = false">取消</el-button>
+        <el-button type="primary" :loading="dndSaving" @click="saveDoNotDisturb">
+          保存配置
+        </el-button>
+      </template>
+    </el-drawer>
   </div>
 </template>
 
@@ -510,6 +631,7 @@ import {
   updateInboundConfig,
   getInboundTemplates,
   updateKeywordFilter,
+  updateDoNotDisturb,
 } from '@/api/endpoint'
 import { getChannels } from '@/api/channel'
 import {
@@ -526,6 +648,8 @@ import {
   X,
   AlertTriangle,
   Info,
+  BellOff,
+  Clock,
 } from 'lucide-vue-next'
 
 const endpoints = ref([])
@@ -551,6 +675,16 @@ const keywordForm = reactive({
   enabled: false,
   mode: 'blacklist',
   keywords: [''],
+})
+
+// 消息免打扰相关
+const showDndDrawer = ref(false)
+const dndEditingEndpoint = ref(null)
+const dndSaving = ref(false)
+
+const dndForm = reactive({
+  enabled: false,
+  timeRanges: [{ start: '22:00', end: '08:00' }],
 })
 
 // 各数据来源类型的示例数据
@@ -716,6 +850,8 @@ const handleCommand = async (command, endpoint) => {
     handleRegenerateToken(endpoint)
   } else if (command === 'keywordFilter') {
     openKeywordFilter(endpoint)
+  } else if (command === 'doNotDisturb') {
+    openDoNotDisturb(endpoint)
   } else if (command === 'delete') {
     handleDelete(endpoint)
   }
@@ -1006,6 +1142,82 @@ const saveKeywordFilter = async () => {
     ElMessage.error(error.message || '保存失败')
   } finally {
     keywordSaving.value = false
+  }
+}
+
+// 消息免打扰相关方法
+const openDoNotDisturb = (endpoint) => {
+  dndEditingEndpoint.value = endpoint
+
+  // 重置表单并回填已有配置
+  if (endpoint.do_not_disturb?.enabled && Array.isArray(endpoint.do_not_disturb.timeRanges) && endpoint.do_not_disturb.timeRanges.length > 0) {
+    dndForm.enabled = true
+    dndForm.timeRanges = endpoint.do_not_disturb.timeRanges.map(r => ({ ...r }))
+  } else {
+    dndForm.enabled = false
+    dndForm.timeRanges = [{ start: '22:00', end: '08:00' }]
+  }
+
+  showDndDrawer.value = true
+}
+
+const addDndRange = () => {
+  if (dndForm.timeRanges.length < 5) {
+    dndForm.timeRanges.push({ start: '00:00', end: '00:00' })
+  }
+}
+
+const removeDndRange = (index) => {
+  if (dndForm.timeRanges.length > 1) {
+    dndForm.timeRanges.splice(index, 1)
+  }
+}
+
+const saveDoNotDisturb = async () => {
+  if (!dndEditingEndpoint.value) return
+
+  // 启用时校验时间段
+  if (dndForm.enabled) {
+    for (let i = 0; i < dndForm.timeRanges.length; i++) {
+      const range = dndForm.timeRanges[i]
+      if (!range.start || !range.end) {
+        ElMessage.error(`第 ${i + 1} 个时间段不完整`)
+        return
+      }
+      if (range.start === range.end) {
+        ElMessage.error(`第 ${i + 1} 个时间段开始和结束时间不能相同`)
+        return
+      }
+    }
+  }
+
+  dndSaving.value = true
+  try {
+    let config = null
+    if (dndForm.enabled) {
+      config = {
+        enabled: true,
+        timeRanges: dndForm.timeRanges.map(r => ({
+          start: r.start,
+          end: r.end,
+        })),
+      }
+    }
+
+    const res = await updateDoNotDisturb(dndEditingEndpoint.value.id, { ...config })
+    if (res.success) {
+      ElMessage.success(dndForm.enabled ? '免打扰配置已启用' : '免打扰功能已关闭')
+      // 更新本地数据
+      const index = endpoints.value.findIndex(e => e.id === dndEditingEndpoint.value.id)
+      if (index !== -1) {
+        endpoints.value[index].do_not_disturb = config
+      }
+      showDndDrawer.value = false
+    }
+  } catch (error) {
+    ElMessage.error(error.message || '保存失败')
+  } finally {
+    dndSaving.value = false
   }
 }
 

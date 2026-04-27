@@ -51,4 +51,7 @@ router.put('/:id/inbound-config', endpointController.updateInboundConfig);
 // 更新关键词过滤配置
 router.put('/:id/keyword-filter', endpointController.updateKeywordFilter);
 
+// 更新消息免打扰配置
+router.put('/:id/do-not-disturb', endpointController.updateDoNotDisturb);
+
 module.exports = router;

@@ -1,6 +1,7 @@
-const { EndpointModel, ChannelModel, PushLogModel } = require('../models');
+const { EndpointModel, ChannelModel, PushLogModel, SettingsModel } = require('../models');
 const { getChannelAdapter } = require('./channels');
 const KeywordFilterService = require('./keywordFilter.service');
+const DoNotDisturbService = require('./doNotDisturb.service');
 const logger = require('../utils/logger');
 
 /**
@@ -118,6 +119,39 @@ class PushService {
    */
   static async pushToChannel(userId, endpointId, channel, message, clientIp) {
     const { title, content, type, url } = message;
+
+    // 消息免打扰检查：如果当前在免打扰时段内，记录日志但不实际推送
+    if (endpointId) {
+      // 全局开关：关闭时所有免打扰配置不生效
+      const globalDndEnabled = SettingsModel.getBoolean('dnd_global_enabled', false);
+      if (globalDndEnabled) {
+        const endpoint = await EndpointModel.findById(endpointId);
+        if (endpoint && DoNotDisturbService.shouldMute(endpoint.do_not_disturb)) {
+          const log = await PushLogModel.create({
+            user_id: userId,
+            endpoint_id: endpointId,
+            channel_id: channel.id,
+            channel_type: channel.channel_type,
+            title,
+            content,
+            message_type: type,
+            status: 'skipped_dnd',
+            ip: clientIp,
+          });
+
+          logger.info(`推送被免打扰拦截 - 用户:${userId} 接口:${endpointId} 渠道:${channel.channel_type}`);
+
+          return {
+            success: false,
+            skippedDnd: true,
+            channelId: channel.id,
+            channelType: channel.channel_type,
+            channelName: channel.name,
+            logId: log.id,
+          };
+        }
+      }
+    }
 
     // 创建推送记录
     const log = await PushLogModel.create({
