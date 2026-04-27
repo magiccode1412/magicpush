@@ -15,6 +15,7 @@ const MeowChannel = require('./meow.channel');
 const WecomappChannel = require('./wecomapp.channel');
 const BarkChannel = require('./bark.channel');
 const PushMeChannel = require('./pushme.channel');
+const XizhiChannel = require('./xizhi.channel');
 // TODO: QQ 机器人渠道开发中，待测试后启用
 // const QqbotChannel = require('./qqbot.channel');
 
@@ -36,6 +37,7 @@ const channelAdapters = {
   wecomapp: WecomappChannel,
   bark: BarkChannel,
   pushme: PushMeChannel,
+  xizhi: XizhiChannel,
   // qqbot: QqbotChannel, // TODO: 待测试后启用
 };
 
@@ -98,6 +100,7 @@ module.exports = {
   WecomappChannel,
   BarkChannel,
   PushMeChannel,
+  XizhiChannel,
   // QqbotChannel, // TODO: 待测试后启用
   getChannelAdapter,
   getChannelTypes,
