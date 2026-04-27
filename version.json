@@ -1,6 +1,6 @@
 {
   "name": "magicpush",
-  "version": "1.7.2",
+  "version": "1.8.0",
   "displayName": "MagicPush",
   "description": "支持多渠道消息推送的统一管理平台",
   "repository": {
@@ -8,6 +8,16 @@
     "url": "https://github.com/magiccode1412/magicpush"
   },
   "changelog": [
+    {
+      "version": "1.8.0",
+      "date": "2026-04-27",
+      "type": "release",
+      "changes": [
+        "新增免打扰功能",
+        "推送记录新增接口字段",
+        "新增通知渠道——息知"
+      ]
+    },
     {
       "version": "1.7.2",
       "date": "2026-04-16",
