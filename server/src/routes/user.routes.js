@@ -30,4 +30,10 @@ router.get('/me/settings/registration', userController.checkAdmin, userControlle
 // 更新注册设置（管理员接口）
 router.put('/me/settings/registration', userController.checkAdmin, userController.updateRegistrationSetting);
 
+// 获取全局免打扰开关
+router.get('/me/settings/dnd-global', userController.getDndGlobalSetting);
+
+// 更新全局免打扰开关（管理员接口）
+router.put('/me/settings/dnd-global', userController.checkAdmin, userController.updateDndGlobalSetting);
+
 module.exports = router;

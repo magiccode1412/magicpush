@@ -289,6 +289,39 @@ class UserController {
       return ResponseUtil.serverError(res, '更新注册设置失败');
     }
   }
+
+  /**
+   * 获取全局免打扰开关状态
+   */
+  static getDndGlobalSetting(req, res) {
+    try {
+      const enabled = SettingsModel.getBoolean('dnd_global_enabled', false);
+      return ResponseUtil.success(res, { enabled });
+    } catch (error) {
+      logger.error('获取免打扰全局设置失败:', error);
+      return ResponseUtil.serverError(res, '获取设置失败');
+    }
+  }
+
+  /**
+   * 更新全局免打扰开关
+   */
+  static updateDndGlobalSetting(req, res) {
+    try {
+      const { enabled } = req.body;
+      if (typeof enabled !== 'boolean') {
+        return ResponseUtil.badRequest(res, '参数错误：enabled 必须为布尔值');
+      }
+
+      SettingsModel.setBoolean('dnd_global_enabled', enabled);
+      logger.info(`管理员 ${req.user.userId} ${enabled ? '开启' : '关闭'}了全局免打扰功能`);
+
+      return ResponseUtil.success(res, { enabled }, `全局免打扰已${enabled ? '开启' : '关闭'}`);
+    } catch (error) {
+      logger.error('更新免打扰全局设置失败:', error);
+      return ResponseUtil.serverError(res, '更新失败');
+    }
+  }
 }
 
 module.exports = UserController;

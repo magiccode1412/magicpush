@@ -77,6 +77,15 @@
           </template>
         </el-table-column>
 
+        <el-table-column label="接口" width="140">
+          <template #default="{ row }">
+            <el-tag v-if="row.endpoint_name" size="small" effect="plain">
+              {{ row.endpoint_name }}
+            </el-tag>
+            <span v-else class="text-gray-400">-</span>
+          </template>
+        </el-table-column>
+
         <el-table-column label="渠道" width="120">
           <template #default="{ row }">
             <el-tag v-if="row.channel_type" size="small" effect="plain">
@@ -104,7 +113,8 @@
 
         <el-table-column label="状态" width="100">
           <template #default="{ row }">
-            <el-tag :type="row.status === 'success' ? 'success' : 'danger'" size="small">
+            <el-tag v-if="row.status === 'skipped_dnd'" type="info" size="small">已静默</el-tag>
+            <el-tag v-else :type="row.status === 'success' ? 'success' : 'danger'" size="small">
               {{ row.status === 'success' ? '成功' : '失败' }}
             </el-tag>
           </template>
@@ -147,6 +157,10 @@
           <div>
             <p class="text-sm text-gray-500 dark:text-gray-400">渠道</p>
             <p class="font-medium">{{ getChannelTypeName(selectedLog.channel_type) || '-' }}</p>
+          </div>
+          <div v-if="selectedLog.endpoint_name">
+            <p class="text-sm text-gray-500 dark:text-gray-400">接口</p>
+            <p class="font-medium">{{ selectedLog.endpoint_name }}</p>
           </div>
           <div>
             <p class="text-sm text-gray-500 dark:text-gray-400">消息类型</p>

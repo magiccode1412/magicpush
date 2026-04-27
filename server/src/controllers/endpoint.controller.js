@@ -266,6 +266,67 @@ class EndpointController {
       return ResponseUtil.serverError(res, error.message || '更新失败');
     }
   }
+
+  /**
+   * 更新消息免打扰配置
+   */
+  static async updateDoNotDisturb(req, res) {
+    try {
+      const { id } = req.params;
+      const { enabled, timeRanges } = req.body;
+      const DoNotDisturbService = require('../services/doNotDisturb.service');
+
+      let config = null;
+
+      if (enabled) {
+        if (!Array.isArray(timeRanges) || timeRanges.length === 0) {
+          return ResponseUtil.badRequest(res, '请至少设置一个时间段');
+        }
+        if (timeRanges.length > 5) {
+          return ResponseUtil.badRequest(res, '最多支持 5 个时间段');
+        }
+        for (let i = 0; i < timeRanges.length; i++) {
+          const range = timeRanges[i];
+          if (!range.start || !range.end) {
+            return ResponseUtil.badRequest(res, `第 ${i + 1} 个时间段缺少开始或结束时间`);
+          }
+          // 校验时间格式 HH:mm
+          const startMatch = String(range.start).match(/^(\d{1,2}):(\d{2})$/);
+          const endMatch = String(range.end).match(/^(\d{1,2}):(\d{2})$/);
+          if (!startMatch || !endMatch) {
+            return ResponseUtil.badRequest(res, `第 ${i + 1} 个时间段格式错误，应为 HH:mm`);
+          }
+          const startH = parseInt(startMatch[1], 10), startM = parseInt(startMatch[2], 10);
+          const endH = parseInt(endMatch[1], 10), endM = parseInt(endMatch[2], 10);
+          if (startH > 23 || startM > 59 || endH > 23 || endM > 59) {
+            return ResponseUtil.badRequest(res, `第 ${i + 1} 个时间段时间值超出范围`);
+          }
+        }
+        config = {
+          enabled: true,
+          timeRanges: timeRanges.map(r => ({
+            start: String(r.start).trim(),
+            end: String(r.end).trim(),
+          })),
+        };
+      }
+
+      // 校验接口是否存在且属于当前用户
+      const existing = await EndpointModel.findById(parseInt(id));
+      if (!existing || existing.user_id !== req.user.userId) {
+        return ResponseUtil.notFound(res, '接口不存在');
+      }
+
+      const endpoint = await EndpointModel.updateDoNotDisturb(parseInt(id), config);
+
+      logger.info(`用户 ${req.user.userId} 更新接口 ${id} 免打扰配置`);
+      return ResponseUtil.success(res, { do_not_disturb: config }, '免打扰配置已更新');
+
+    } catch (error) {
+      logger.error('更新免打扰配置失败:', error);
+      return ResponseUtil.serverError(res, error.message || '更新失败');
+    }
+  }
 }
 
 module.exports = EndpointController;

@@ -141,8 +141,6 @@ main:
             tags:
               - latest-linux-amd64
               - latest-linux-arm64
-              - "${APP_VERSION}-linux-amd64"
-              - "${APP_VERSION}-linux-arm64"
             type: docker
 
 dev:

@@ -1,6 +1,8 @@
 <div align="center">
   <img src="public/logo.png" alt="测试logo" width="256px">
   <h1 align="center">MagicPush</h1> 
+  <span>项目地址：<a href="https://cnb.cool/magiccode1412/magicpush" target="_blank">CNB云原生构建</a> | <a href="https://github.com/magiccode1412/magicpush" target="_blank">GitHub</a>
+  </span>
   <p>一个支持多种消息渠道的推送服务管理平台，用户可以通过标准化的REST API接口将消息推送到多种通知渠道。</p>
   <p>
     <a href="./LICENSE">
@@ -22,22 +24,23 @@
   </p>
 </div>
 
-## 项目地址
-+ [CNB云原生构建](https://cnb.cool/magiccode1412/magicpush)
-+ [GitHub](https://github.com/magiccode1412/magicpush)
-
 ## 📝 更新日志
 查看 [CHANGELOG.md](docs/CHANGELOG.md) 了解版本更新记录。
 
 ## 🌐 Demo站
 
-自行注册即可
+自行注册即可（邮箱可随便填，不需要验证）
 
-+ [最新版](https://vsvglrxarxno.ap-northeast-1.clawcloudrun.com/)
-+ [开发版](https://sdafhbaommsg.ap-northeast-1.clawcloudrun.com)
+由于zeabur和clawcloud run不再提供免费资源，所以demo站转到railway和huggingface
 
-> 演示环境仅作测试使用，请勿发送违规信息，数据会定期重置，请勿存储重要信息。
-> 演示环境部署在cloud claw，如果遇到无法访问，请自行部署试用
++ [最新版](https://magicpush-production-761c.up.railway.app/)
++ [开发版](https://magiccode1412-magicpush.hf.space)
+
+> 演示环境仅作测试使用，请勿发送违规信息
+
+> 切勿使用真实个人信息，数据会定期重置，请勿存储重要信息。
+
+> 演示环境部署在railway和huggingface，如果遇到无法访问，可能是在冷启动中
 
 ## 预览
 
@@ -88,12 +91,12 @@
 
 ### 消息渠道支持
 - **微信龙虾机器人** (扫码绑定，直接推送到个人微信，有10条/24小时限制)
-- 企业微信机器人
-- Telegram Bot
-- PushPlus
-- WxPusher
-- 飞书机器人
-- 钉钉机器人
+- **企业微信机器人**
+- **Telegram Bot**
+- **PushPlus**
+- **WxPusher**
+- **飞书机器人**
+- **钉钉机器人**
 - **微信公众号** (模板消息推送，支持测试号)
 - **Server酱** (微信推送服务)
 - **Webhook** (通用 HTTP 推送，支持自定义 URL/Headers/Body)
@@ -102,6 +105,7 @@
 - **Bark** (iOS 自定义推送通知)
 - **Meow** (鸿蒙系统推送应用)
 - **PushMe** (多平台统一推送服务)
+- **息知** (极简微信消息通知接口，永久免费，支持单点推送和频道推送)
 - **企业微信应用** (企业微信应用消息推送)
 
 ### 核心功能
@@ -112,7 +116,8 @@
 - 渠道绑定与配置管理
 - 推送接口管理（多接口/多令牌）
 - **推送消息关键词过滤**（支持黑名单/白名单模式，按接口独立配置）
-- 推送历史记录与状态追踪
+- **消息免打扰（DND）**（支持按接口配置多个免打扰时段，全局开关控制）
+- 推送历史记录与状态追踪（含接口名称标识）
 - 响应式Web管理界面
 - 深浅色主题切换
 
@@ -148,6 +153,7 @@
 | **Bark** | 无限制 | - | 自建服务，无平台限制 |
 | **Gotify** | 无限制 | - | 自建服务，无平台限制 |
 | **Meow** | 无限制 | - | 自建服务，无平台限制 |
+| **息知** | 30 条/分钟<br>微信上限 10 万次/天 |- | 永久免费服务，无推送数量限制计划 |
 | **Webhook** | 无限制 | - | 取决于目标服务器 |
 | **微信龙虾机器人** | 10 条/24 小时 | 每个微信号 | 连续发送 10 条后需用户主动发消息才能继续 |
 | **企业微信应用** | ~200 次/分钟 | 每个应用 | 与接收人数相关 |
@@ -159,9 +165,6 @@
 **latest镜像已支持amd/armv8架构**
 
 ### 点击下面任一按钮一键部署
-
-[![Deploy on Zeabur](./public/image/depoly_to_zeabur.svg)](https://zeabur.com/templates/GGBDF1?referralCode=nixingshiguang)
-没有免费资源了
 
 [![Deploy on Railway](./public/image/deploy_on_railway.svg)](https://railway.com/deploy/JbNI4y?referralCode=85Y1W5&utm_medium=integration&utm_source=template&utm_campaign=generic)
 
@@ -395,6 +398,7 @@ curl -X POST http://localhost:3000/api/push \
 | Bark | serverUrl, deviceKey (可选: group, sound, level, icon) |
 | Meow | nickname (可选: type) |
 | 企业微信应用 | corpid, corpsecret, agentid, touser (可选: type) |
+| 息知 | pushMode (single/channel), key 或 channelKey |
 
 > **微信龙虾机器人限制说明：** 机器人连续主动发送 10 条消息后，需用户主动发送一条消息才能继续推送；自用户上次主动发消息起 24 小时后，也需主动发消息才能继续推送。系统会在接近限额时自动在消息中提醒用户。
 
@@ -403,8 +407,8 @@ curl -X POST http://localhost:3000/api/push \
 后端 `.env` 配置：
 
 ```env
-NODE_ENV=development
-# JWT_SECRET=your-secret-key        # 可选，不设置则自动生成安全密钥
+NODE_ENV=development                # 可选
+JWT_SECRET=your-secret-key          # 可选，不设置则自动生成安全密钥
 JWT_ACCESS_EXPIRES_IN=15m           # 可选，默认 15 分钟
 JWT_REFRESH_EXPIRES_IN=7d           # 可选，默认 7 天
 DB_PATH=./data/push_service.db      # 可选

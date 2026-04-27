@@ -151,6 +151,14 @@ const initDatabase = async () => {
       // 字段已存在，忽略错误
     }
 
+    // 迁移：为已存在的推送记录表添加 endpoint_name 字段
+    try {
+      db.exec(`ALTER TABLE push_logs ADD COLUMN endpoint_name TEXT`);
+      logger.info('已为推送记录表添加 endpoint_name 字段');
+    } catch (e) {
+      // 字段已存在，忽略错误
+    }
+
     // 迁移：为已存在的接口表添加 inbound_config 字段
     try {
       db.exec(`ALTER TABLE endpoints ADD COLUMN inbound_config TEXT`);
@@ -163,6 +171,14 @@ const initDatabase = async () => {
     try {
       db.exec(`ALTER TABLE endpoints ADD COLUMN keyword_filter TEXT`);
       logger.info('已为接口表添加 keyword_filter 字段');
+    } catch (e) {
+      // 字段已存在，忽略错误
+    }
+
+    // 迁移：为已存在的接口表添加 do_not_disturb 字段（消息免打扰）
+    try {
+      db.exec(`ALTER TABLE endpoints ADD COLUMN do_not_disturb TEXT`);
+      logger.info('已为接口表添加 do_not_disturb 字段');
     } catch (e) {
       // 字段已存在，忽略错误
     }

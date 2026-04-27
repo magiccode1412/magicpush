@@ -31,3 +31,12 @@ export const getRegistrationSetting = () => {
 export const updateRegistrationSetting = (enabled) => {
   return request.put('/users/me/settings/registration', { enabled })
 }
+
+// 全局免打扰开关相关 API
+export const getDndGlobalSetting = () => {
+  return request.get('/users/me/settings/dnd-global')
+}
+
+export const updateDndGlobalSetting = (enabled) => {
+  return request.put('/users/me/settings/dnd-global', { enabled })
+}

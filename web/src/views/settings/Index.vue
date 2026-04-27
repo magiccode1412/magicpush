@@ -217,6 +217,32 @@
             />
           </div>
         </div>
+
+        <!-- 消息免打扰（全局开关） -->
+        <div v-if="isAdmin" class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6 hover:shadow-md hover:-translate-y-0.5 hover:border-blue-200 dark:hover:border-blue-800 transition-all duration-300">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-lg bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center">
+                <BellOff class="w-5 h-5 text-purple-600" />
+              </div>
+              <div>
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-white">消息免打扰</h3>
+                <p class="text-xs text-gray-500 dark:text-gray-400">
+                  {{ dndGlobalEnabled ? '已开启：各接口的免打扰配置将生效' : '已关闭：所有接口的免打扰配置不生效' }}
+                </p>
+              </div>
+            </div>
+            <el-switch
+              v-model="dndGlobalEnabled"
+              :loading="dndSaving"
+              @change="handleDndGlobalToggle"
+            />
+          </div>
+          <p class="text-xs text-gray-500 dark:text-gray-400 mt-3">
+            全局总开关。关闭后，即使接口配置了免打扰时间段也不会拦截推送。
+            各接口的具体时间段配置请在「接口管理」页面中设置。
+          </p>
+        </div>
       </div>
     </div>
 </template>
@@ -227,9 +253,9 @@ import { ElMessage, ElMessageBox } from 'element-plus'
 import { useAuthStore } from '@/stores/auth'
 import { useThemeStore } from '@/stores/theme'
 import { useSettingsStore } from '@/stores/settings'
-import { getCurrentUser, updateCurrentUser, changePassword, exportConfig, importConfig, getRegistrationSetting, updateRegistrationSetting } from '@/api/user'
+import { getCurrentUser, updateCurrentUser, changePassword, exportConfig, importConfig, getRegistrationSetting, updateRegistrationSetting, getDndGlobalSetting, updateDndGlobalSetting } from '@/api/user'
 import { fetchVersionFromServer } from '@/utils/version'
-import { User, Sun, Moon, Monitor, Download, Upload, Shield, Globe } from 'lucide-vue-next'
+import { User, Sun, Moon, Monitor, Download, Upload, Shield, Globe, BellOff } from 'lucide-vue-next'
 
 const authStore = useAuthStore()
 const themeStore = useThemeStore()
@@ -451,9 +477,49 @@ const handleFileChange = async (e) => {
   }
 }
 
+// 消息免打扰全局开关
+const dndGlobalEnabled = ref(false)
+const dndSaving = ref(false)
+
+const loadDndGlobalSetting = async () => {
+  if (!isAdmin.value) return
+  try {
+    const res = await getDndGlobalSetting()
+    if (res.success) {
+      dndGlobalEnabled.value = res.data.enabled
+    }
+  } catch (error) {
+    console.error('加载免打扰全局设置失败:', error)
+  }
+}
+
+const handleDndGlobalToggle = async (value) => {
+  if (!isAdmin.value) {
+    ElMessage.error('需要管理员权限')
+    return
+  }
+  dndSaving.value = true
+  try {
+    const res = await updateDndGlobalSetting(value)
+    if (res.success) {
+      ElMessage.success(value ? '已开启全局免打扰' : '已关闭全局免打扰')
+    } else {
+      // 恢复原值
+      dndGlobalEnabled.value = !value
+      ElMessage.error(res.message || '设置失败')
+    }
+  } catch (error) {
+    dndGlobalEnabled.value = !value
+    ElMessage.error('设置失败')
+  } finally {
+    dndSaving.value = false
+  }
+}
+
 onMounted(async () => {
   loadUserInfo()
   loadRegistrationSetting()
+  loadDndGlobalSetting()
   // 从服务器获取版本信息
   await fetchVersionFromServer()
 })
