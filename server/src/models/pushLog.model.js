@@ -49,6 +49,12 @@ class PushLogModel {
       params.push(options.endDate);
     }
 
+    if (options.keyword) {
+      sql += ' AND (title LIKE ? OR content LIKE ?)';
+      const kw = `%${options.keyword}%`;
+      params.push(kw, kw);
+    }
+
     // 获取总数
     const countStmt = db.prepare(sql.replace('SELECT *', 'SELECT COUNT(*) as total'));
     const { total } = countStmt.get(...params);

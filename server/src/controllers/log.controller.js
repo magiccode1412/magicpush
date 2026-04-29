@@ -20,6 +20,7 @@ class LogController {
         status: req.query.status,
         startDate: req.query.startDate,
         endDate: req.query.endDate,
+        keyword: req.query.keyword || undefined,
       };
 
       const logs = await LogService.getLogs(req.user.userId, options);
