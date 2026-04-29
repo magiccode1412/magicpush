@@ -1,7 +1,7 @@
 // 版本信息（默认值，成功从服务端获取后会被覆盖）
 export const VERSION = {
   name: 'MagicPush',
-  version: '',
+  version: '1.8.1',
   get displayName() {
     return this.name + (this.version ? ` v${this.version}` : '')
   },
