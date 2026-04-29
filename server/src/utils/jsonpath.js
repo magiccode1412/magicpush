@@ -63,15 +63,26 @@ function extractFields(source, mapping, defaults = {}) {
   // 处理映射规则
   if (mapping) {
     for (const [field, path] of Object.entries(mapping)) {
-      if (typeof path === 'string' && path.startsWith('$.')) {
-        // JSONPath 表达式
-        const value = getValue(source, path);
-        if (value !== undefined && value !== null) {
-          result[field] = value;
-        }
+      // 兼容 string 和 array 两种格式
+      const paths = Array.isArray(path) ? path : [path];
+
+      if (paths.length === 1 && typeof paths[0] === 'string' && !paths[0].startsWith('$.')) {
+        // 单个固定值（向后兼容）
+        result[field] = paths[0];
       } else {
-        // 固定值
-        result[field] = path;
+        // 多值 JSONPath 提取
+        const values = [];
+        for (const p of paths) {
+          if (typeof p === 'string' && p.startsWith('$.')) {
+            const value = getValue(source, p);
+            if (value !== undefined && value !== null) {
+              values.push(String(value));
+            }
+          }
+        }
+        if (values.length > 0) {
+          result[field] = values.join('\n');
+        }
       }
     }
   }

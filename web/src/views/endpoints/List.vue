@@ -299,17 +299,21 @@
           <div class="font-medium text-gray-900 dark:text-white mb-3">字段映射规则</div>
           <div class="space-y-4">
             <div>
-              <label class="text-xs text-gray-500 dark:text-gray-400 mb-1 block">标题字段 (JSONPath)</label>
+              <label class="text-xs text-gray-500 dark:text-gray-400 mb-1 block">标题字段 (JSONPath，支持多行多路径)</label>
               <el-input 
+                type="textarea"
+                :rows="2"
                 v-model="inboundForm.fieldMapping.title" 
-                placeholder="$.alerts[0].labels.alertname"
+                placeholder="每行一个 JSONPath，如：&#10;$.alerts[0].labels.alertname&#10;$.common.title"
               />
             </div>
             <div>
-              <label class="text-xs text-gray-500 dark:text-gray-400 mb-1 block">内容字段 (JSONPath)</label>
+              <label class="text-xs text-gray-500 dark:text-gray-400 mb-1 block">内容字段 (JSONPath，支持多行多路径)</label>
               <el-input 
+                type="textarea"
+                :rows="2"
                 v-model="inboundForm.fieldMapping.content" 
-                placeholder="$.alerts[0].annotations.message"
+                placeholder="每行一个 JSONPath，如：&#10;$.alerts[0].annotations.message&#10;$.body"
               />
             </div>
             <div>
@@ -985,9 +989,11 @@ const openInboundConfig = (endpoint) => {
   // 重置表单
   inboundForm.enabled = endpoint.inbound_config?.enabled || false
   inboundForm.sourceType = endpoint.inbound_config?.sourceType || 'generic'
+  // 回显 fieldMapping：兼容 array 格式（join 为换行分隔的字符串）
+  const rawMapping = endpoint.inbound_config?.fieldMapping || {}
   inboundForm.fieldMapping = {
-    title: endpoint.inbound_config?.fieldMapping?.title || '',
-    content: endpoint.inbound_config?.fieldMapping?.content || '',
+    title: Array.isArray(rawMapping.title) ? rawMapping.title.join('\n') : (rawMapping.title || ''),
+    content: Array.isArray(rawMapping.content) ? rawMapping.content.join('\n') : (rawMapping.content || ''),
   }
   inboundForm.defaultValues = {
     type: endpoint.inbound_config?.defaultValues?.type || 'text',
@@ -1011,10 +1017,21 @@ const saveInboundConfig = async () => {
   
   inboundSaving.value = true
   try {
+    // 将多行字符串转为数组格式提交（向后兼容单值场景）
+    const mappingToArray = (val) => {
+      if (!val) return ''
+      if (Array.isArray(val)) return val
+      const lines = val.split('\n').map(s => s.trim()).filter(s => s)
+      return lines.length <= 1 ? (lines[0] || '') : lines
+    }
+    
     const config = inboundForm.enabled ? {
       enabled: true,
       sourceType: inboundForm.sourceType,
-      fieldMapping: inboundForm.fieldMapping,
+      fieldMapping: {
+        title: mappingToArray(inboundForm.fieldMapping.title),
+        content: mappingToArray(inboundForm.fieldMapping.content),
+      },
       defaultValues: inboundForm.defaultValues,
     } : { enabled: false }
     
