@@ -1,9 +1,9 @@
-// 版本信息
+// 版本信息（默认值，成功从服务端获取后会被覆盖）
 export const VERSION = {
   name: 'MagicPush',
-  version: '1.8.0',
+  version: '',
   get displayName() {
-    return `${this.name} v${this.version}`
+    return this.name + (this.version ? ` v${this.version}` : '')
   },
   get shortVersion() {
     const parts = this.version.split('.')
