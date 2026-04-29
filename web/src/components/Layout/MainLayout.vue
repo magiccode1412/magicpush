@@ -65,9 +65,11 @@
           </div>
 
           <div class="flex items-center justify-between px-2">
-            <span class="text-xs text-gray-500 dark:text-gray-400">
-              {{ VERSION.displayName }}
-            </span>
+            <el-badge :value="''" :hidden="!hasRemoteUpdate" :max="99" class="cursor-pointer" @click="handleCheckUpdate">
+              <span class="text-xs text-gray-500 dark:text-gray-400 hover:text-blue-500 transition-colors">
+                {{ VERSION.displayName }}
+              </span>
+            </el-badge>
             <div class="flex items-center gap-1">
               <button
                 @click="themeStore.toggleTheme"
@@ -116,6 +118,7 @@
       <VersionUpdateDialog
         v-model:visible="showUpdateDialog"
         :latest-changelog="latestChangelog"
+        :remote-version="currentRemoteVersion"
       />
     </div>
   </div>
@@ -126,7 +129,8 @@ import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { useThemeStore } from '@/stores/theme'
-import { VERSION, fetchVersionFromServer } from '@/utils/version'
+import { ElMessage } from 'element-plus'
+import { VERSION, fetchVersionFromServer, checkRemoteVersion } from '@/utils/version'
 import VersionUpdateDialog from '@/components/VersionUpdateDialog.vue'
 import {
   Bell,
@@ -156,6 +160,29 @@ const themeStore = useThemeStore()
 const isMobileMenuOpen = ref(false)
 const showUpdateDialog = ref(false)
 const latestChangelog = ref(null)
+const hasRemoteUpdate = ref(false)
+const checkingUpdate = ref(false)
+const currentRemoteVersion = ref('')
+
+// 手动检查更新
+const handleCheckUpdate = async () => {
+  checkingUpdate.value = true
+  const result = await checkRemoteVersion(true) // 强制刷新
+  checkingUpdate.value = false
+
+  if (!result) {
+    ElMessage.warning('无法获取远程版本信息，请检查网络')
+    return
+  }
+
+  if (result.hasUpdate) {
+    latestChangelog.value = result.latestChangelog
+    currentRemoteVersion.value = result.remoteVersion
+    showUpdateDialog.value = true
+  } else {
+    ElMessage.success(`当前已是最新版本 (${VERSION.version})`)
+  }
+}
 
 // 版本更新检测
 onMounted(async () => {
@@ -166,10 +193,25 @@ onMounted(async () => {
   const lastSeenVersion = localStorage.getItem('mp_last_seen_version')
   // 首次访问或版本号发生变化，显示更新弹窗
   if (lastSeenVersion !== currentVersion) {
-    // 取最新一条 changelog
+    // 取最新一条 changelog（本地版本升级场景）
     latestChangelog.value = versionData.changelog[0]
+    currentRemoteVersion.value = '' // 本地升级，非远程新版
     showUpdateDialog.value = true
     localStorage.setItem('mp_last_seen_version', currentVersion)
+  }
+
+  // 静默检测远程是否有新版
+  const remoteResult = await checkRemoteVersion(false)
+  if (remoteResult?.hasUpdate) {
+    hasRemoteUpdate.value = true
+    // 仅对该远程版本通知一次
+    const lastNotifiedRemote = localStorage.getItem('mp_last_remote_version')
+    if (lastNotifiedRemote !== remoteResult.remoteVersion) {
+      latestChangelog.value = remoteResult.latestChangelog
+      currentRemoteVersion.value = remoteResult.remoteVersion
+      showUpdateDialog.value = true
+      localStorage.setItem('mp_last_remote_version', remoteResult.remoteVersion)
+    }
   }
 })
 
