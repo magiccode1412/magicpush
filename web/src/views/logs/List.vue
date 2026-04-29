@@ -63,7 +63,15 @@
           clearable
           class="w-52"
           @keyup.enter="handleFilter"
-        />
+        >
+          <template #prepend>
+            <el-select v-model="filter.keywordScope" class="w-28">
+              <el-option label="全部" value="all" />
+              <el-option label="标题" value="title" />
+              <el-option label="内容" value="content" />
+            </el-select>
+          </template>
+        </el-input>
 
         <el-button type="primary" @click="handleFilter">
           <Search class="w-4 h-4 mr-1" />
@@ -232,6 +240,7 @@ const filter = reactive({
   channelType: '',
   dateRange: null,
   keyword: '',
+  keywordScope: 'all',
 })
 
 const pagination = reactive({
@@ -272,6 +281,7 @@ const loadData = async () => {
 
     if (filter.keyword) {
       params.keyword = filter.keyword.trim()
+      params.keywordScope = filter.keywordScope || 'all'
     }
 
     const [logsRes, statsRes, typesRes] = await Promise.all([
@@ -319,6 +329,7 @@ const resetFilter = () => {
   filter.channelType = ''
   filter.dateRange = null
   filter.keyword = ''
+  filter.keywordScope = 'all'
   pagination.page = 1
   loadData()
 }
