@@ -102,6 +102,18 @@ class WecomChannel extends BaseChannel {
         placeholder: '请输入企业微信机器人Key或完整Webhook地址',
         description: '在企业微信群中添加机器人后获取的Key，支持直接粘贴完整Webhook地址',
       },
+      {
+        name: '_docLinks',
+        label: '官方文档',
+        type: 'links',
+        required: false,
+        links: [
+          {
+            label: '查看企业微信群机器人创建指南',
+            url: 'https://developer.work.weixin.qq.com/document/path/99110',
+          },
+        ],
+      },
     ];
   }
 }

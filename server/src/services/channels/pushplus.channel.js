@@ -88,6 +88,18 @@ class PushPlusChannel extends BaseChannel {
         placeholder: '请输入群组编码（可选）',
         description: '群组编码，用于群推消息',
       },
+      {
+        name: '_docLinks',
+        label: '官方文档',
+        type: 'links',
+        required: false,
+        links: [
+          {
+            label: '访问 PushPlus 官网获取 Token',
+            url: 'https://www.pushplus.plus/',
+          },
+        ],
+      },
     ];
   }
 }

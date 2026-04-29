@@ -205,6 +205,18 @@ class BarkChannel extends BaseChannel {
         placeholder: '如 https://example.com/icon.png',
         description: '自定义通知图标 URL（仅 iOS 15+ 支持）',
       },
+      {
+        name: '_docLinks',
+        label: '官方网站',
+        type: 'links',
+        required: false,
+        links: [
+          {
+            label: '访问 Bark 官网',
+            url: 'https://bark.day.app/',
+          },
+        ],
+      },
     ];
   }
 }
