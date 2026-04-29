@@ -30,7 +30,11 @@ class InboundService {
         const userMapping = mapping || {};
         const filteredUserMapping = {};
         for (const [key, value] of Object.entries(userMapping)) {
-          if (value !== '' && value !== null && value !== undefined) {
+          // 兼容 string 和 array：空字符串、空数组、null/undefined 均视为未配置
+          const isEmpty = value === '' || value === null || value === undefined
+            || (Array.isArray(value) && value.length === 0)
+            || (Array.isArray(value) && value.length === 1 && value[0] === '');
+          if (!isEmpty) {
             filteredUserMapping[key] = value;
           }
         }

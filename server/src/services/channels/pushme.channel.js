@@ -149,6 +149,18 @@ class PushMeChannel extends BaseChannel {
         placeholder: '临时推送密钥，仅用于测试',
         description: '临时密钥，仅支持官方服务，方便快速测试。正式使用请配置 Push Key',
       },
+      {
+        name: '_docLinks',
+        label: '官方网站',
+        type: 'links',
+        required: false,
+        links: [
+          {
+            label: '访问 PushMe 官网',
+            url: 'https://push.i-i.me/',
+          },
+        ],
+      },
     ];
   }
 }

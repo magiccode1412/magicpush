@@ -2,7 +2,7 @@
   <el-dialog
     :model-value="visible"
     @update:model-value="$emit('update:visible', $event)"
-    title="版本更新"
+    :title="isRemoteUpdate ? '发现新版本' : '版本更新'"
     width="520px"
     :close-on-click-modal="false"
     class="version-update-dialog"
@@ -15,7 +15,20 @@
         </div>
         <div class="version-info">
           <h3 class="version-title">{{ displayName }}</h3>
-          <p class="version-subtitle">快来看看更新了什么吧！</p>
+          <p class="version-subtitle">{{ isRemoteUpdate ? '发现新版本可用，快来看看吧！' : '快来看看更新了什么吧！' }}</p>
+        </div>
+      </div>
+
+      <!-- 当前/远程版本对比 -->
+      <div v-if="isRemoteUpdate && remoteVersion" class="version-compare">
+        <div class="compare-row">
+          <span class="compare-label">当前版本</span>
+          <el-tag size="small" type="info">{{ currentVersion }}</el-tag>
+        </div>
+        <div class="compare-arrow"><ArrowDown class="w-4 h-4" /></div>
+        <div class="compare-row">
+          <span class="compare-label">最新版本</span>
+          <el-tag size="small" type="success">{{ remoteVersion }}</el-tag>
         </div>
       </div>
 
@@ -44,6 +57,10 @@
     <template #footer>
       <div class="dialog-footer">
         <el-button @click="$emit('update:visible', false)">关闭</el-button>
+        <el-button v-if="isRemoteUpdate" type="primary" @click="handleGoToRelease">
+          <ExternalLink class="w-4 h-4 mr-1" />
+          前往查看 Release
+        </el-button>
         <el-button type="primary" @click="handleViewFullLog">
           <FileText class="w-4 h-4 mr-1" />
           查看完整日志
@@ -56,7 +73,8 @@
 <script setup>
 import { computed } from 'vue'
 import { useRouter } from 'vue-router'
-import { Sparkles, FileText } from 'lucide-vue-next'
+import { ArrowDown, ExternalLink, FileText } from 'lucide-vue-next'
+import { VERSION } from '@/utils/version'
 
 const props = defineProps({
   visible: {
@@ -67,11 +85,18 @@ const props = defineProps({
     type: Object,
     default: null,
   },
+  remoteVersion: {
+    type: String,
+    default: '',
+  },
 })
 
 const emit = defineEmits(['update:visible'])
 
 const router = useRouter()
+
+const currentVersion = computed(() => VERSION.version)
+const isRemoteUpdate = computed(() => !!props.remoteVersion)
 
 const displayName = computed(() => {
   if (!props.latestChangelog) return ''
@@ -81,6 +106,10 @@ const displayName = computed(() => {
 const handleViewFullLog = () => {
   emit('update:visible', false)
   router.push('/changelog')
+}
+
+const handleGoToRelease = () => {
+  window.open('https://github.com/magiccode1412/magicpush/releases', '_blank')
 }
 </script>
 

@@ -1,7 +1,7 @@
 {
   "name": "magicpush-web",
   "private": true,
-  "version": "1.8.0",
+  "version": "1.8.1",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -21,7 +21,7 @@
   "devDependencies": {
     "@vitejs/plugin-vue": "^5.0.4",
     "autoprefixer": "^10.4.20",
-    "postcss": "^8.4.38",
+    "postcss": "^8.5.12",
     "tailwind-merge": "^2.5.5",
     "tailwindcss": "^3.4.3",
     "tailwindcss-animate": "^1.0.7",

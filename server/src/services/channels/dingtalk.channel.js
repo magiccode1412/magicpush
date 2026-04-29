@@ -122,6 +122,18 @@ class DingtalkChannel extends BaseChannel {
         placeholder: '如有加签请输入Secret',
         description: '安全设置选择"加签"时的密钥',
       },
+      {
+        name: '_docLinks',
+        label: '官方文档',
+        type: 'links',
+        required: false,
+        links: [
+          {
+            label: '查看钉钉机器人创建指南',
+            url: 'https://open.dingtalk.com/document/dingstart/webhook-robot',
+          },
+        ],
+      },
     ];
   }
 }

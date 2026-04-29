@@ -1,5 +1,5 @@
 appname               = magicpush
-version               = 1.7.2
+version               = 1.8.1
 display_name          = 魔法推送
 desc                  = """一个支持多种消息渠道的统一推送服务管理平台，通过标准化的REST API接口实现消息推送
 支持渠道：微信龙虾机器人、企业微信、钉钉、飞书、Telegram、微信公众号、WxPusher、PushPlus、Server酱、Webhook等
@@ -12,8 +12,20 @@ maintainer_url        = https://github.com/magiccode1412
 desktop_uidir         = ui
 desktop_applaunchname = magicpush.Application
 service_port          = "${wizard_app_port}"
-changelog             = """1. 增加限流开关功能
-2. 添加基于版本号的镜像
-3. 实现接口关键词过滤功能
-4. 数据导入导出功能补充必要字段
+changelog             = """1. 入站配置支持字段映射多路径配置，每行一个
+2. 推送记录添加关键字筛选条件
+3. 新增远程版本检测功能，方便用户感知更新
+4. 部分渠道添加推送渠道官方文档链接
+5. 新增免打扰功能
+6. 推送记录新增接口字段
+7. 新增通知渠道——息知
+8. 增加限流开关功能
+9. 添加基于版本号的镜像
+10. 实现接口关键词过滤功能
+11. 数据导入导出功能补充必要字段
+12. 微信龙虾机器人增加对markdown支持（标题、超链接、列表、引用文本、粗体、删除线、行内代码、代码块、表格）
+13. 新增PushMe推送渠道
+14. 移除移动端顶部空白导航栏
+15. Server酱渠道增加支持V3版本
+16. WxPusher渠道支持极简推送
 """

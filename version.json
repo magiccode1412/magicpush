@@ -1,6 +1,6 @@
 {
   "name": "magicpush",
-  "version": "1.8.0",
+  "version": "1.8.1",
   "displayName": "MagicPush",
   "description": "支持多渠道消息推送的统一管理平台",
   "repository": {
@@ -8,6 +8,17 @@
     "url": "https://github.com/magiccode1412/magicpush"
   },
   "changelog": [
+    {
+      "version": "1.8.1",
+      "date": "2026-04-29",
+      "type": "release",
+      "changes": [
+        "接口管理：入站配置支持字段映射多路径配置，每行一个",
+        "推送记录：添加关键字筛选条件",
+        "新增远程版本检测功能（远程版本信息来自项目仓库的version.json文件），方便用户感知更新",
+        "部分渠道添加推送渠道官方文档链接"
+      ]
+    },
     {
       "version": "1.8.0",
       "date": "2026-04-27",

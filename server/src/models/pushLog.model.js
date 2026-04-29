@@ -49,6 +49,22 @@ class PushLogModel {
       params.push(options.endDate);
     }
 
+    if (options.keyword) {
+      const kw = `%${options.keyword}%`;
+      const scope = options.keywordScope || 'all';
+      if (scope === 'title') {
+        sql += ' AND title LIKE ?';
+        params.push(kw);
+      } else if (scope === 'content') {
+        sql += ' AND content LIKE ?';
+        params.push(kw);
+      } else {
+        // 默认：同时搜索 title 和 content
+        sql += ' AND (title LIKE ? OR content LIKE ?)';
+        params.push(kw, kw);
+      }
+    }
+
     // 获取总数
     const countStmt = db.prepare(sql.replace('SELECT *', 'SELECT COUNT(*) as total'));
     const { total } = countStmt.get(...params);

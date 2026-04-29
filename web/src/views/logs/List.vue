@@ -57,6 +57,22 @@
           value-format="YYYY-MM-DD"
         />
 
+        <el-input
+          v-model="filter.keyword"
+          placeholder="搜索标题或内容关键字"
+          clearable
+          class="w-52"
+          @keyup.enter="handleFilter"
+        >
+          <template #prepend>
+            <el-select v-model="filter.keywordScope" class="w-28">
+              <el-option label="全部" value="all" />
+              <el-option label="标题" value="title" />
+              <el-option label="内容" value="content" />
+            </el-select>
+          </template>
+        </el-input>
+
         <el-button type="primary" @click="handleFilter">
           <Search class="w-4 h-4 mr-1" />
           筛选
@@ -223,6 +239,8 @@ const filter = reactive({
   status: '',
   channelType: '',
   dateRange: null,
+  keyword: '',
+  keywordScope: 'all',
 })
 
 const pagination = reactive({
@@ -259,6 +277,11 @@ const loadData = async () => {
     if (filter.dateRange && filter.dateRange.length === 2) {
       params.startDate = filter.dateRange[0]
       params.endDate = filter.dateRange[1]
+    }
+
+    if (filter.keyword) {
+      params.keyword = filter.keyword.trim()
+      params.keywordScope = filter.keywordScope || 'all'
     }
 
     const [logsRes, statsRes, typesRes] = await Promise.all([
@@ -305,6 +328,8 @@ const resetFilter = () => {
   filter.status = ''
   filter.channelType = ''
   filter.dateRange = null
+  filter.keyword = ''
+  filter.keywordScope = 'all'
   pagination.page = 1
   loadData()
 }

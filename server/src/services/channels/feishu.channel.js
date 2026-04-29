@@ -130,6 +130,18 @@ class FeishuChannel extends BaseChannel {
         placeholder: '如有签名校验请输入Secret',
         description: '启用签名校验时的密钥',
       },
+      {
+        name: '_docLinks',
+        label: '官方文档',
+        type: 'links',
+        required: false,
+        links: [
+          {
+            label: '查看飞书机器人创建指南',
+            url: 'https://open.feishu.cn/document/client-docs/bot-v3/bot-overview',
+          },
+        ],
+      },
     ];
   }
 }
