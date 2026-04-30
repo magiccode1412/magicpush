@@ -142,6 +142,8 @@ main:
               - latest-linux-amd64
               - latest-linux-arm64
             type: docker
+        - name: update jsdelivr cache
+          script: curl -s "https://purge.jsdelivr.net/gh/magiccode1412/magicpush@main/version.json"
 
 dev:
   web_trigger_docker_dev:
