@@ -14,6 +14,7 @@ const logger = require('./utils/logger');
 require('console');
 require('./models');
 const clawbotMonitor = require('./services/clawbot/clawbot-monitor');
+const yuanbaobotMonitor = require('./services/yuanbaobot/yuanbaobot-monitor');
 
 // 确保日志目录存在
 const logsDir = path.join(__dirname, '../logs');
@@ -108,6 +109,9 @@ app.listen(PORT, () => {
 
   // 启动 ClawBot 长轮询监控（自动获取 context_token）
   clawbotMonitor.start();
+
+  // 启动元宝 Bot WS 连接监控
+  yuanbaobotMonitor.start();
 });
 
 // ── 内存监控 ──────────────────────────────────────────────────

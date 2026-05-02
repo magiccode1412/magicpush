@@ -10,6 +10,7 @@ const pushRoutes = require('./push.routes');
 const inboundRoutes = require('./inbound.routes');
 const logRoutes = require('./log.routes');
 const adminRoutes = require('./admin.routes');
+const yuanbaobotRoutes = require('./yuanbaobot.routes');
 const authenticate = require('../middleware/auth.middleware');
 const { healthLimiter } = require('../middleware/rateLimit.middleware');
 const logger = require('../utils/logger');
@@ -87,5 +88,8 @@ router.use('/logs', logRoutes);
 
 // 管理员路由（需要认证）
 router.use('/admin', authenticate, adminRoutes);
+
+// 元宝 Bot 路由
+router.use('/yuanbaobot', yuanbaobotRoutes);
 
 module.exports = router;

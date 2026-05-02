@@ -1,710 +1,423 @@
-# 腾讯元宝 Bot 接入 MagicPush 通知渠道 - 技术调研报告
+# 腾讯元宝 Bot 接入 MagicPush 通知渠道 - 开发进度报告
 
-> 调研日期: 2026-05-01
-> 目标: 将腾讯元宝 Bot 作为新的通知渠道接入 MagicPush 平台
-
----
-
-## 一、核心发现
-
-**腾讯元宝 Bot** 是腾讯官方推出的 AI 助手平台，已提供 OpenClaw 官方插件（`Tencent/yuanbao-openclaw-plugin`），采用 **WebSocket + Protobuf** 协议通信。
-
-### 官方资源
-- **GitHub 仓库**: https://github.com/Tencent/yuanbao-openclaw-plugin
-- **OpenClaw 要求**: 版本 2026.4.10 或以上
-- **协议**: WebSocket 长连接 + Protobuf 二进制
-- **状态**: production-ready（支持私聊 + 群聊）
+> 最后更新: 2026-05-02
+> 状态: **后端核心已完成，正在联调签名认证 (code=10097 已修复待验证)**
 
 ---
 
-## 二、技术架构对比
+## 一、当前开发进度总览
 
-| 特性 | 微信龙虾机器人 (现有) | 腾讯元宝 Bot (新增) |
-|------|---------------------|-------------------|
-| **通信协议** | HTTP REST API | WebSocket 长连接 |
-| **认证方式** | 扫码绑定获取 Token | appKey + appSecret |
-| **消息格式** | JSON | Protobuf 二进制 |
-| **连接模式** | 无状态请求 | 有状态长连接 + 心跳 |
-| **推送限制** | 10条/24小时 | 未发现明确限制 |
-| **支持消息类型** | 文本 | 文本/图片/文件/音频/视频/贴纸 |
-| **双向通信** | 仅发送 + 长轮询接收 | 全双工通信 |
+### 已完成 (Phase 1 核心链路 + 部分 Phase 2)
 
----
+| 模块 | 文件 | 行数 | 状态 | 说明 |
+|------|------|------|------|------|
+| Protobuf 编解码 | `services/yuabaobot/proto-codec.js` | ~410 | 完成 | 基于 protobufjs，完整覆盖 ConnMsg/AuthBind/Ping/C2C/InboundMessage |
+| Token 签名认证 | `services/yuabaobot/auth.js` | ~204 | 完成 | HMAC-SHA256 签名、token 缓存池、防并发重复请求 |
+| WebSocket 客户端 | `services/yuabaobot/ws-client.js` | ~617 | 完成 | 连接/认证/心跳/重连/消息收发 全流程 |
+| 监控服务(单例) | `services/yuabaobot/yuabaobot-monitor.js` | ~227 | 完成 | 渠道生命周期管理、入站握手绑定、appKey 复用连接 |
+| 渠道适配器 | `services/channels/yuabaobot.channel.js` | ~164 | 完成 | 继承 BaseChannel，实现 send/validate/test/getConfigFields |
+| API 控制器 | `controllers/yuabaobot.controller.js` | ~99 | 完成 | 绑定状态查询 / 重试绑定 |
+| API 路由 | `routes/yuabaobot.routes.js` | ~15 | 完成 | GET status / POST retry |
+| 渠道注册 | `services/channels/index.js` | 修改 | 完成 | 注册 yuanbaobot: yuabaobotChannel 映射 |
+| 验证中间件白名单 | `middleware/validator.middleware.js:67` | 修改 | 完成 | .isIn() 加入 'yuanbaobot' |
+| 创建渠道自动触发 WS | `services/channel.service.js:63-71` | 修改 | 完成 | createChannel 后立即 addChannel() |
+| 应用启动入口 | `src/app.js:17,114` | 修改 | 完成 | 引入并启动 yuabaobotMonitor.start() |
+| 路由挂载 | `src/routes/index.js:13,93` | 修改 | 完成 | 挂载 /api/yuabaobot 路由 |
 
-## 三、元宝 Bot 核心技术细节
+### 当前问题（已修复待验证）
 
-### 3.1 认证配置
+**问题**: 签名接口返回 `code=10097`
+**根因**: 两处与官方实现不一致
+1. **时间戳格式**: 原来带毫秒 (`...55.631+08:00`) -> 已修复为去掉毫秒 (`...55+08:00`)
+2. **请求头缺失**: 原来只有 `Content-Type` -> 已补齐 `X-AppVersion`, `X-OperationSystem`, `X-Instance-Id`, `X-Bot-Version`
 
-```javascript
-{
-  channels: {
-    yuanbao: {
-      appKey: "your_app_key",        // 从元宝应用创建机器人获取
-      appSecret: "your_app_secret",  // 应用密钥
-    }
-  }
-}
-```
+**修复位置**: `services/yuabaobot/auth.js`
+- 第 37-40 行: `beijingISODate()` 增加 `.replace(/\.\d{3}/, '')`
+- 第 138-143 行: POST headers 增加 4 个 X-* 身份标识头
+- 新增第 9 行: `OPENCLAW_INSTANCE_ID = 16`
+- 新增第 14-21 行: `getOS()` 工具函数
 
-**Token 格式**: `appKey:appSecret`（冒号分隔）
-
-**获取方式**:
-1. 打开腾讯元宝 App
-2. 进入应用设置/机器人管理
-3. 创建新机器人
-4. 获取 App Key 和 App Secret
-
-### 3.2 WebSocket 连接流程
-
-```
-┌─────────┐     ┌──────────┐     ┌──────────────┐
-│  Client  │     │ Gateway  │     │ Yuanbao Server│
-└────┬─────┘     └────┬─────┘     └──────┬───────┘
-     │                │                  │
-     │── 1. WebSocket Connect ──────────▶ │
-     │                │                  │
-     │◀── Connection Established ─────── │
-     │                │                  │
-     │── 2. AuthBind (appKey+token) ───▶│
-     │    { bizId, uid, source, token }  │
-     │                │                  │
-     │◀── AuthBindRsp { connectId } ────│
-     │                │                  │
-     │── 3. Start Heartbeat (5s) ──────▶│
-     │                │                  │
-     │◀── PingRsp { heartInterval } ────│   ← 循环心跳
-     │                │                  │
-     │── 4. SendC2CMessage ────────────▶│   → 业务消息
-     │◀── SendMessageRsp ──────────────│
-     │                │                  │
-     │◀── PushMsg (cmdType=2) ─────────│   ← 接收消息
-     │                │                  │
-```
-
-### 3.3 关键技术参数
-
-```javascript
-// 连接配置
-const CONFIG = {
-  // 心跳
-  HEARTBEAT_INTERVAL_FIRST: 5_000,      // 首次心跳延迟: 5秒
-  HEARTBEAT_TIMEOUT_THRESHOLD: 2,       // 连续2次未收到ACK触发重连
-
-  // 重连策略
-  RECONNECT_DELAYS: [1_000, 2_000, 5_000, 10_000, 30_000, 60_000],
-  MAX_RECONNECT_ATTEMPTS: 100,          // 最大重连次数
-
-  // 消息
-  SEND_TIMEOUT_MS: 30_000,              // 发送超时: 30秒
-  MAX_MESSAGE_CHARS: 3000,              // 单条消息最大字符数
-
-  // 不可重连的错误码
-  NO_RECONNECT_CODES: [4012, 4013, 4014, 4018, 4019, 4021],
-  // 4012: 版本封禁
-  // 4013: 用户封禁
-  // 4014: 同账号冲突
-  // 4018: 账号封禁
-  // 4019: 账号已删除
-  // 4021: 设备移除
-
-  // 认证失败码
-  AUTH_FAILED_CODES: [41103, 41104, 41108],
-  AUTH_ALREADY_CODE: 41101,             // 已认证成功码
-};
-```
-
-### 3.4 消息发送方式
-
-#### 私聊消息 (C2C)
-```typescript
-// 发送私聊消息
-client.sendC2CMessage({
-  to_account: "user_id",
-  msg_body: {
-    text: "消息内容"
-    // 可选: 图片、文件等多媒体内容
-  }
-});
-
-// 响应结构
-{
-  msgId: "uuid",
-  code: 0,           // 0=成功
-  message: ""        // 错误信息
-}
-```
-
-#### 群聊消息
-```typescript
-// 发送群聊消息
-client.sendGroupMessage({
-  group_code: "group_id",
-  msg_body: {
-    text: "群消息内容"
-  }
-});
-```
-
-### 3.5 Protobuf 协议结构
-
-#### 连接层消息 (ConnMsg)
-```
-ConnMsg:
-├── head (PBHead)                    [必填]
-│   ├── version: uint32              # 协议版本
-│   ├── seqNo: uint32                # 序列号
-│   ├── cmdType: uint32              # 0=请求 / 1=响应 / 2=推送 / 3=确认
-│   ├── cmd: uint32                  # 命令类型 (见 CMD 枚举)
-│   ├── msgId: string                # 消息ID (UUID去横杠)
-│   ├── status: uint32               # 状态码 (0=成功)
-│   └── needAck: bool               # 是否需要ACK
-└── data: bytes                      # Protobuf 编码的业务数据
-```
-
-#### 命令枚举 (CMD)
-```javascript
-const CMD = {
-  AuthBind: 1,         // 认证绑定
-  Ping: 2,             // 心跳
-  Kickout: 3,          // 踢出通知
-};
-
-const BIZ_CMD = {
-  SendC2CMessage: "send_c2c_message",        // 发送私聊消息
-  SendGroupMessage: "send_group_message",    // 发送群聊消息
-  QueryGroupInfo: "query_group_info",        // 查询群信息
-  GetGroupMemberList: "get_group_member_list", // 获取成员列表
-  SendPrivateHeartbeat: "send_private_heartbeat", // 私聊心跳
-  SendGroupHeartbeat: "send_group_heartbeat",    // 群聊心跳
-  SyncInformation: "sync_information",          // 同步命令列表
-};
-
-const BIZ_MODULE = "yuanbao_openclaw_proxy";  // 固定模块名
-```
-
-#### 认证请求 (AuthBindReq)
-```
-AuthBindReq:
-├── bizId: string          # 业务ID (从appKey派生)
-├── uid: string            # 用户ID
-├── source: string         # 来源标识
-├── token: string          # 签名后的token
-├── msgId: string          # 消息ID
-├── routeEnv: string       # 路由环境
-├── appVersion: string     # 插件版本
-├── operationSystem: string # 操作系统
-└── botVersion: string     # Bot版本
-```
-
-#### 认证响应 (AuthBindRsp)
-```
-AuthBindRsp:
-├── code: number           # 0=成功, 41101=已认证, 其他=失败
-├── message: string        # 错误信息
-├── connectId: string      # 连接ID (用于日志追踪)
-├── timestamp: number/string # 时间戳
-└── clientIp: string       # 客户端IP
-```
-
-#### 心跳请求/响应
-```
-PingReq:
-└── (空或时间戳)
-
-PingRsp:
-└── heartInterval: number  # 下次心跳间隔(秒), >1时更新本地间隔
-```
-
-#### 推送消息 (PushMsg)
-```
-PushMsg:
-├── cmd: string            # 推送命令
-├── module: string         # 模块名
-├── msgId: string          # 消息ID
-└── data: bytes            # 实际消息数据 (需二次解码)
-
-DirectedPush:              // 简化版推送
-├── type: number           # 类型
-└── content: string        # 内容文本
-```
-
-#### 踢出通知 (KickoutMsg)
-```
-KickoutMsg:
-├── status: number         # 状态码
-├── reason: string         # 原因
-└── otherDeviceName: string # 其他设备名
-```
-
-### 3.6 支持的消息类型
-
-#### 接收消息 ✅
-- ✅ 文本消息
-- ✅ 图片
-- ✅ 文件
-- ✅ 音频/语音
-- ✅ 视频
-- ✅ 贴纸/自定义表情
-- ✅ 自定义元素（链接卡片等）
-
-#### 发送消息 ✅
-- ✅ 文本（支持 Markdown）
-- ✅ 图片
-- ✅ 文件
-- ✅ 音频
-- ✅ 视频
-- ✅ 贴纸
+**验证方式**: 重启服务，观察日志中 `[yuanbaobot-auth] 签名响应 code=` 是否变为 0
 
 ---
 
-## 四、与现有 MagicPush 架构集成方案
+## 二、架构设计（已落地）
 
-### 4.1 现有龙虾机器人架构回顾
-
-```
-核心文件位置:
-├── server/src/services/clawbot/
-│   ├── ilink-client.js           # HTTP客户端 (微信ilink API)
-│   └── clawbot-monitor.js        # 长轮询监控服务
-├── server/src/services/channels/
-│   ├── wechatclawbot.channel.js  # 渠道适配器 (继承BaseChannel)
-│   └── index.js                  # 渠道注册中心
-├── server/src/controllers/
-│   └── clawbot.controller.js     # 绑定流程控制器
-├── server/src/routes/
-│   └── clawbot.routes.js         # 绑定专用路由
-└── web/src/components/
-    └── ClawbotBindDialog.vue     # 前端扫码绑定组件
-```
-
-**BaseChannel 基类接口**:
-```javascript
-class BaseChannel {
-  constructor(config);
-  async send(message);           // 子类实现: 发送消息
-  validate(config);              // 子类实现: 验证配置
-  async test();                  // 子类实现: 测试连接
-  static getName();              // 子类实现: 返回渠道名称
-  static getDescription();       // 返回描述文字
-  static getConfigFields();      // 返回配置字段列表 (动态表单)
-}
-```
-
-### 4.2 元宝 Bot 渠道架构设计
+### 2.1 文件结构（全部已创建）
 
 ```
-新建文件结构:
-├── server/src/services/
+server/src/
+├── app.py                                    # [改] 启动时加载 yuabaobotMonitor
+├── middleware/
+│   └── validator.middleware.js               # [改] 白名单加入 yuanbaobot
+├── routes/
+│   ├── index.js                              # [改] 挂载 yuabaobot routes
+│   └── yuabaobot.routes.js                     # [新] GET status / POST retry
+├── controllers/
+│   └── yuabaobot.controller.py                 # [新] 绑定状态/重试控制器
+├── services/
+│   ├── channel.service.py                    # [改] createChannel 自动触发 WS
 │   ├── channels/
-│   │   ├── yuanbot.channel.js       # 渠道适配器 (继承BaseChannel)
-│   │   └── index.js                 # 注册: yuanbot: YuanbotChannel
-│   └── yuanbot/
-│       ├── ws-client.js            # WebSocket客户端封装
-│       ├── proto-codec.js          # Protobuf编解码器
-│       ├── auth.js                 # Token签名和认证逻辑
-│       └── yuanbot-monitor.js      # 连接监控和生命周期管理
-├── server/src/controllers/
-│   └── yuanbot.controller.js       # 配置和测试控制器
-├── server/src/routes/
-│   └── yuanbot.routes.js           # API路由定义
-└── web/src/components/
-    └── YuanbotConfigDialog.vue     # 配置弹窗组件
+│   │   ├── index.js                          # [改] 注册 yuabaobotChannel
+│   │   └── yuabaobot.channel.js                # [新] 渠道适配器
+│   └── yuabaobot/
+│       ├── proto-codec.js                    # [新] Protobuf 编解码
+│       ├── auth.js                           # [新] Token 签名管理
+│       ├── ws-client.js                      # [新] WS 客户端
+│       └── yuabaobot-monitor.js               # [新] 监控单例
 ```
 
-### 4.3 核心模块设计
+### 2.2 完整数据流
 
-#### ws-client.js - WebSocket 客户端
-```javascript
-/**
- * YuanbaoWsClient - 元宝Bot WebSocket客户端
- *
- * 职责:
- * 1. 建立/维护WebSocket长连接
- * 2. 认证绑定 (AuthBind)
- * 3. 心跳保活 (自动重连)
- * 4. 发送业务消息 (sendC2CMessage/sendGroupMessage)
- * 5. 接收推送消息并分发
- */
-class YuanbaoWsClient {
-  constructor({ connectionConfig, callbacks });
-
-  // 连接管理
-  connect();
-  disconnect();
-  getState();  // 'disconnected' | 'connecting' | 'authenticating' | 'connected' | 'reconnecting'
-
-  // 消息发送
-  sendText(toAccount, text);           // 发送文本
-  sendMedia(toAccount, mediaData);     // 发送媒体
-  sendAndWait(cmd, module, data);      // 通用请求-响应模式
-
-  // 回调事件
-  callbacks: {
-    onReady(connectInfo),      // 认证成功
-    onClose(code, reason),     // 连接关闭
-    onError(error),            // 错误
-    onKickout(info),           // 被踢出
-    onDispatch(pushEvent),     // 收到推送消息
-    onStateChange(state),      // 状态变化
-    onAuthFailed(errorCode),   // 认证失败(用于刷新token)
-  };
-}
 ```
-
-#### proto-codec.js - Protobuf 编解码
-```javascript
-/**
- * Protobuf编解码器
- *
- * 注意: 官方插件使用protobufjs动态编译 .proto 文件
- * 简化实现可使用手动编码或protobufjs静态代码
- */
-
-// 连接层编码/解码
-function encodeConnMsg(head, data);     // 编码ConnMsg
-function decodeConnMsg(binary);          // 解码ConnMsg
-function buildAuthBindMsg(payload);      // 构建认证请求
-function buildPingMsg(msgId);            // 构建心跳请求
-function buildPushAck(head);             // 构建ACK响应
-
-// 业务层编码/解码
-function encodeSendC2CMessageReq(data);  // 编码私聊消息请求
-function encodeSendGroupMessageReq(data);// 编码群聊消息请求
-function decodeSendMessageRsp(data);     // 解码发送响应
-function decodeInboundMessage(data);     // 解码接收到的消息
+用户操作                        后端处理                       元宝服务器
+---------                      ----------                   ------------
+                                                                |
+1 填写 appKey/appSecret                                       |
+   POST /api/channels                                         |
+      |                                                        |
+      v                                                        |
+2 channel.service.createChannel()                             |
+   |- 写 DB (channel_type=yuanbaobot)                         |
+   `- yuabaobotMonitor.addChannel(id)  --> 3                    |
+           |                                                  |
+           v                                                  |
+4 ws-client._doConnect()                                      |
+   |- auth.getToken() --> HTTP POST sign-token --> 5          |
+   |   (HMAC-SHA256 签名)        <--- token/botId --|         |
+   |                                                        |
+   |- new WebSocket(wss://...) --> 6 建立 WS 连接            |
+   |                              <--- connected               |
+   |                                                        |
+   |- 发送 AuthBind (Protobuf) --> 7                          |
+   |                              <--- AuthBindRsp code=0     |
+   |                                                        |
+   `- state = 'connected'                                     |
+      onReady 回调触发                                         |
+                                                                |
+8 前端轮询 GET /api/yuabaobot/bind/:id/status                     |
+   返回 { connectionState:'connected', bound:false }            |
+   -> 显示 [我已操作] 按钮                                        |
+                                                                |
+9 用户在元宝 App 给 Bot 发消息                                   |
+                                                              |
+   <--- inbound_message_push -- 10 元宝推送入站消息             |
+      |                                                        |
+      v                                                        |
+11 monitor._handleInboundEvent()                                |
+   |- 提取 fromAccount                                         |
+   |- 写 DB config.toUserId = fromAccount                       |
+   `- boundSet.add(channelId)                                  |
+                                                                |
+12 前端再次轮询 status                                           |
+   返回 { connectionState:'connected', bound:true }             |
+   -> 渠道就绪                                                   |
+                                                                |
+13 推送消息                                                       |
+   channel.send(msg)                                            |
+   `- client.sendText(toUserId, text)                           |
+       `- sendC2CMessage (Protobuf) --> 14                      |
+                                 <--- SendMessageRsp code=0    |
 ```
-
-#### auth.js - 认证管理
-```javascript
-/**
- * Token签名和认证
- *
- * 流程:
- * 1. 使用 appKey + appSecret 生成签名 token
- * 2. token 可能有时效性，需要定期刷新
- * 3. 认证失败时触发刷新流程
- */
-class YuanbaoAuthManager {
-  constructor(appKey, appSecret);
-
-  async getSignedToken();  // 获取签名后的token
-  async refreshToken();    // 刷新token (如果过期)
-}
-```
-
-#### yuanbot.channel.js - 渠道适配器
-```javascript
-/**
- * YuanbotChannel - 元宝Bot渠道适配器
- *
- * 继承BaseChannel, 实现标准渠道接口
- */
-class YuanbotChannel extends BaseChannel {
-  static getName() { return "腾讯元宝"; }
-  static getDescription() { return "通过腾讯元宝Bot推送消息"; }
-
-  static getConfigFields() {
-    return [
-      { name: "appKey", label: "App Key", type: "text", required: true },
-      { name: "appSecret", label: "App Secret", type: "password", required: true },
-      { name: "toUserId", label: "接收用户ID", type: "text", required: true },
-    ];
-  }
-
-  async send(message) {
-    const { title, content } = message;
-    const text = title ? `${title}\n\n${content}` : content;
-
-    // 获取或创建WS客户端实例
-    const client = await this._getClient();
-
-    // 发送消息
-    return client.sendText(this.toUserId, text);
-  }
-
-  async test() {
-    const client = await this._getClient();
-    return client.sendText(this.toUserId, "【测试消息】MagicPush元宝Bot通道测试成功");
-  }
-
-  validate(config) {
-    if (!config.appKey || !config.appSecret) throw new Error("缺少appKey或appSecret");
-    if (!config.toUserId) throw new Error("缺少接收用户ID");
-  }
-}
-```
-
-#### yuanbot-monitor.js - 监控服务
-```javascript
-/**
- * YuanbotMonitor - 连接监控单例
- *
- * 职责:
- * 1. 管理所有yuanbot渠道的WS连接
- * 2. 统一的生命周期管理
- * 3. 连接状态持久化和恢复
- * 4. 异常告警和日志
- */
-class YuanbotMonitor {
-  static getInstance();
-
-  addChannel(channelId, config);     // 添加渠道到监控
-  removeChannel(channelId);          // 移除渠道
-  getClient(channelId);              // 获取指定渠道的WS客户端
-  getAllStatus();                    // 获取所有连接状态
-
-  // 内部方法
-  _startConnection(channelId);       // 启动连接
-  _handleReconnect(channelId);       // 处理重连
-  _handleDisconnect(channelId);      // 处理断开
-}
-```
-
-### 4.4 关键差异点及处理策略
-
-| 差异点 | 龙虾机器人处理方式 | 元宝Bot处理策略 |
-|--------|------------------|---------------|
-| **WebSocket vs HTTP** | 无状态HTTP调用 | 维护长连接池, 单例管理WS客户端 |
-| **Protobuf vs JSON** | 直接JSON解析 | 引入protobufjs库或手写codec |
-| **appKey认证 vs 扫码** | 扫码绑定零配置 | 用户手动填写appKey/appSecret |
-| **双向通信** | 仅长轮询接收 | 可选实现消息接收(指令控制/回执) |
-| **无推送限额** | 复杂的10条/24h额度管理 | 无需额度系统, 大幅简化 |
-| **连接状态管理** | 无 | 需要监控服务管理连接生命周期 |
-
-### 4.5 数据库设计
-
-在现有 `channels` 表中添加新类型的 config 结构:
-
-```sql
--- 新增 channel_type = 'yuanbot' 的记录
-INSERT INTO channels (
-  user_id, channel_type, name, config, is_active
-) VALUES (
-  ${userId},
-  'yuanbot',
-  '腾讯元宝Bot',
-  '{
-    "appKey": "your_app_key",
-    "appSecret": "encrypted_app_secret",
-    "toUserId": "target_user_id",
-    "connectionStatus": "connected",
-    "lastConnectedAt": 1746000000000,
-    "connectId": "conn_xxx"
-  }',
-  1
-);
-```
-
-**config 字段说明**:
-
-| 字段 | 类型 | 必填 | 说明 |
-|------|------|------|------|
-| `appKey` | string | ✅ | 应用密钥ID |
-| `appSecret` | string | ✅ | 应用密钥 (建议加密存储) |
-| `toUserId` | string | ✅ | 目标用户ID |
-| `connectionStatus` | string | ❌ | 运行时状态: connected/disconnecting/reconnecting |
-| `lastConnectedAt` | number | ❌ | 上次连接时间戳 |
-| `connectId` | string | ❌ | 当前连接ID |
 
 ---
 
-## 五、开发路线图
+## 三、各模块详细说明（当前实现）
 
-### Phase 1: MVP 最小可用版本 ⚡
-**目标**: 实现基础的文本消息推送功能
+### 3.1 proto-codec.js -- Protobuf 编解码器
 
-- [ ] 实现 `proto-codec.js` (Protobuf编解码基础)
-- [ ] 实现 `auth.js` (Token签名)
-- [ ] 实现 `ws-client.js` (WS连接 + 认证 + 心跳 + 发送消息)
-- [ ] 实现 `yuanbot.channel.js` (渠道适配器, 继承BaseChannel)
-- [ ] 在 `channels/index.js` 注册新渠道
-- [ ] 实现 `yuanbot.controller.js` (测试连接API)
-- [ ] 实现前端配置表单 `YuanbotConfigDialog.vue`
-- [ ] 端到端测试: 创建渠道 -> 测试连接 -> 推送消息
+使用 `protobufjs` 库的 JSON descriptor 方式动态构建 Root（无需 .proto 文件）。
 
-### Phase 2: 稳定性增强 🛡️
-**目标**: 生产级可靠性
+**已实现的编解码能力**:
 
-- [ ] 实现 `yuanbot-monitor.js` (全局连接管理单例)
-- [ ] 自动重连机制完善 (指数退避 + 最大重试次数)
-- [ ] Token自动刷新机制
-- [ ] 连接状态持久化 (重启后恢复连接)
-- [ ] 多渠道并发支持 (多个元宝bot同时运行)
-- [ ] 日志和监控指标 (连接数、消息数、错误率)
+| 功能 | 方法 | 状态 |
+|------|------|------|
+| ConnMsg 信封编码/解码 | `encodeConnMsg()` / `decodeConnMsg()` | OK |
+| AuthBind 请求构建 | `buildAuthBindMsg(payload)` | OK |
+| Ping 请求构建 | `buildPingMsg(msgId)` | OK |
+| 业务请求信封 | `buildBusinessConnMsg(cmd, module, data, msgId)` | OK |
+| C2C 消息编码 | `encodeSendC2CMessageReq(params)` | OK |
+| 发送响应解码 | `decodeSendMessageRsp(data)` | OK |
+| 入站消息解码 | `decodeInboundMessagePush(data)` | OK |
+| Push ACK 构建 | `buildPushAck(headMsg)` | MVP 暂返回 null |
+| 按 type name 解码 | `decodePB(typeName, data)` | OK |
 
-### Phase 3: 功能扩展 🚀
-**目标**: 完整功能集
+**Proto Schema**: 完整提取自官方 `yuanbao-openclaw-plugin`,包含:
+- **conn_common**: Head, ConnMsg, AuthBindReq/Rsp, PingReq/Rsp, KickoutMsg, PushMsg 等
+- **yuanbao_openclaw_proxy**: SendC2CMessageReq/Rsp, InboundMessagePush, MsgBodyElement 等
 
-- [ ] 多媒体消息支持 (图片/文件/音频/视频)
-- [ ] 群聊消息推送
-- [ ] Markdown格式消息渲染
-- [ ] 消息接收和处理 (用于指令控制)
-- [ ] Webhook回调 (接收消息后转发)
-- [ ] 连接状态仪表盘展示
-- [ ] 推送统计和分析
+### 3.2 auth.js -- Token 签名管理
 
----
+```
+类: TokenManager (按 appKey 缓存的实例池)
+方法:
+  - getToken()          -> 获取有效 token(缓存命中或重新签发)
+  - invalidateCache()   -> 清除缓存强制刷新
+私有:
+  - _requestSignToken() -> 调用元宝 API 签发 token
 
-## 六、参考资源
+全局函数:
+  - getTokenManager(appKey, appSecret, apiDomain?) -> 获取/创建 TokenManager
+  - computeSignature(nonce, ts, appKey, appSecret) -> HMAC-SHA256
+  - generateNonce() -> 16字节随机 hex
+  - beijingISODate() -> 北京时间 ISO 字符串(无毫秒)
+  - getOS() -> 操作系统标识
+```
 
-### 官方文档
-- **GitHub仓库**: https://github.com/Tencent/yuanbao-openclaw-plugin
-- **README**: 包含完整的配置示例和故障排查指南
-- **源码结构**:
-  ```
-  src/
-  ├── channel.ts              # 主插件入口 (渠道注册)
-  ├── access/ws/
-  │   ├── client.ts           # WS客户端完整实现 ⭐️ 重点参考
-  │   ├── gateway.ts          # 网关启动和管理
-  │   ├── conn-codec.ts       # 连接层Protobuf编解码
-  │   └── biz-codec.ts        # 业务层Protobuf编解码
-  ├── business/
-  │   ├── actions/            # 消息动作处理
-  │   └── tools/              # 工具函数
-  └── types.ts                # TypeScript类型定义
-  ```
+**关键参数**:
 
-### 项目内部参考
-- **龙虾机器人实现**: `/workspace/server/src/services/clawbot/`
-  - `ilink-client.js` - HTTP客户端封装模式
-  - `clawbot-monitor.js` - 长轮询监控模式
-- **渠道基类**: `/workspace/server/src/services/channels/base.channel.js`
-- **渠道注册中心**: `/workspace/server/src/services/channels/index.js`
-- **推送服务**: `/workspace/server/src/services/push.service.js`
-- **开发计划文档**: `/workspace/docs/wechatclawbot-dev-plan.md`
+| 参数 | 值 |
+|------|-----|
+| API 地址 | `https://bot.yuanbao.tencent.com/api/v5/robotLogic/sign-token` |
+| 签名算法 | HMAC-SHA256(appSecret, nonce + timestamp + appKey + appSecret) |
+| Token 过期策略 | 提前 5 分钟刷新 (`TOKEN_REFRESH_BEFORE_MS`) |
+| 并发控制 | `_signingFlight` Promise 复用,避免同一时刻多发请求 |
+| Instance ID | 16 (与官方一致) |
 
-### 相关依赖
+**请求头 (已修复)**:
 ```json
 {
-  "dependencies": {
-    "ws": "^8.x",              // WebSocket客户端
-    "protobufjs": "^7.x"       // Protobuf运行时 (可选, 也可手写codec)
-  }
+  "Content-Type": "application/json",
+  "X-AppVersion": "magicpush-1.0.0",
+  "X-OperationSystem": "Linux",
+  "X-Instance-Id": "16",
+  "X-Bot-Version": "magicpush-1.0.0"
 }
 ```
 
----
+**时间戳格式 (已修复)**:
+```
+正确: 2026-05-02T10:38:55+08:00
+错误: 2026-05-02T10:38:55.631+08:00  (有毫秒)
+```
 
-## 七、风险和注意事项
+### 3.3 ws-client.js -- WebSocket 客户端
 
-### 技术风险
-⚠️ **Protobuf兼容性**: 官方使用 `.proto` 文件动态编译，需要确保 schema 一致
-⚠️ **Token时效性**: appSecret签名的token可能有过期机制，需实现刷新逻辑
-⚠️ **连接稳定性**: WebSocket长连接在网络不稳定环境下可能频繁断连，需健壮的重连机制
-⚠️ **并发限制**: 同一账号多设备登录可能触发踢出 (code 4014)，需避免重复连接
+```
+类: yuabaobotWsClient
 
-### 运维建议
-📌 **监控关键指标**: 连接数、重连频率、消息发送成功率/延迟
-📌 **日志策略**: 开启 `debugBotIds` 进行问题排查
-📌 **密钥安全**: appSecret 必须加密存储，避免明文落库
-📌 **灰度发布**: 先在小范围测试，再逐步推广到所有用户
+状态机: disconnected -> connecting -> authenticating -> connected
+                                              `- reconnecting -> ...
 
----
+公开方法:
+  - connect()           -> 启动连接流程
+  - disconnect()        -> 主动断开
+  - getState()          -> 当前状态字符串
+  - sendText(toAccount, text) -> 发送 C2C 文本消息
 
-## 八、快速开始模板
+回调:
+  - onReady(info)       -> 认证成功 (connectId, ip)
+  - onError(err)        -> 错误
+  - onDispatch(event)   -> 入站消息推送
+  - onStateChange(state)-> 状态变化
+  - onKickout(info)     -> 被踢下线
+```
 
-当准备开始开发时，可以直接复制以下代码框架:
+**心跳机制**:
+- 首次延迟 5s,后续间隔由服务端 `heartInterval` 控制(默认 5s)
+- 连续 2 次 ACK 未收到触发重连
+- 超时阈值: `HEARTBEAT_TIMEOUT_THRESHOLD = 2`
+
+**重连策略**:
 
 ```javascript
-// server/src/services/channels/yuanbot.channel.js
-const BaseChannel = require('./base.channel');
-// TODO: 导入其他依赖
+RECONNECT_DELAYS = [1000, 2000, 5000, 10000, 30000, 60000];  // ms
+MAX_RECONNECT_ATTEMPTS = 50;
+```
 
-class YuanbotChannel extends BaseChannel {
-  constructor(config) {
-    super(config);
-    this.appKey = config.appKey;
-    this.appSecret = config.appSecret;
-    this.toUserId = config.toUserId;
-    this.wsClient = null;  // 延迟初始化
-  }
+**错误码分类**:
 
-  static getName() {
-    return '腾讯元宝';
-  }
+| 类型 | 错误码 | 处理方式 |
+|------|--------|---------|
+| 不再重连 | 4012, 4013, 4014, 4018, 4019, 4021 | 停止,标记 disconnected |
+| 刷新 token 重试 | 41103, 41104, 41108 | invalidateCache -> 重连 |
+| 瞬时可重试 | 50400, 50503 | 直接重连 |
+| 其他 | - | 直接重连(默认行为) |
 
-  static getDescription() {
-    return '通过腾讯元宝Bot推送消息，支持文本和多媒体';
-  }
+**请求-响应匹配**: 通过 `msgId` (UUID去横杠) 做 Map 匹配,30s 超时。
 
-  static getConfigFields() {
-    return [
-      {
-        name: 'appKey',
-        label: 'App Key',
-        type: 'text',
-        placeholder: '从元宝应用获取',
-        required: true,
-        description: '在元宝App中创建机器人后获得'
-      },
-      {
-        name: 'appSecret',
-        label: 'App Secret',
-        type: 'password',
-        placeholder: '输入应用密钥',
-        required: true,
-        description: '请妥善保管，不要泄露'
-      },
-      {
-        name: 'toUserId',
-        label: '接收用户ID',
-        type: 'text',
-        placeholder: '输入目标用户的元宝ID',
-        required: true,
-        description: '消息接收者的用户标识'
-      }
-    ];
-  }
+### 3.4 yuabaobot-monitor.js -- 监控服务(单例)
 
-  validate(config) {
-    if (!config.appKey || !config.appSecret) {
-      throw new Error('缺少必要的认证信息: appKey 和 appSecret');
-    }
-    if (!config.toUserId) {
-      throw new Error('缺少接收用户ID (toUserId)');
-    }
-  }
+```
+单例: yuabaobotMonitor
 
-  async test() {
-    try {
-      // TODO: 测试连接
-      const result = await this.send({
-        title: '测试消息',
-        content: 'MagicPush 腾讯元宝Bot 渠道测试成功！如果您收到此消息，说明配置正确。',
-        type: 'text'
-      });
-      return { success: true, message: '测试成功', result };
-    } catch (error) {
-      throw new Error(`测试失败: ${error.message}`);
-    }
-  }
+核心数据结构:
+  - clientMap: Map<appKey, yuabaobotWsClient>  -> 同一 appKey 复用连接
+  - boundSet: Set<channelId>                  -> 已完成握手的渠道 ID
 
-  async send(message, options = {}) {
-    const { title, content, type = 'text' } = message;
-    let text = title ? `${title}\n\n${content}` : content;
+公开方法:
+  - start()             -> 扫描 DB 中所有激活 yuabaobot 渠道,建立连接
+  - stop()              -> 断开所有连接
+  - addChannel(channelId) -> 新增渠道时调用(含清除旧绑定)
+  - removeChannel(channelId) -> 删除渠道时清理
+  - isBound(channelId)  -> 是否已握手
+  - getClient(appKey)   -> 获取 WS Client(供适配器发消息用)
+```
 
-    // TODO: 实现实际的消息发送逻辑
-    // 1. 获取或创建 WS 客户端
-    // 2. 确保连接处于活跃状态
-    // 3. 调用 sendC2CMessage 发送消息
-    // 4. 处理响应和错误
+**入站握手绑定逻辑**:
+```
+收到 inbound_message_push
+  -> 提取 fromAccount (用户元宝 ID)
+  -> 写 DB: config.toUserId = fromAccount
+  -> 写 DB: config.senderNickname = senderNickname
+  -> boundSet.add(channelId)
+  -> 日志: 握手成功!
+```
 
-    console.log(`[YuanBot] Sending to ${this.toUserId}:`, text.substring(0, 50));
+### 3.5 yuabaobot.channel.js -- 渠道适配器
 
-    // 临时占位符 - 替换为实际实现
-    return {
-      success: true,
-      messageId: `msg_${Date.now()}`,
-      channel: 'yuanbot'
-    };
-  }
+```
+类: yuabaobotChannel extends BaseChannel
+
+配置字段:
+  - appKey        (必填, text)
+  - appSecret     (必填, password)
+  - _docLinks     (帮助链接组)
+  - _bindingHint  (绑定提示文字)
+
+特殊字段 toUserId:
+  - 用户填表时不显示(创建时为空)
+  - 用户在元宝 App 给 Bot 发消息后,由 monitor 自动从 inbound push 提取写入
+  - send() 时检查: 为空则抛错提示先完成绑定
+```
+
+**send 流程**:
+1. 检查 toUserId -> 无则报错
+2. HTML 标签清理 (type === 'html')
+3. 从 monitor 获取 WS Client (by appKey)
+4. 检查 client.state === 'connected'
+5. 调用 client.sendText(toUserId, text)
+6. 检查 result.code === 0
+
+### 3.6 API 接口
+
+#### yuabaobot.controller.js
+
+| 方法 | 路径 | 说明 |
+|------|------|------|
+| GET | `/api/yuabaobot/bind/:channelId/status` | 查询绑定状态和 WS 连接状态 |
+| POST | `/api/yuabaobot/bind/:channelId/retry` | 重置绑定 + 触发重连 |
+
+**status 响应格式**:
+```json
+{
+  "success": true,
+  "data": {
+    "bound": false,
+    "toUserId": null,
+    "senderNickname": null,
+    "connectionState": "connected"
+  },
+  "message": "等待握手绑定"
 }
-
-module.exports = YuanbotChannel;
 ```
 
 ---
 
-> **下一步**: 当准备好继续开发时，可以基于本文档快速启动实现。
-> 建议从 Phase 1 (MVP) 开始，先跑通核心链路，再逐步增强功能。
+## 四、前端对接要点(待开发)
+
+### 4.1 创建渠道后的交互流程
+
+```
++----------------------------------------------------------+
+|  用户填写 App Key + App Secret -> 点保存                  |
+|      v                                                     |
+|  后端: createChannel -> DB + 自动触发 WS 连接               |
+|      v                                                     |
+|  前端: 显示"正在连接元宝服务器..." (loading 状态)            |
+|      v 轮询 GET /api/yuabaobot/bind/:id/status (每 3-5s)    |
+|                                                          |
+|  +- connectionState = 'connecting' ---> 继续等待           |
+|  +- connectionState = 'connected' ---> 显示[我已操作]按钮   |
+|  `- connectionState = 'disconnected' --> 显示错误 + 重试   |
+|                                                          |
+|  用户点[我已操作]:                                           |
+|    -> 提示:"请打开元宝 App,给你的 Bot 发送一条任意消息"      |
+|    -> 继续轮询 status                                        |
+|      v                                                      |
+|  bound = true -> 显示"绑定成功!可以接收通知了"                |
++----------------------------------------------------------+
+```
+
+### 4.2 关键前端状态判断
+
+```javascript
+// 轮询 status 接口
+const res = await fetch(`/api/yuabaobot/bind/${channelId}/status`);
+const { bound, connectionState } = res.data;
+
+if (!bound && connectionState === 'connected') {
+  // WS 已通但未握手 -> 显示「我已操作」按钮
+}
+if (bound && connectionState === 'connected') {
+  // 完全就绪 -> 可以正常推送
+}
+if (connectionState === 'disconnected' || connectionState === 'reconnecting') {
+  // 连接异常 -> 显示重试按钮
+}
+```
+
+### 4.3 getConfigFields 中的特殊字段
+
+`_docLinks` 和 `_bindingHint` 是非标准字段,前端需要识别并渲染:
+- `type: 'links'` -> 渲染为帮助文档链接列表
+- `type: 'hint'` -> 渲染为信息提示文本(不参与提交)
+- `name` 以 `_` 开头的字段 -> 建议前端过滤掉不作为表单项提交给后端
+
+---
+
+## 五、已知限制 & TODO
+
+### 当前 MVP 限制
+
+| # | 限制 | 影响 | 计划 |
+|---|------|------|------|
+| 1 | 仅支持 C2C 文本消息 | 无法发图片/文件/群聊 | Phase 3 |
+| 2 | Push ACK 未实现 | 服务端可能重推 | 低风险,MVP 可接受 |
+| 3 | 单进程内存缓存 (managerPool/tokenCache) | 多实例部署不共享 | 生产环境需 Redis |
+| 4 | 同一 appKey 只保留一个 WS 连接 | 多渠道同 appKey 共享连接 | 合理的设计 |
+| 5 | 删除渠道未联动 monitor.removeChannel() | 可能残留空闲连接 | 需补充 channel.service.deleteChannel 中的调用 |
+| 6 | 更新渠道未重连 WS | 改 appKey/appSecret 后需手动 retry | 需补充 updateChannel 中的联动 |
+| 7 | 无前端 UI | 无法通过界面创建/管理元宝 Bot 渠道 | 待开发 |
+
+### TODO 清单
+
+- [ ] **[P0]** 验证 code=10097 修复是否生效(重启服务观察日志)
+- [ ] **[P0]** 补充 `deleteChannel` 中调用 `monitor.removeChannel()`
+- [ ] **[P0]** 补充 `updateChannel` 中检测 appKey/appSecret 变化并触发重连
+- [ ] **[P1]** 开发前端 yuabaobotConfigDialog.vue(含轮询状态/绑定引导)
+- [ ] **[P1]** 前端支持 `_docLinks`(links类型) 和 `_bindingHint`(hint类型) 字段渲染
+- [ ] **[P2]** 实现 Push ACK (`buildPushAck`)
+- [ ] **[P2]** 支持多媒体消息(图片/文件等)
+- [ ] **[P2]** 支持群聊消息发送
+- [ ] **[P3]** Token 缓存迁移到 Redis(多实例支持)
+
+---
+
+## 六、技术参考
+
+### 6.1 对比官方源码的关键差异点
+
+| 差异项 | 官方 (TypeScript) | 我们 (JavaScript) | 备注 |
+|--------|------------------|------------------|------|
+| Protobuf 编译 | .proto 文件动态编译 | JSON descriptor | 效果一致,无需 proto 文件 |
+| WS 库 | ws (相同) | ws (相同) | 一致 |
+| 签名算法 | 相同 HMAC-SHA256 | 相同 | 已对齐 |
+| 时间戳 | `.replace(/\.\d{3}/,"")` | 同上 | 已修复 |
+| 请求头 | X-AppVersion 等 4 个头 | 同上 | 已修复 |
+| Instance Id | 16 | 16 | 一致 |
+| 心跳间隔 | 可配置 | 默认 5s,可被服务端更新 | 一致 |
+| 重连策略 | 类似指数退避 | 固定档位退避 | 我们的更简单可控 |
+
+### 6.2 官方资源
+- GitHub: https://github.com/Tencent/yuanbao-openclaw-plugin
+- 关键参考文件: `client.ts`, `gateway.ts`, `request.ts`, `auth.ts`
+
+### 6.3 项目内部参考
+- 龙虾机器人: `server/src/services/clawbot/` (HTTP 长轮询模式)
+- 渠道基类: `server/src/services/channels/base.channel.js`
+- 推送服务: `server/src/services/push.service.js`
+
+---
+
+> **下一步操作**: 重启服务,观察日志中 `code=` 是否变为 0。如果签名成功,WS 应该能正常建立连接并认证。

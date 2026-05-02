@@ -18,7 +18,7 @@
         <div class="text-sm text-blue-700 dark:text-blue-300">
           <p class="font-medium mb-1">支持的渠道类型</p>
           <p class="opacity-80">
-            微信龙虾机器人 · 企业微信群机器人 · 钉钉 · 飞书 · Telegram · 微信公众号 · WxPusher · PushPlus · Server酱 · Webhook · SMTP邮件 · Gotify · Bark · Meow · PushMe · 息知 · 企业微信应用
+            微信龙虾机器人 · 企业微信群机器人 · 钉钉 · 飞书 · Telegram · 微信公众号 · WxPusher · PushPlus · Server酱 · Webhook · SMTP邮件 · Gotify · Bark · Meow · PushMe · 息知 · 企业微信应用 · <strong class="text-blue-600 dark:text-blue-400">元宝 Bot</strong>
           </p>
         </div>
       </div>
@@ -59,6 +59,10 @@
                   编辑
                 </el-dropdown-item>
                 <el-dropdown-item v-if="channel.channel_type === 'wechatclawbot'" command="rebind">
+                  <RefreshCw class="w-4 h-4 mr-2" />
+                  重新绑定
+                </el-dropdown-item>
+                <el-dropdown-item v-if="channel.channel_type === 'yuanbaobot'" command="rebind_yuanbaobot">
                   <RefreshCw class="w-4 h-4 mr-2" />
                   重新绑定
                 </el-dropdown-item>
@@ -182,6 +186,13 @@
           </el-button>
         </div>
 
+        <!-- 元宝 Bot：握手绑定引导 -->
+        <div v-if="form.channelType === 'yuanbaobot' && !editingChannel" class="text-center py-4">
+          <p class="text-sm text-gray-600 dark:text-gray-400 mb-3">
+            元宝 Bot 需要通过 WebSocket 握手完成绑定。请先填写 App Key 和 App Secret，然后点击下方按钮开始连接。
+          </p>
+        </div>
+
         <el-form-item v-if="form.channelType !== 'wechatclawbot'" label="渠道名称" prop="name">
           <el-input v-model="form.name" placeholder="请输入渠道名称" />
         </el-form-item>
@@ -237,6 +248,20 @@
               v-else-if="field.type === 'switch'"
               v-model="form.config[field.name]"
             />
+            <!-- 下拉选择 -->
+            <el-select
+              v-else-if="field.type === 'select'"
+              v-model="form.config[field.name]"
+              :placeholder="'请选择' + (field.label || '')"
+              class="w-full"
+            >
+              <el-option
+                v-for="opt in (field.options || [])"
+                :key="opt.value"
+                :label="opt.label"
+                :value="opt.value"
+              />
+            </el-select>
             <!-- 数字输入 -->
             <el-input
               v-else-if="field.type === 'number'"
@@ -258,13 +283,17 @@
                 {{ link.label }}
               </a>
             </div>
+            <!-- 信息提示 -->
+            <div v-else-if="field.type === 'hint'" class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 rounded-lg p-3">
+              <p class="text-sm text-blue-700 dark:text-blue-300">{{ field.description }}</p>
+            </div>
             <!-- 普通文本 -->
             <el-input
               v-else
               v-model="form.config[field.name]"
               :placeholder="field.placeholder"
             />
-            <p v-if="field.description" class="text-xs text-gray-500 mt-1">
+            <p v-if="field.description && field.type !== 'hint'" class="text-xs text-gray-500 mt-1">
               {{ field.description }}
             </p>
           </el-form-item>
@@ -274,7 +303,7 @@
       <template v-if="form.channelType !== 'wechatclawbot'" #footer>
         <el-button @click="showCreateDialog = false">取消</el-button>
         <el-button type="primary" :loading="formLoading" @click="handleSubmit">
-          {{ editingChannel ? '保存' : '绑定' }}
+          {{ editingChannel ? '保存' : (form.channelType === 'yuanbaobot' ? '绑定并连接' : '绑定') }}
         </el-button>
       </template>
     </el-dialog>
@@ -285,6 +314,14 @@
       :mode="clawbotBindMode"
       :channel-id="clawbotBindChannelId"
       @success="handleClawbotBindSuccess"
+    />
+
+    <!-- 元宝 Bot 握手绑定弹窗 -->
+    <YuanbaobotBindDialog
+      v-model:visible="showYuanbaobotDialog"
+      :mode="yuanbaobotBindMode"
+      :channel-id="yuanbaobotBindChannelId"
+      @success="handleYuanbaobotBindSuccess"
     />
   </div>
 </template>
@@ -316,6 +353,7 @@ import {
   ExternalLink,
 } from 'lucide-vue-next'
 import ClawbotBindDialog from '@/components/ClawbotBindDialog.vue'
+import YuanbaobotBindDialog from '@/components/YuanbaobotBindDialog.vue'
 
 const channels = ref([])
 const channelTypes = ref([])
@@ -325,6 +363,9 @@ const editingChannel = ref(null)
 const showClawbotDialog = ref(false)
 const clawbotBindMode = ref('create')
 const clawbotBindChannelId = ref(null)
+const showYuanbaobotDialog = ref(false)
+const yuanbaobotBindMode = ref('create')
+const yuanbaobotBindChannelId = ref(null)
 
 const formRef = ref(null)
 const form = reactive({
@@ -380,6 +421,7 @@ const getChannelColor = (type) => {
     pushme: 'bg-emerald-500',
     xizhi: 'bg-green-500',
     qqbot: 'bg-cyan-500',
+    yuanbaobot: 'bg-violet-600',
   }
   return colors[type] || 'bg-gray-500'
 }
@@ -404,6 +446,7 @@ const getChannelIcon = (type) => {
     pushme: Smartphone,
     xizhi: Bell,
     qqbot: MessageSquare,
+    yuanbaobot: Cat,
   }
   return icons[type] || Share2
 }
@@ -413,6 +456,19 @@ const getDisplayConfig = (channel) => {
   if (channel.channel_type === 'wechatclawbot') {
     if (channel.config.toUserId) displayConfig['用户ID'] = channel.config.toUserId
     if (channel.config.botId) displayConfig['BotID'] = channel.config.botId
+    return displayConfig
+  }
+  // 元宝 Bot：显示握手绑定后的用户/群信息
+  if (channel.channel_type === 'yuanbaobot') {
+    const target = channel.config.sendTarget || 'private'
+    displayConfig['发送目标'] = target === 'group' ? '群聊' : '私聊'
+    if (target === 'group' && channel.config.groupCode) {
+      displayConfig['群号'] = channel.config.groupCode
+    }
+    if (channel.config.toUserId) {
+      const nick = channel.config.senderNickname || ''
+      displayConfig['绑定用户'] = nick ? `${nick} (${channel.config.toUserId.substring(0, 16)}...)` : channel.config.toUserId.substring(0, 20)
+    }
     return displayConfig
   }
   const type = channelTypes.value.find(t => t.type === channel.channel_type)
@@ -477,6 +533,10 @@ const handleCommand = (command, channel) => {
     clawbotBindMode.value = 'rebind'
     clawbotBindChannelId.value = channel.id
     showClawbotDialog.value = true
+  } else if (command === 'rebind_yuanbaobot') {
+    yuanbaobotBindMode.value = 'rebind'
+    yuanbaobotBindChannelId.value = channel.id
+    showYuanbaobotDialog.value = true
   } else if (command === 'test') {
     handleTest(channel)
   } else if (command === 'delete') {
@@ -562,6 +622,16 @@ const handleSubmit = async () => {
       })
       if (res.success) {
         ElMessage.success('绑定成功')
+        // 元宝 Bot：创建成功后自动打开握手绑定弹窗
+        if (form.channelType === 'yuanbaobot' && res.data?.id) {
+          showCreateDialog.value = false
+          resetForm()
+          loadData()
+          yuanbaobotBindMode.value = 'create'
+          yuanbaobotBindChannelId.value = res.data.id
+          showYuanbaobotDialog.value = true
+          return
+        }
       }
     }
     showCreateDialog.value = false
@@ -590,6 +660,11 @@ const openClawbotBind = () => {
 const handleClawbotBindSuccess = () => {
   showCreateDialog.value = false
   resetForm()
+  loadData()
+}
+
+const handleYuanbaobotBindSuccess = () => {
+  showYuanbaobotDialog.value = false
   loadData()
 }
 
