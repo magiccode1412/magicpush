@@ -2,6 +2,13 @@ const { ChannelModel } = require('../models');
 const { getChannelAdapter, getChannelTypes, validateChannelConfig } = require('./channels');
 const logger = require('../utils/logger');
 
+// 延迟加载（避免循环依赖）
+let _yuanbaobotMonitor;
+function getYuabaobotMonitor() {
+  if (!_yuanbaobotMonitor) _yuanbaobotMonitor = require('./yuanbaobot/yuanbaobot-monitor');
+  return _yuanbaobotMonitor;
+}
+
 /**
  * 渠道服务
  */
@@ -52,6 +59,17 @@ class ChannelService {
     });
 
     logger.info(`用户 ${userId} 创建了渠道: ${name} (${channelType})`);
+
+    // 元宝 Bot 类型需要立即建立 WS 连接
+    if (channelType === 'yuanbaobot') {
+      try {
+        getYuabaobotMonitor().addChannel(channel.id);
+        logger.info(`[channel-service] 已触发元宝 Bot 渠道 ${channel.id} WS 连接`);
+      } catch (e) {
+        logger.warn(`[channel-service] 触发元宝 Bot WS 连接失败（不影响创建）:`, e.message);
+      }
+    }
+
     return channel;
   }
 
@@ -66,6 +84,7 @@ class ChannelService {
 
     const updateData = {};
     if (channelData.name !== undefined) updateData.name = channelData.name;
+    let needReconnect = false;
     if (channelData.config !== undefined) {
       // 验证新配置
       const validation = validateChannelConfig(channel.channel_type, channelData.config);
@@ -73,10 +92,32 @@ class ChannelService {
         throw new Error(validation.message);
       }
       updateData.config = channelData.config;
+
+      // 元宝 Bot 类型：检测 appKey / appSecret 是否变化
+      if (channel.channel_type === 'yuanbaobot') {
+        const oldConfig = typeof channel.config === 'string' ? JSON.parse(channel.config) : channel.config;
+        const newConfig = channelData.config;
+        if (oldConfig.appKey !== newConfig.appKey || oldConfig.appSecret !== newConfig.appSecret) {
+          needReconnect = true;
+          logger.info(`[channel-service] 检测到元宝 Bot 渠道 ${id} 凭证变化, 将触发 WS 重连`);
+        }
+      }
     }
     if (channelData.is_active !== undefined) updateData.is_active = channelData.is_active;
 
-    return await ChannelModel.update(id, updateData);
+    const result = await ChannelModel.update(id, updateData);
+
+    // 凭证变更 -> 断开旧连接并重新建立
+    if (needReconnect) {
+      try {
+        getYuabaobotMonitor().removeChannel(id);
+        getYuabaobotMonitor().addChannel(id);
+      } catch (e) {
+        logger.warn(`[channel-service] 元宝 Bot 重连失败（不影响更新）:`, e.message);
+      }
+    }
+
+    return result;
   }
 
   /**
@@ -90,6 +131,17 @@ class ChannelService {
 
     await ChannelModel.delete(id);
     logger.info(`用户 ${userId} 删除了渠道: ${channel.name}`);
+
+    // 元宝 Bot 类型需要断开 WS 连接
+    if (channel.channel_type === 'yuanbaobot') {
+      try {
+        getYuabaobotMonitor().removeChannel(id);
+        logger.info(`[channel-service] 已清理元宝 Bot 渠道 ${id} WS 连接`);
+      } catch (e) {
+        logger.warn(`[channel-service] 清理元宝 Bot WS 连接失败（不影响删除）:`, e.message);
+      }
+    }
+
     return true;
   }
 

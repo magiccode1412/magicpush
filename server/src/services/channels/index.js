@@ -16,12 +16,14 @@ const WecomappChannel = require('./wecomapp.channel');
 const BarkChannel = require('./bark.channel');
 const PushMeChannel = require('./pushme.channel');
 const XizhiChannel = require('./xizhi.channel');
+const YuabaobotChannel = require('./yuanbaobot.channel');
 // TODO: QQ 机器人渠道开发中，待测试后启用
 // const QqbotChannel = require('./qqbot.channel');
 
 // 渠道类型到适配器的映射
 const channelAdapters = {
   wechatclawbot: WechatclawbotChannel,
+  yuanbaobot: YuabaobotChannel,
   wecom: WecomChannel,
   telegram: TelegramChannel,
   pushplus: PushPlusChannel,
@@ -101,6 +103,7 @@ module.exports = {
   BarkChannel,
   PushMeChannel,
   XizhiChannel,
+  YuabaobotChannel,
   // QqbotChannel, // TODO: 待测试后启用
   getChannelAdapter,
   getChannelTypes,

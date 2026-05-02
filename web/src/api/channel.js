@@ -48,3 +48,12 @@ export const clawbotRebind = (channelId, data) => {
 export const checkClawbotContextStatus = (channelId) => {
   return request.get(`/channels/clawbot/bind/${channelId}/context-status`)
 }
+
+// 元宝 Bot 绑定
+export const getYuanbaobotBindStatus = (channelId) => {
+  return request.get(`/yuanbaobot/bind/${channelId}/status`)
+}
+
+export const retryYuanbaobotBind = (channelId) => {
+  return request.post(`/yuanbaobot/bind/${channelId}/retry`)
+}
