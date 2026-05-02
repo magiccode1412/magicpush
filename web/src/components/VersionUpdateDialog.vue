@@ -59,11 +59,7 @@
         <el-button @click="$emit('update:visible', false)">关闭</el-button>
         <el-button v-if="isRemoteUpdate" type="primary" @click="handleGoToRelease">
           <ExternalLink class="w-4 h-4 mr-1" />
-          前往查看 Release
-        </el-button>
-        <el-button type="primary" @click="handleViewFullLog">
-          <FileText class="w-4 h-4 mr-1" />
-          查看完整日志
+          前往查看<a href="https://github.com/magiccode1412/magicpush/blob/main/docs/CHANGELOG.md" target="_blank">更新日志</a>
         </el-button>
       </div>
     </template>
