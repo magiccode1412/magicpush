@@ -955,7 +955,17 @@ const channelAdapters = {
 };
 ```
 
-#### 步骤 3：重启服务
+#### 步骤 3：添加验证白名单
+
+编辑 `server/src/middleware/validator.middleware.js`，在 `createChannelValidation` 的 `isIn` 白名单中加入新渠道类型：
+
+```javascript
+.isIn(['wechatclawbot', 'wecom', 'telegram', /* ...已有渠道 */, 'mychannel'])
+```
+
+> **注意**：此步骤容易被遗漏，遗漏会导致前端报「不支持的渠道类型」错误。
+
+#### 步骤 4：重启服务
 
 重启后端服务，新渠道即可在前端「渠道管理」页面看到和使用。
 

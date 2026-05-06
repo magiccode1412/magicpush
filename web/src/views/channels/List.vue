@@ -18,7 +18,7 @@
         <div class="text-sm text-blue-700 dark:text-blue-300">
           <p class="font-medium mb-1">支持的渠道类型</p>
           <p class="opacity-80">
-            微信龙虾机器人 · 企业微信群机器人 · 钉钉 · 飞书 · Telegram · 微信公众号 · WxPusher · PushPlus · Server酱 · Webhook · SMTP邮件 · Gotify · Bark · Meow · PushMe · 息知 · 企业微信应用 · <strong class="text-blue-600 dark:text-blue-400">元宝 Bot</strong>
+            微信龙虾机器人 · 企业微信群机器人 · 钉钉 · 飞书 · Telegram · 微信公众号 · WxPusher · PushPlus · Server酱 · Webhook · SMTP邮件 · Gotify · Bark · Meow · PushMe · 息知 · 企业微信应用 · 元宝 Bot · ntfy
           </p>
         </div>
       </div>
@@ -301,10 +301,27 @@
       </el-form>
 
       <template v-if="form.channelType !== 'wechatclawbot'" #footer>
-        <el-button @click="showCreateDialog = false">取消</el-button>
-        <el-button type="primary" :loading="formLoading" @click="handleSubmit">
-          {{ editingChannel ? '保存' : (form.channelType === 'yuanbaobot' ? '绑定并连接' : '绑定') }}
-        </el-button>
+        <!-- ntfy 相关文档链接 -->
+        <div v-if="form.channelType === 'ntfy'" class="flex flex-wrap gap-x-4 gap-y-1 mb-3 text-xs">
+          <a href="https://ntfy.sh/" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 flex items-center gap-1">
+            <ExternalLink class="w-3 h-3" /> 官网
+          </a>
+          <a href="https://docs.ntfy.sh/publish/" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 flex items-center gap-1">
+            <ExternalLink class="w-3 h-3" /> 发布消息 API
+          </a>
+          <a href="https://docs.ntfy.sh/config/#users-and-roles" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 flex items-center gap-1">
+            <ExternalLink class="w-3 h-3" /> 用户与权限配置
+          </a>
+          <a href="https://docs.ntfy.sh/publish/#action-buttons" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 flex items-center gap-1">
+            <ExternalLink class="w-3 h-3" /> 操作按钮文档
+          </a>
+        </div>
+        <div class="flex justify-end gap-2">
+          <el-button @click="showCreateDialog = false">取消</el-button>
+          <el-button type="primary" :loading="formLoading" @click="handleSubmit">
+            {{ editingChannel ? '保存' : (form.channelType === 'yuanbaobot' ? '绑定并连接' : '绑定') }}
+          </el-button>
+        </div>
       </template>
     </el-dialog>
 
@@ -422,6 +439,7 @@ const getChannelColor = (type) => {
     xizhi: 'bg-green-500',
     qqbot: 'bg-cyan-500',
     yuanbaobot: 'bg-violet-600',
+    ntfy: 'bg-cyan-500',
   }
   return colors[type] || 'bg-gray-500'
 }
@@ -447,6 +465,7 @@ const getChannelIcon = (type) => {
     xizhi: Bell,
     qqbot: MessageSquare,
     yuanbaobot: Cat,
+    ntfy: Bell,
   }
   return icons[type] || Share2
 }
