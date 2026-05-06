@@ -18,7 +18,7 @@
         <div class="text-sm text-blue-700 dark:text-blue-300">
           <p class="font-medium mb-1">支持的渠道类型</p>
           <p class="opacity-80">
-            微信龙虾机器人 · 企业微信群机器人 · 钉钉 · 飞书 · Telegram · 微信公众号 · WxPusher · PushPlus · Server酱 · Webhook · SMTP邮件 · Gotify · Bark · Meow · PushMe · 息知 · 企业微信应用 · 元宝 Bot · ntfy · PushDeer
+            微信龙虾机器人 · 企业微信群机器人 · 钉钉 · 飞书 · Telegram · 微信公众号 · WxPusher · PushPlus · Server酱 · Webhook · SMTP邮件 · Gotify · Bark · Meow · PushMe · 息知 · 企业微信应用 · 元宝 Bot · ntfy · PushDeer · iGot
           </p>
         </div>
       </div>
@@ -301,6 +301,15 @@
       </el-form>
 
       <template v-if="form.channelType !== 'wechatclawbot'" #footer>
+        <!-- iGot 相关文档链接 -->
+        <div v-if="form.channelType === 'igot'" class="flex flex-wrap gap-x-4 gap-y-1 mb-3 text-xs">
+          <a href="https://push.hellyw.com" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 flex items-center gap-1">
+            <ExternalLink class="w-3 h-3" /> 官网
+          </a>
+          <a href="https://push.hellyw.com/doc/#/" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 flex items-center gap-1">
+            <ExternalLink class="w-3 h-3" /> 官方文档
+          </a>
+        </div>
         <!-- PushDeer 相关文档链接 -->
         <div v-if="form.channelType === 'pushdeer'" class="flex flex-wrap gap-x-4 gap-y-1 mb-3 text-xs">
           <a href="https://github.com/easychen/pushdeer" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 flex items-center gap-1">
@@ -452,6 +461,7 @@ const getChannelColor = (type) => {
     yuanbaobot: 'bg-violet-600',
     ntfy: 'bg-cyan-500',
     pushdeer: 'bg-orange-500',
+    igot: 'bg-indigo-500',
   }
   return colors[type] || 'bg-gray-500'
 }
@@ -479,6 +489,7 @@ const getChannelIcon = (type) => {
     yuanbaobot: Cat,
     ntfy: Bell,
     pushdeer: Smartphone,
+    igot: Send,
   }
   return icons[type] || Share2
 }

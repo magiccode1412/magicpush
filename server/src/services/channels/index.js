@@ -19,6 +19,7 @@ const XizhiChannel = require('./xizhi.channel');
 const YuabaobotChannel = require('./yuanbaobot.channel');
 const NtfyChannel = require('./ntfy.channel');
 const PushDeerChannel = require('./pushdeer.channel');
+const IGotChannel = require('./igot.channel');
 // TODO: QQ 机器人渠道开发中，待测试后启用
 // const QqbotChannel = require('./qqbot.channel');
 
@@ -44,6 +45,7 @@ const channelAdapters = {
   xizhi: XizhiChannel,
   ntfy: NtfyChannel,
   pushdeer: PushDeerChannel,
+  igot: IGotChannel,
   // qqbot: QqbotChannel, // TODO: 待测试后启用
 };
 
@@ -110,6 +112,7 @@ module.exports = {
   YuabaobotChannel,
   NtfyChannel,
   PushDeerChannel,
+  IGotChannel,
   // QqbotChannel, // TODO: 待测试后启用
   getChannelAdapter,
   getChannelTypes,
