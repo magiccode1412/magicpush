@@ -18,7 +18,7 @@
         <div class="text-sm text-blue-700 dark:text-blue-300">
           <p class="font-medium mb-1">支持的渠道类型</p>
           <p class="opacity-80">
-            微信龙虾机器人 · 企业微信群机器人 · 钉钉 · 飞书 · Telegram · 微信公众号 · WxPusher · PushPlus · Server酱 · Webhook · SMTP邮件 · Gotify · Bark · Meow · PushMe · 息知 · 企业微信应用 · 元宝 Bot · ntfy
+            微信龙虾机器人 · 企业微信群机器人 · 钉钉 · 飞书 · Telegram · 微信公众号 · WxPusher · PushPlus · Server酱 · Webhook · SMTP邮件 · Gotify · Bark · Meow · PushMe · 息知 · 企业微信应用 · 元宝 Bot · ntfy · PushDeer
           </p>
         </div>
       </div>
@@ -301,7 +301,18 @@
       </el-form>
 
       <template v-if="form.channelType !== 'wechatclawbot'" #footer>
-        <!-- ntfy 相关文档链接 -->
+        <!-- PushDeer 相关文档链接 -->
+        <div v-if="form.channelType === 'pushdeer'" class="flex flex-wrap gap-x-4 gap-y-1 mb-3 text-xs">
+          <a href="https://github.com/easychen/pushdeer" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 flex items-center gap-1">
+            <ExternalLink class="w-3 h-3" /> GitHub 仓库
+          </a>
+          <a href="https://github.com/easychen/pushdeer#发送消息" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 flex items-center gap-1">
+            <ExternalLink class="w-3 h-3" /> API 使用说明
+          </a>
+          <a href="https://github.com/easychen/pushdeer#使用自架服务器端和自架版客户端" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 flex items-center gap-1">
+            <ExternalLink class="w-3 h-3" /> 自架部署指南
+          </a>
+        </div>
         <div v-if="form.channelType === 'ntfy'" class="flex flex-wrap gap-x-4 gap-y-1 mb-3 text-xs">
           <a href="https://ntfy.sh/" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 flex items-center gap-1">
             <ExternalLink class="w-3 h-3" /> 官网
@@ -440,6 +451,7 @@ const getChannelColor = (type) => {
     qqbot: 'bg-cyan-500',
     yuanbaobot: 'bg-violet-600',
     ntfy: 'bg-cyan-500',
+    pushdeer: 'bg-orange-500',
   }
   return colors[type] || 'bg-gray-500'
 }
@@ -466,6 +478,7 @@ const getChannelIcon = (type) => {
     qqbot: MessageSquare,
     yuanbaobot: Cat,
     ntfy: Bell,
+    pushdeer: Smartphone,
   }
   return icons[type] || Share2
 }
