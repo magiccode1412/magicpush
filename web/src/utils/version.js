@@ -31,8 +31,33 @@ export const fetchVersionFromServer = async () => {
 
 // 远程版本检测（前端直连 jsdelivr CDN）
 const CDN_VERSION_URL = 'https://cdn.jsdelivr.net/gh/magiccode1412/magicpush@main/version.json'
+const CDN_DEV_VERSION_URL = 'https://cdn.jsdelivr.net/gh/magiccode1412/magicpush@dev/version.json'
 const REMOTE_CACHE_KEY = 'mp_remote_version_check'
+const REMOTE_DEV_CACHE_KEY = 'mp_remote_dev_version_check'
 const CACHE_DURATION = 24 * 60 * 60 * 1000 // 24小时缓存
+
+/**
+ * 获取远程更新检测是否启用（从 localStorage 读取，默认启用）
+ */
+export const getCheckUpdateEnabled = () => {
+  try {
+    const val = localStorage.getItem('mp_check_update_enabled')
+    return val === null ? true : val === 'true'
+  } catch {
+    return true
+  }
+}
+
+/**
+ * 获取是否同时检测 dev 版本更新（从 localStorage 读取，默认关闭）
+ */
+export const getCheckUpdateDevEnabled = () => {
+  try {
+    return localStorage.getItem('mp_check_update_dev_enabled') === 'true'
+  } catch {
+    return false
+  }
+}
 
 /**
  * 检查远程是否有新版本可用
@@ -40,19 +65,30 @@ const CACHE_DURATION = 24 * 60 * 60 * 1000 // 24小时缓存
  * @returns {Promise<{hasUpdate: boolean, remoteVersion: string, latestChangelog: Object|null}|null>}
  */
 export const checkRemoteVersion = async (force = false) => {
-  // 尝试读取缓存
-  let cached = null
-  try {
-    cached = JSON.parse(localStorage.getItem(REMOTE_CACHE_KEY))
-  } catch { /* ignore */ }
+  return _fetchRemoteVersion(CDN_VERSION_URL, REMOTE_CACHE_KEY, force)
+}
 
-  // 非强制模式且缓存有效，直接用缓存结果比较
+function buildResult(remoteVersion, latestChangelog) {
+  return {
+    hasUpdate: semverGt(remoteVersion, VERSION.version),
+    remoteVersion,
+    latestChangelog,
+  }
+}
+
+/**
+ * 内部通用版本检测函数
+ */
+async function _fetchRemoteVersion(url, cacheKey, force = false) {
+  let cached = null
+  try { cached = JSON.parse(localStorage.getItem(cacheKey)) } catch { /* ignore */ }
+
   if (!force && cached && (Date.now() - cached.timestamp < CACHE_DURATION)) {
     return buildResult(cached.remoteVersion, cached.latestChangelog)
   }
 
   try {
-    const res = await fetch(CDN_VERSION_URL + (force ? '?_=' + Date.now() : ''))
+    const res = await fetch(url + (force ? '?_=' + Date.now() : ''))
     if (!res.ok) return null
     const data = await res.json()
 
@@ -63,24 +99,20 @@ export const checkRemoteVersion = async (force = false) => {
       allChangelog: data.changelog || [],
     }
 
-    // 写入缓存
-    try {
-      localStorage.setItem(REMOTE_CACHE_KEY, JSON.stringify(resultData))
-    } catch { /* ignore */ }
-
+    try { localStorage.setItem(cacheKey, JSON.stringify(resultData)) } catch { /* ignore */ }
     return buildResult(data.version, resultData.latestChangelog)
   } catch {
-    // 网络失败不影响使用
     return null
   }
 }
 
-function buildResult(remoteVersion, latestChangelog) {
-  return {
-    hasUpdate: semverGt(remoteVersion, VERSION.version),
-    remoteVersion,
-    latestChangelog,
-  }
+/**
+ * 检测 dev 分支是否有新版本可用
+ * @param {boolean} force - 是否强制忽略缓存重新请求
+ * @returns {Promise<{hasUpdate: boolean, remoteVersion: string, latestChangelog: Object|null}|null>}
+ */
+export const checkRemoteVersionDev = async (force = false) => {
+  return _fetchRemoteVersion(CDN_DEV_VERSION_URL, REMOTE_DEV_CACHE_KEY, force)
 }
 
 /**
