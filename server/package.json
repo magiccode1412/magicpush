@@ -3,6 +3,7 @@
   "version": "1.10.0",
   "description": "MagicPush 后端服务",
   "main": "src/app.js",
+  "packageManager": "pnpm@10.33.4",
   "scripts": {
     "start": "node src/app.js",
     "dev": "nodemon src/app.js",
