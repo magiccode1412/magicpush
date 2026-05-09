@@ -1,6 +1,6 @@
 {
   "name": "magicpush",
-  "version": "1.9.0",
+  "version": "1.10.0",
   "displayName": "MagicPush",
   "description": "支持多渠道消息推送的统一管理平台",
   "repository": {
@@ -8,6 +8,15 @@
     "url": "https://github.com/magiccode1412/magicpush"
   },
   "changelog": [
+    {
+      "version": "1.10.0",
+      "date": "2026-05-06",
+      "type": "release",
+      "changes": [
+        "新增通知渠道:ntfy/pushdeer/igot/群晖chat",
+        "支持检测开发版本更新"
+      ]
+    },
     {
       "version": "1.9.0",
       "date": "2026-05-02",

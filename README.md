@@ -1,7 +1,9 @@
 <div align="center">
   <img src="public/logo.png" alt="测试logo" width="256px">
-  <h1 align="center">MagicPush</h1> 
-  <span>项目地址：<a href="https://cnb.cool/magiccode1412/magicpush" target="_blank">CNB云原生构建</a> | <a href="https://github.com/magiccode1412/magicpush" target="_blank">GitHub</a>
+  <h1 align="center">魔法推送</h1> 
+  <span>
+    <a href="https://github.com/magiccode1412/magicpush" target="_blank">项目地址</a> | 
+    <a href="docs/CHANGELOG.md">更新日志</a>
   </span>
   <p>一个支持多种消息渠道的推送服务管理平台，用户可以通过标准化的REST API接口将消息推送到多种通知渠道。</p>
   <p>
@@ -24,22 +26,16 @@
   </p>
 </div>
 
-## 📝 更新日志
-查看 [CHANGELOG.md](docs/CHANGELOG.md) 了解版本更新记录。
-
-## 🌐 Demo站
+## 🌐 [Demo站](https://uptimeflare-ept.pages.dev/)
 
 自行注册即可（邮箱可随便填，不需要验证）
 
 由于zeabur和clawcloud run不再提供免费资源，所以demo站转到railway和huggingface
 
-+ [最新版](https://magicpush-production-761c.up.railway.app/)
-+ [开发版](https://magiccode1412-magicpush.hf.space)
-
 > 演示环境仅作测试使用，请勿发送违规信息
-
+>
 > 切勿使用真实个人信息，数据会定期重置，请勿存储重要信息。
-
+>
 > 演示环境部署在railway和huggingface，如果遇到无法访问，可能是在冷启动中
 
 ## 预览
@@ -81,10 +77,13 @@
 
 通过以下几张图,就会明白,自己拥有一个推送服务,是多么的有用:
 + 一对一的消息推送方式
+
 ![一对一消息推送方式](./public/image/magicpush01.png)
 + 多对一推送服务
+
 ![多对一推送服务](./public/image/magicpush02.png)
 + 使用自己的推送服务
+
 ![使用自己的推送服务](./public/image/magicpush03.png)
 
 ## ✨ 功能特性
@@ -108,6 +107,10 @@
 - **PushMe** (多平台统一推送服务)
 - **息知** (极简微信消息通知接口，永久免费，支持单点推送和频道推送)
 - **企业微信应用** (企业微信应用消息推送)
+- **ntfy** (开源跨平台推送服务，支持自托管)
+- **PushDeer** (全平台推送服务，支持 iOS/Android/Mac，**项目已停止维护**)
+- **iGot** (开放式通知推送服务，支持 iOS/Android)
+- **群晖 Chat** (Synology NAS 即时通讯套件，通过 Incoming Webhook 推送)
 
 ### 核心功能
 - 多渠道消息同时推送
@@ -159,6 +162,10 @@
 | **微信龙虾机器人** | 10 条/24 小时 | 每个微信号 | 连续发送 10 条后需用户主动发消息才能继续 |
 | **企业微信应用** | ~200 次/分钟 | 每个应用 | 与接收人数相关 |
 | **元宝 Bot** | 无明确限制 | - | 通过 WebSocket 长连接推送，受网络稳定性影响 |
+| **ntfy** | 无限制（自建）<br>有限制（公共云） | 每个 topic | 公共云有速率限制；自建服务无平台限制 |
+| **PushDeer** | 无明确限制（自建）<br>有限制（公共云） | 每个 pushkey | 官方公共云可能有限流；自建服务无限制 |
+| **iGot** | 未公开精确限制 | 每个 key | 个人/小团队维护的公共云服务，建议关注限流情况 |
+| **群晖 Chat** | 取决于硬件性能 | 无明确 API 限流 | 自托管服务，受 NAS 硬件性能和网络带宽影响；高频推送可能造成资源压力 |
 
 > **提示：** 以上为各平台官方公开的限制信息，具体限制可能随平台政策调整而变化，请以各平台最新文档为准。高频推送场景建议优先选择无平台限制的自建渠道（Bark/Gotify/Webhook）。
 
@@ -166,16 +173,7 @@
 
 ## 🐳 Docker 部署
 
-**latest镜像已支持amd/armv8架构**
-
-### 点击下面任一按钮一键部署
-
-[![Deploy on Railway](./public/image/deploy_on_railway.svg)](https://railway.com/deploy/JbNI4y?referralCode=85Y1W5&utm_medium=integration&utm_source=template&utm_campaign=generic)
-
-+ 先用30天免费试用，5美元积分，然后每月1美元
-+ 每个服务最多支持1个vCPU / 0.5GB RAM
-+ 0.5 GB 卷存储
-+ 无需信用卡
+**`latest镜像`和`指定版本号镜像`都支持amd/armv8架构**
 
 ### 使用预构建镜像
 
@@ -183,7 +181,7 @@
 
 ```bash
 docker run -d -p 3000:3000 \
-  -v $(pwd)/data:/app/server/data \
+  -v ./data:/app/server/data \
   magiccode1412/magicpush:latest
 ```
 
@@ -192,17 +190,30 @@ docker run -d -p 3000:3000 \
 ```yml
 services:
   app:
-    image: magiccode1412/magicpush:latest # 国外用这个
-    #image: docker.cnb.cool/magiccode1412/magicpush:latest # 国内用这个
+    image: magiccode1412/magicpush:latest
+    # image: docker.cnb.cool/magiccode1412/magicpush:latest # 国内用这个更快
     ports:
       - "3000:3000"
     volumes:
-      - ./data:/app/server/data
+      - ./data:/app/server/data # 数据库
+      - ./logs:/app/server/logs # 日志
     network_mode: bridge
+    restart: always
     container_name: magicpush
 ```
 
-访问：http://localhost:3000
+访问：http://<服务器ip>:3000
+
+### Rainway一键部署
+
+[![Deploy on Railway](./public/image/deploy_on_railway.svg)](https://railway.com/deploy/JbNI4y?referralCode=85Y1W5&utm_medium=integration&utm_source=template&utm_campaign=generic)
+
++ 先用30天免费试用，5美元积分，然后每月1美元
++ 每个服务最多支持1个vCPU / 0.5GB RAM
++ 0.5 GB 卷存储
++ 无需信用卡
+
+⚠️注意⚠️：在30天试用后，需要手动更改计划，并且1美元额度的服务有冷启动
 
 ### 手动构建
 
@@ -239,9 +250,31 @@ docker build -t magicpush .
 - Pinia (状态管理)
 - Vue Router 4.x
 
-## 感谢
 
-- [tt-haogege](（https://github.com/tt-haogege)的[pr](https://github.com/magiccode1412/magicpush/pull/2)提供UI灵感
+## 💖 感谢墙
+
+<table align="center">
+  <tr>
+    <td align="center">
+      <a href="https://github.com/Sunanang">
+        <img src="public/image/thanks/Lando.jpg" 
+             width="70" 
+             height="70"
+             style="border-radius:50%;" />
+        <br /><sub>Lando</sub>
+      </a>
+    </td>
+    <td align="center">
+      <a href="https://github.com/tt-haogege">
+        <img src="https://avatars.githubusercontent.com/u/56960885?v=4" 
+             width="70" 
+             height="70"
+             style="border-radius:50%;" />
+        <br /><sub>tt-haogege</sub>
+      </a>
+    </td>
+  </tr>
+</table>
 
 ## 📄 许可证
 

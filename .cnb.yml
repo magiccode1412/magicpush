@@ -153,3 +153,5 @@ dev:
       stages:
         - name: docker build && push
           script: bash ./scripts/docker.sh dev
+        - name: update jsdelivr cache
+          script: curl -s "https://purge.jsdelivr.net/gh/magiccode1412/magicpush@dev/version.json"

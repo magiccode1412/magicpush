@@ -195,6 +195,42 @@
           </div>
         </div>
 
+        <!-- 版本更新检测 -->
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6 hover:shadow-md hover:-translate-y-0.5 hover:border-blue-200 dark:hover:border-blue-800 transition-all duration-300">
+          <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">版本更新检测</h3>
+          <div class="space-y-4">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-lg bg-green-100 dark:bg-green-900/30 flex items-center justify-center">
+                  <RefreshCw class="w-5 h-5 text-green-600" />
+                </div>
+                <div>
+                  <p class="text-sm font-medium text-gray-900 dark:text-white">自动检测更新</p>
+                  <p class="text-xs text-gray-500 dark:text-gray-400">启动时静默检查是否有新版本</p>
+                </div>
+              </div>
+              <el-switch
+                v-model="settingsStore.checkUpdateEnabled"
+              />
+            </div>
+
+            <div v-if="settingsStore.checkUpdateEnabled" class="flex items-center justify-between pl-[52px]">
+              <div>
+                <p class="text-sm font-medium text-gray-700 dark:text-gray-300">包含 dev 分支</p>
+                <p class="text-xs text-gray-500 dark:text-gray-400">同时检测开发分支的预发布版本</p>
+              </div>
+              <el-switch
+                v-model="settingsStore.checkUpdateDevEnabled"
+              />
+            </div>
+
+            <p class="text-xs text-gray-500 dark:text-gray-400 mt-2">
+              关闭后将不再自动检查远程版本更新，仍可通过底部版本号手动触发。
+              {{ settingsStore.checkUpdateDevEnabled ? 'dev 分支为开发中的预发布版本，可能不稳定。' : '' }}
+            </p>
+          </div>
+        </div>
+
         <!-- 数据迁移 -->
         <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6 hover:shadow-md hover:-translate-y-0.5 hover:border-blue-200 dark:hover:border-blue-800 transition-all duration-300">
           <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">数据迁移</h3>
@@ -255,7 +291,7 @@ import { useThemeStore } from '@/stores/theme'
 import { useSettingsStore } from '@/stores/settings'
 import { getCurrentUser, updateCurrentUser, changePassword, exportConfig, importConfig, getRegistrationSetting, updateRegistrationSetting, getDndGlobalSetting, updateDndGlobalSetting } from '@/api/user'
 import { fetchVersionFromServer } from '@/utils/version'
-import { User, Sun, Moon, Monitor, Download, Upload, Shield, Globe, BellOff } from 'lucide-vue-next'
+import { User, Sun, Moon, Monitor, Download, Upload, Shield, Globe, BellOff, RefreshCw } from 'lucide-vue-next'
 
 const authStore = useAuthStore()
 const themeStore = useThemeStore()

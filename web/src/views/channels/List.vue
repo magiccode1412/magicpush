@@ -18,7 +18,7 @@
         <div class="text-sm text-blue-700 dark:text-blue-300">
           <p class="font-medium mb-1">支持的渠道类型</p>
           <p class="opacity-80">
-            微信龙虾机器人 · 企业微信群机器人 · 钉钉 · 飞书 · Telegram · 微信公众号 · WxPusher · PushPlus · Server酱 · Webhook · SMTP邮件 · Gotify · Bark · Meow · PushMe · 息知 · 企业微信应用 · <strong class="text-blue-600 dark:text-blue-400">元宝 Bot</strong>
+            微信龙虾机器人 · 企业微信群机器人 · 钉钉 · 飞书 · Telegram · 微信公众号 · WxPusher · PushPlus · Server酱 · Webhook · SMTP邮件 · Gotify · Bark · Meow · PushMe · 息知 · 企业微信应用 · 元宝 Bot · ntfy · PushDeer · iGot · 群晖 Chat
           </p>
         </div>
       </div>
@@ -301,10 +301,56 @@
       </el-form>
 
       <template v-if="form.channelType !== 'wechatclawbot'" #footer>
-        <el-button @click="showCreateDialog = false">取消</el-button>
-        <el-button type="primary" :loading="formLoading" @click="handleSubmit">
-          {{ editingChannel ? '保存' : (form.channelType === 'yuanbaobot' ? '绑定并连接' : '绑定') }}
-        </el-button>
+        <!-- 群晖 Chat 相关文档链接 -->
+        <div v-if="form.channelType === 'synologychat'" class="flex flex-wrap gap-x-4 gap-y-1 mb-3 text-xs">
+          <a href="https://www.synology.com/en-global/dsm/feature/chat" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 flex items-center gap-1">
+            <ExternalLink class="w-3 h-3" /> 产品介绍
+          </a>
+          <a href="https://kb.synology.com/en-global/DSM/tutorial/How_to_use_Synology_Chat_to_send_notifications" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 flex items-center gap-1">
+            <ExternalLink class="w-3 h-3" /> 使用指南
+          </a>
+        </div>
+        <!-- iGot 相关文档链接 -->
+        <div v-if="form.channelType === 'igot'" class="flex flex-wrap gap-x-4 gap-y-1 mb-3 text-xs">
+          <a href="https://push.hellyw.com" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 flex items-center gap-1">
+            <ExternalLink class="w-3 h-3" /> 官网
+          </a>
+          <a href="https://push.hellyw.com/doc/#/" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 flex items-center gap-1">
+            <ExternalLink class="w-3 h-3" /> 官方文档
+          </a>
+        </div>
+        <!-- PushDeer 相关文档链接 -->
+        <div v-if="form.channelType === 'pushdeer'" class="flex flex-wrap gap-x-4 gap-y-1 mb-3 text-xs">
+          <a href="https://github.com/easychen/pushdeer" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 flex items-center gap-1">
+            <ExternalLink class="w-3 h-3" /> GitHub 仓库
+          </a>
+          <a href="https://github.com/easychen/pushdeer#发送消息" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 flex items-center gap-1">
+            <ExternalLink class="w-3 h-3" /> API 使用说明
+          </a>
+          <a href="https://github.com/easychen/pushdeer#使用自架服务器端和自架版客户端" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 flex items-center gap-1">
+            <ExternalLink class="w-3 h-3" /> 自架部署指南
+          </a>
+        </div>
+        <div v-if="form.channelType === 'ntfy'" class="flex flex-wrap gap-x-4 gap-y-1 mb-3 text-xs">
+          <a href="https://ntfy.sh/" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 flex items-center gap-1">
+            <ExternalLink class="w-3 h-3" /> 官网
+          </a>
+          <a href="https://docs.ntfy.sh/publish/" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 flex items-center gap-1">
+            <ExternalLink class="w-3 h-3" /> 发布消息 API
+          </a>
+          <a href="https://docs.ntfy.sh/config/#users-and-roles" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 flex items-center gap-1">
+            <ExternalLink class="w-3 h-3" /> 用户与权限配置
+          </a>
+          <a href="https://docs.ntfy.sh/publish/#action-buttons" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 flex items-center gap-1">
+            <ExternalLink class="w-3 h-3" /> 操作按钮文档
+          </a>
+        </div>
+        <div class="flex justify-end gap-2">
+          <el-button @click="showCreateDialog = false">取消</el-button>
+          <el-button type="primary" :loading="formLoading" @click="handleSubmit">
+            {{ editingChannel ? '保存' : (form.channelType === 'yuanbaobot' ? '绑定并连接' : '绑定') }}
+          </el-button>
+        </div>
       </template>
     </el-dialog>
 
@@ -422,6 +468,10 @@ const getChannelColor = (type) => {
     xizhi: 'bg-green-500',
     qqbot: 'bg-cyan-500',
     yuanbaobot: 'bg-violet-600',
+    ntfy: 'bg-cyan-500',
+    pushdeer: 'bg-orange-500',
+    igot: 'bg-indigo-500',
+    synologychat: 'bg-yellow-600',
   }
   return colors[type] || 'bg-gray-500'
 }
@@ -447,6 +497,10 @@ const getChannelIcon = (type) => {
     xizhi: Bell,
     qqbot: MessageSquare,
     yuanbaobot: Cat,
+    ntfy: Bell,
+    pushdeer: Smartphone,
+    igot: Send,
+    synologychat: MonitorSpeakerphone,
   }
   return icons[type] || Share2
 }
