@@ -1,6 +1,6 @@
 services:
   magicpush:
-    image: docker.cnb.cool/magiccode1412/magicpush:1.8.1
+    image: docker.cnb.cool/magiccode1412/magicpush:1.10.0
     ports:
       - "${wizard_app_port}:3000"
     volumes:

@@ -1,8 +1,9 @@
 appname               = magicpush
-version               = 1.8.1
+version               = 1.10.0
 display_name          = 魔法推送
 desc                  = """一个支持多种消息渠道的统一推送服务管理平台，通过标准化的REST API接口实现消息推送
-支持渠道：微信龙虾机器人、企业微信、钉钉、飞书、Telegram、微信公众号、WxPusher、PushPlus、Server酱、Webhook等
+目前支持21个渠道：
+<table><tr><td>微信龙虾机器人</td><td>元宝 Bot</td><td>企业微信群机器人</td><td>钉钉</td><td>飞书</td></tr><tr><td>Telegram</td><td>微信公众号</td><td>WxPusher</td><td>PushPlus</td><td>Server酱</td></tr><tr><td>Webhook</td><td>SMTP邮件</td><td>Gotify</td><td>Bark</td><td>Meow</td></tr><tr><td>PushMe</td><td>息知</td><td>企业微信应用</td><td>ntfy</td><td>PushDeer</td></tr><tr><td>iGot</td><td>群晖 Chat</td></tr></table>
 相关链接：<a href="https://github.com/magiccode1412/magicpush" target="_blank">Github仓库</a> | <a href="https://github.com/Sunanang/FNMessageBots/blob/main/docs/channels/magicpush.md" target="_blank">日志推送配置教程</a>
 """
 platform              = all
@@ -12,20 +13,18 @@ maintainer_url        = https://github.com/magiccode1412
 desktop_uidir         = ui
 desktop_applaunchname = magicpush.Application
 service_port          = "${wizard_app_port}"
-changelog             = """1. 入站配置支持字段映射多路径配置，每行一个
-2. 推送记录添加关键字筛选条件
-3. 新增远程版本检测功能，方便用户感知更新
-4. 部分渠道添加推送渠道官方文档链接
-5. 新增免打扰功能
-6. 推送记录新增接口字段
-7. 新增通知渠道——息知
-8. 增加限流开关功能
-9. 添加基于版本号的镜像
-10. 实现接口关键词过滤功能
-11. 数据导入导出功能补充必要字段
-12. 微信龙虾机器人增加对markdown支持（标题、超链接、列表、引用文本、粗体、删除线、行内代码、代码块、表格）
-13. 新增PushMe推送渠道
-14. 移除移动端顶部空白导航栏
-15. Server酱渠道增加支持V3版本
-16. WxPusher渠道支持极简推送
+changelog             = """1. 新增 ntfy 通知渠道（开源跨平台推送服务，支持自托管）
+2. 新增 PushDeer 通知渠道（全平台推送服务，支持 iOS/Android/Mac）
+3. 新增 iGot 通知渠道（开放式通知推送服务）
+4. 新增群晖 Chat 通知渠道（Synology NAS 即时通讯套件 Incoming Webhook）
+5. 设置页面新增「版本更新检测」开关（默认开启）
+6. 设置页新增「包含 dev 分支」选项，支持检测开发分支预发布版本
+7. 新增元宝 Bot（YuanBao Bot）推送渠道，支持私聊消息推送和群聊消息推送
+8. 新增息知（XiZhi）推送渠道，永久免费
+9. 入站配置支持字段映射多路径配置，每行一个
+10. 推送记录添加关键字筛选条件
+11. 新增远程版本检测功能，方便用户感知更新
+12. 部分渠道添加推送渠道官方文档链接
+13. 新增消息免打扰（DND）功能，支持按接口配置多个免打扰时段
+14. 推送记录新增接口名称字段
 """
