@@ -397,6 +397,7 @@ import {
   Building2,
   Clock,
   ExternalLink,
+  MonitorSpeaker,
 } from 'lucide-vue-next'
 import ClawbotBindDialog from '@/components/ClawbotBindDialog.vue'
 import YuanbaobotBindDialog from '@/components/YuanbaobotBindDialog.vue'
@@ -500,7 +501,7 @@ const getChannelIcon = (type) => {
     ntfy: Bell,
     pushdeer: Smartphone,
     igot: Send,
-    synologychat: MonitorSpeakerphone,
+    synologychat: MonitorSpeaker,
   }
   return icons[type] || Share2
 }
