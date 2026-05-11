@@ -18,8 +18,8 @@
           使用推送服务非常简单，只需要以下三步：
         </p>
         <ol class="list-decimal list-inside space-y-2 text-gray-600 dark:text-gray-300">
-          <li>在<strong>接口管理</strong>页面创建一个推送接口</li>
           <li>在<strong>渠道管理</strong>页面配置消息渠道（企业微信群机器人、Telegram 等）</li>
+          <li>在<strong>接口管理</strong>页面创建一个推送接口</li>
           <li>将渠道绑定到接口，然后使用接口令牌调用 API 发送消息</li>
         </ol>
       </div>
@@ -285,8 +285,9 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
+import { getCustomDomainSetting } from '@/api/user'
 import { useSettingsStore } from '@/stores/settings'
 import {
   Rocket,
@@ -300,11 +301,30 @@ import {
 } from 'lucide-vue-next'
 
 const settingsStore = useSettingsStore()
+const customDomain = ref('')
 
 const apiBaseUrl = computed(() => {
+  if (customDomain.value.trim()) {
+    return customDomain.value.trim().replace(/\/$/, '')
+  }
   return settingsStore.isProxyEnabled 
     ? settingsStore.proxyUrl.trim().replace(/\/$/, '')
     : window.location.origin
+})
+
+const loadCustomDomain = async () => {
+  try {
+    const res = await getCustomDomainSetting()
+    if (res.success) {
+      customDomain.value = res.data?.value || ''
+    }
+  } catch (error) {
+    console.error('加载自定义域名失败:', error)
+  }
+}
+
+onMounted(() => {
+  loadCustomDomain()
 })
 
 const getExample = computed(() => `curl "${apiBaseUrl.value}/api/push/your_token?title=测试消息&content=这是一条测试消息&type=text"`)

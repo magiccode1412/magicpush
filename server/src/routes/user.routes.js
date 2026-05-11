@@ -36,4 +36,8 @@ router.get('/me/settings/dnd-global', userController.getDndGlobalSetting);
 // 更新全局免打扰开关（管理员接口）
 router.put('/me/settings/dnd-global', userController.checkAdmin, userController.updateDndGlobalSetting);
 
+// 调试页自定义域名设置
+router.get('/me/settings/custom-domain', userController.getCustomDomainSetting);
+router.put('/me/settings/custom-domain', userController.updateCustomDomainSetting);
+
 module.exports = router;

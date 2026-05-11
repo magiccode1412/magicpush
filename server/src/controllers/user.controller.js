@@ -304,6 +304,39 @@ class UserController {
   }
 
   /**
+   * 获取调试页自定义域名设置
+   */
+  static getCustomDomainSetting(req, res) {
+    try {
+      const value = SettingsModel.get('debug_custom_domain', '');
+      return ResponseUtil.success(res, { value });
+    } catch (error) {
+      logger.error('获取自定义域名设置失败:', error);
+      return ResponseUtil.serverError(res, '获取设置失败');
+    }
+  }
+
+  /**
+   * 更新调试页自定义域名设置
+   */
+  static updateCustomDomainSetting(req, res) {
+    try {
+      const { value } = req.body;
+      if (typeof value !== 'string') {
+        return ResponseUtil.badRequest(res, '参数错误：value 必须为字符串');
+      }
+
+      SettingsModel.set('debug_custom_domain', value.trim());
+      logger.info(`用户 ${req.user.userId} 更新了调试页自定义域名: ${value.trim() || '(空)'}`);
+
+      return ResponseUtil.success(res, { value: value.trim() }, '自定义域名已更新');
+    } catch (error) {
+      logger.error('更新自定义域名设置失败:', error);
+      return ResponseUtil.serverError(res, '更新设置失败');
+    }
+  }
+
+  /**
    * 更新全局免打扰开关
    */
   static updateDndGlobalSetting(req, res) {

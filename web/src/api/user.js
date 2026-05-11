@@ -40,3 +40,12 @@ export const getDndGlobalSetting = () => {
 export const updateDndGlobalSetting = (enabled) => {
   return request.put('/users/me/settings/dnd-global', { enabled })
 }
+
+// 调试页自定义域名设置
+export const getCustomDomainSetting = () => {
+  return request.get('/users/me/settings/custom-domain')
+}
+
+export const updateCustomDomainSetting = (value) => {
+  return request.put('/users/me/settings/custom-domain', { value })
+}

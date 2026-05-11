@@ -64,6 +64,23 @@
                 <el-radio-button label="header">Authorization 头</el-radio-button>
               </el-radio-group>
             </el-form-item>
+
+            <el-form-item label="自定义域名">
+              <el-input
+                v-model="customDomain"
+                placeholder="请求url不符合预期时可修改此项"
+                clearable
+                @blur="saveCustomDomain"
+                @keyup.enter="saveCustomDomain"
+              >
+                <template #prefix>
+                  <Globe class="w-4 h-4 text-gray-400" />
+                </template>
+              </el-input>
+              <p class="text-xs text-gray-500 mt-1">
+                优先级：自定义域名 &gt; 代理转发 &gt; 当前地址
+              </p>
+            </el-form-item>
           </el-form>
         </div>
 
@@ -308,6 +325,7 @@ import { ref, reactive, computed, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
 import axios from 'axios'
 import { getEndpoints } from '@/api/endpoint'
+import { getCustomDomainSetting, updateCustomDomainSetting } from '@/api/user'
 import { useSettingsStore } from '@/stores/settings'
 import {
   Settings,
@@ -318,6 +336,7 @@ import {
   Share2,
   Zap,
   Copy,
+  Globe,
 } from 'lucide-vue-next'
 
 const endpoints = ref([])
@@ -329,6 +348,8 @@ const headerFormat = ref('text')
 const loading = ref(false)
 const response = ref(null)
 const settingsStore = useSettingsStore()
+const customDomain = ref('')
+const savingCustomDomain = ref(false)
 
 const form = reactive({
   title: '',
@@ -355,12 +376,21 @@ const canSubmitInbound = computed(() => {
   return selectedEndpoint.value && inboundBody.value.trim()
 })
 
+const effectiveBaseUrl = computed(() => {
+  // 优先级：自定义域名 > 代理转发 > window.location.origin
+  if (customDomain.value.trim()) {
+    return customDomain.value.trim().replace(/\/$/, '')
+  }
+  if (settingsStore.isProxyEnabled) {
+    return settingsStore.proxyUrl.trim().replace(/\/$/, '')
+  }
+  return window.location.origin
+})
+
 const requestUrl = computed(() => {
-  if (!currentEndpoint.value) return '请选择接口'
+  const baseUrl = effectiveBaseUrl.value
+  if (!currentEndpoint.value) return `${baseUrl}/api/push/{token}`
   
-  const baseUrl = settingsStore.isProxyEnabled 
-    ? settingsStore.proxyUrl.trim().replace(/\/$/, '')
-    : window.location.origin
   const token = currentEndpoint.value.token
   
   if (apiType.value === 'inbound') {
@@ -463,6 +493,37 @@ const loadEndpoints = async () => {
   }
 }
 
+const loadCustomDomain = async () => {
+  try {
+    const res = await getCustomDomainSetting()
+    if (res.success) {
+      customDomain.value = res.data?.value || ''
+    }
+  } catch (error) {
+    console.error('加载自定义域名失败:', error)
+  }
+}
+
+const saveCustomDomain = async () => {
+  if (savingCustomDomain.value) return
+  savingCustomDomain.value = true
+  try {
+    const res = await updateCustomDomainSetting(customDomain.value)
+    if (!res.success) {
+      ElMessage.warning(res.message || '保存失败')
+      // 回滚
+      loadCustomDomain()
+    }
+  } catch (error) {
+    console.error('保存自定义域名失败:', error)
+    ElMessage.error('保存自定义域名失败')
+    // 回滚
+    loadCustomDomain()
+  } finally {
+    savingCustomDomain.value = false
+  }
+}
+
 const handleEndpointChange = () => {
   response.value = null
   // 如果选择的接口不支持入站，切换到标准推送
@@ -478,9 +539,7 @@ const handleTest = async () => {
   response.value = null
   
   try {
-    const baseUrl = settingsStore.isProxyEnabled 
-      ? settingsStore.proxyUrl.trim().replace(/\/$/, '')
-      : window.location.origin
+    const baseUrl = effectiveBaseUrl.value
     const token = currentEndpoint.value.token
     
     let res
@@ -658,5 +717,6 @@ const copyBody = () => {
 
 onMounted(() => {
   loadEndpoints()
+  loadCustomDomain()
 })
 </script>
