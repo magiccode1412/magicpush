@@ -57,6 +57,14 @@ function getValue(obj, path) {
  * @param {Object} defaults - 默认值，如 { type: 'text' }
  * @returns {Object} - 提取后的对象 { title, content, type }
  */
+// 解析字面量中的转义字符（如 \n \t \\）
+function unescapeLiteral(str) {
+  return String(str)
+    .replace(/\\n/g, '\n')
+    .replace(/\\t/g, '\t')
+    .replace(/\\\\/g, '\\');
+}
+
 function extractFields(source, mapping, defaults = {}) {
   const result = {};
 
@@ -68,20 +76,24 @@ function extractFields(source, mapping, defaults = {}) {
 
       if (paths.length === 1 && typeof paths[0] === 'string' && !paths[0].startsWith('$.')) {
         // 单个固定值（向后兼容）
-        result[field] = paths[0];
+        result[field] = unescapeLiteral(paths[0]);
       } else {
-        // 多值 JSONPath 提取
+        // 混合模式：JSONPath 提取 + 字面量拼接
         const values = [];
         for (const p of paths) {
           if (typeof p === 'string' && p.startsWith('$.')) {
+            // JSONPath → 从 payload 提取动态值
             const value = getValue(source, p);
             if (value !== undefined && value !== null) {
               values.push(String(value));
             }
+          } else if (p !== '' && p !== null && p !== undefined) {
+            // 非 $ 开头 → 解析转义后作为字面量
+            values.push(unescapeLiteral(p));
           }
         }
         if (values.length > 0) {
-          result[field] = values.join('\n');
+          result[field] = values.join('');
         }
       }
     }

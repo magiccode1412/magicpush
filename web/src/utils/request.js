@@ -1,6 +1,7 @@
 import axios from 'axios'
 import { ElMessage } from 'element-plus'
 import { useAuthStore } from '@/stores/auth'
+import router from '@/router'
 
 const request = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL || '/api',
@@ -14,6 +15,7 @@ const request = axios.create({
 let isRefreshing = false
 let refreshFailed = false
 let refreshSubscribers = []
+let isRedirecting = false // 防止重复跳转
 
 // 添加等待刷新完成的订阅者
 const subscribeTokenRefresh = (cb) => {
@@ -51,10 +53,15 @@ request.interceptors.response.use(
 
     // 处理 401 未授权
     if (response?.status === 401) {
-      // 如果已经标记刷新失败，直接退出
-      if (refreshFailed) {
-        authStore.logout()
-        window.location.href = '/login'
+      // 【关键修复】排除刷新接口，避免死循环
+      if (config?.url?.includes('/auth/refresh')) {
+        // 刷新请求本身返回401 → refresh token也过期了，直接登出
+        doLogout()
+        return Promise.reject(error)
+      }
+
+      // 如果已经标记刷新失败或正在跳转，直接拒绝（防止重复处理）
+      if (refreshFailed || isRedirecting) {
         return Promise.reject(error)
       }
 
@@ -63,13 +70,9 @@ request.interceptors.response.use(
         return new Promise((resolve) => {
           subscribeTokenRefresh((success) => {
             if (success) {
-              // 刷新成功，重试请求
               config.headers.Authorization = `Bearer ${authStore.accessToken}`
               resolve(request(config))
             } else {
-              // 刷新失败，跳转登录
-              authStore.logout()
-              window.location.href = '/login'
               resolve(Promise.reject(error))
             }
           })
@@ -92,25 +95,11 @@ request.interceptors.response.use(
           return request(config)
         } else {
           // 刷新失败
-          isRefreshing = false
-          refreshFailed = true
-          onRefreshed(false)
-
-          authStore.logout()
-          window.location.href = '/login'
-          ElMessage.error('登录已过期，请重新登录')
-
+          handleRefreshFail()
           return Promise.reject(error)
         }
       } catch (err) {
-        isRefreshing = false
-        refreshFailed = true
-        onRefreshed(false)
-
-        authStore.logout()
-        window.location.href = '/login'
-        ElMessage.error('登录已过期，请重新登录')
-
+        handleRefreshFail()
         return Promise.reject(error)
       }
     }
@@ -122,10 +111,30 @@ request.interceptors.response.use(
   }
 )
 
+// 统一登出跳转逻辑
+const doLogout = () => {
+  if (isRedirecting) return // 防止重复跳转
+  isRedirecting = true
+  authStore.logout()
+  router.push('/login').finally(() => {
+    isRedirecting = false
+  })
+}
+
+// 统一刷新失败处理
+const handleRefreshFail = () => {
+  isRefreshing = false
+  refreshFailed = true
+  onRefreshed(false)
+  ElMessage.error('登录已过期，请重新登录')
+  doLogout()
+}
+
 // 重置刷新状态（用于登录成功后）
 export const resetRefreshState = () => {
   isRefreshing = false
   refreshFailed = false
+  isRedirecting = false
   refreshSubscribers = []
 }
 
