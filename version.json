@@ -1,6 +1,6 @@
 {
   "name": "magicpush",
-  "version": "1.10.1",
+  "version": "1.11.0",
   "displayName": "MagicPush",
   "description": "支持多渠道消息推送的统一管理平台",
   "repository": {
@@ -8,6 +8,15 @@
     "url": "https://github.com/magiccode1412/magicpush"
   },
   "changelog": [
+    {
+      "version": "1.11.0",
+      "date": "2026-05-19",
+      "type": "release",
+      "changes": [
+        "升级接口管理的入站配置，支持字符串拼接，使用方法参考readme文档",
+        "修复令牌过期导致的401刷新死循环与重复跳转问题"
+      ]
+    },
     {
       "version": "1.10.1",
       "date": "2026-05-11",

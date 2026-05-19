@@ -1,5 +1,5 @@
 appname               = magicpush
-version               = 1.10.1
+version               = 1.11.0
 display_name          = 魔法推送
 desc                  = """一个支持多种消息渠道的统一推送服务管理平台，通过标准化的REST API接口实现消息推送
 目前支持21个渠道：
@@ -13,20 +13,6 @@ maintainer_url        = https://github.com/magiccode1412
 desktop_uidir         = ui
 desktop_applaunchname = magicpush.Application
 service_port          = "${wizard_app_port}"
-changelog             = """1. 紧急修复v1.10.0版本中，渠道管理页面空白问题
-2. 新增 PushDeer 通知渠道（全平台推送服务，支持 iOS/Android/Mac）
-3. 新增 iGot 通知渠道（开放式通知推送服务）
-4. 新增群晖 Chat 通知渠道（Synology NAS 即时通讯套件 Incoming Webhook）
-5. 设置页面新增「版本更新检测」开关（默认开启）
-6. 设置页新增「包含 dev 分支」选项，支持检测开发分支预发布版本
-7. 新增元宝 Bot（YuanBao Bot）推送渠道，支持私聊消息推送和群聊消息推送
-8. 新增息知（XiZhi）推送渠道，永久免费
-9. 入站配置支持字段映射多路径配置，每行一个
-10. 推送记录添加关键字筛选条件
-11. 新增远程版本检测功能，方便用户感知更新
-12. 部分渠道添加推送渠道官方文档链接
-13. 新增消息免打扰（DND）功能，支持按接口配置多个免打扰时段
-14. 推送记录新增接口名称字段
-15. 新增 ntfy 通知渠道（开源跨平台推送服务，支持自托管）
-16. 接口调试页面新增自定义URL，解决飞牛app中继下URL（如：office.app.5ddd.com:32043）不符合预期问题
+changelog             = """1. 升级接口管理的入站配置，支持字符串拼接（字面量与 JSONPath 混合配置），使用方法参考 README 文档
+2. 修复令牌过期导致的 401 刷新死循环与重复跳转问题
 """

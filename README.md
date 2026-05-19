@@ -26,6 +26,12 @@
   </p>
 </div>
 
+## 文档
+
++ [关键词过滤](docs/documentation/keyword-filter-guide.md)
++ [消息免打扰](docs/documentation/do-not-disturb-guide.md)
++ [入站配置](docs/documentation/inbound-config-guide.md)
+
 ## 🌐 [Demo站](https://uptimeflare-ept.pages.dev/)
 
 自行注册即可（邮箱可随便填，不需要验证）
