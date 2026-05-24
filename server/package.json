@@ -21,7 +21,7 @@
     "https-proxy-agent": "^7.0.2",
     "jsonwebtoken": "^9.0.2",
     "nodemailer": "^8.0.3",
-    "protobufjs": "^8.0.3",
+    "protobufjs": "^8.4.2",
     "socks-proxy-agent": "^8.0.2",
     "uuid": "^9.0.1",
     "winston": "^3.12.0",
