@@ -1,0 +1,172 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ============================================
+   Global CSS Variables & Base Styles
+   ============================================ */
+@layer base {
+  :root {
+    --color-primary: #6C63FF;
+    --color-primary-light: #7C3AED;
+    --color-primary-dark: #3B82F6;
+    --bg-dark: #0F0F1A;
+    --bg-dark-secondary: #1A1A2E;
+    --bg-light: #F8FAFC;
+    --text-primary: #FFFFFF;
+    --text-secondary: #E2E8F0;
+    --text-muted: #94A3B8;
+    --glass-bg: rgba(255, 255, 255, 0.05);
+    --glass-border: rgba(255, 255, 255, 0.1);
+  }
+
+  html {
+    scroll-behavior: smooth;
+    font-family: 'Inter', 'PingFang SC', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  }
+
+  body {
+    @apply bg-[#0F0F1A] text-white antialiased overflow-x-hidden;
+  }
+
+  ::selection {
+    background-color: rgba(108, 99, 255, 0.3);
+    color: white;
+  }
+
+  /* Scrollbar styling */
+  ::-webkit-scrollbar {
+    width: 8px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #1a1a2e;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, #6C63FF, #7C3AED);
+    border-radius: 4px;
+  }
+}
+
+/* ============================================
+   Component Styles
+   ============================================ */
+@layer components {
+  .glass-card {
+    @apply backdrop-blur-xl bg-white/5 border border-white/10 rounded-2xl;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .glass-card:hover {
+    @apply bg-white/10 border-white/20 shadow-lg shadow-purple-500/10;
+    transform: translateY(-2px);
+  }
+
+  .gradient-text {
+    @apply bg-gradient-to-r from-purple-400 via-violet-400 to-blue-400 bg-clip-text text-transparent;
+  }
+
+  .glow-border {
+    position: relative;
+  }
+  .glow-border::before {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    border-radius: inherit;
+    padding: 1px;
+    background: linear-gradient(135deg, #6C63FF, #7C3AED, #3B82F6);
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+  .glow-border:hover::before {
+    opacity: 1;
+  }
+
+  .btn-primary {
+    @apply inline-flex items-center gap-2 px-8 py-4 rounded-xl font-semibold text-white
+           bg-gradient-to-r from-purple-500 to-violet-600 
+           hover:from-purple-600 hover:to-violet-700
+           shadow-lg shadow-purple-500/25 hover:shadow-purple-500/40
+           transition-all duration-300 hover:-translate-y-0.5 cursor-pointer;
+  }
+
+  .btn-outline {
+    @apply inline-flex items-center gap-2 px-8 py-4 rounded-xl font-semibold text-white
+           border border-white/20 bg-white/5 backdrop-blur-sm
+           hover:bg-white/10 hover:border-white/30
+           transition-all duration-300 hover:-translate-y-0.5 cursor-pointer;
+  }
+
+  /* Section container */
+  .section-container {
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-28;
+  }
+
+  /* Section title */
+  .section-title {
+    @apply text-3xl md:text-4xl lg:text-5xl font-bold text-center mb-4;
+  }
+  .section-subtitle {
+    @apply text-lg text-slate-400 text-center max-w-2xl mx-auto mb-16;
+  }
+}
+
+/* ============================================
+   Animation Utilities
+   ============================================ */
+@layer utilities {
+  .animate-reveal {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+  }
+  .animate-reveal.revealed {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .delay-100 { animation-delay: 100ms; }
+  .delay-200 { animation-delay: 200ms; }
+  .delay-300 { animation-delay: 300ms; }
+  .delay-400 { animation-delay: 400ms; }
+  .delay-500 { animation-delay: 500ms; }
+}
+
+/* ============================================
+   Hero Background Effects
+   ============================================ */
+.hero-bg {
+  position: relative;
+  overflow: hidden;
+}
+.hero-bg::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background:
+    radial-gradient(circle at 30% 40%, rgba(108, 99, 255, 0.15) 0%, transparent 50%),
+    radial-gradient(circle at 70% 60%, rgba(124, 58, 237, 0.12) 0%, transparent 50%),
+    radial-gradient(circle at 50% 50%, rgba(59, 130, 246, 0.08) 0%, transparent 60%);
+  animation: heroFloat 15s ease-in-out infinite alternate;
+}
+@keyframes heroFloat {
+  0% { transform: translate(0, 0) rotate(0deg); }
+  33% { transform: translate(30px, -30px) rotate(1deg); }
+  66% { transform: translate(-20px, 20px) rotate(-1deg); }
+  100% { transform: translate(10px, -10px) rotate(0.5deg); }
+}
+
+/* Grid pattern overlay */
+.grid-pattern {
+  background-image: 
+    linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+  background-size: 60px 60px;
+}
