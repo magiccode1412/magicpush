@@ -26,6 +26,23 @@
   </p>
 </div>
 
+## 使用交流
+
+<table>
+  <tr>
+    <td align="center">
+      <a href="https://qm.qq.com/q/wWS78gByRa">点此加入QQ群</a>
+      <br>
+      <img src="./public/image/qq-group.jpg" alt="qq-group" width="128px">
+    </td>
+    <td align="center">
+      <a href="https://pd.qq.com/s/eveskv89x">点此加入QQ频道</a>
+      <br>
+      <img src="./public/image/qq-channel.jpg" alt="qq-channel" width="128px">
+    </td>
+  </tr>
+</table>
+
 ## 文档
 
 + [关键词过滤](docs/documentation/keyword-filter-guide.md)
