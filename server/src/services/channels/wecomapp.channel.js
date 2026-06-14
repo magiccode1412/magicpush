@@ -28,6 +28,7 @@ class WecomappChannel extends BaseChannel {
     this.agentid = parseInt(config.agentid);
     this.touser = config.touser;
     this.channelId = channelId;
+    this.proxyUrl = config.proxyUrl;
     this._tokenCache = { token: null, expiresAt: 0 };
   }
 
@@ -39,12 +40,19 @@ class WecomappChannel extends BaseChannel {
     }
 
     logger.info(`企业微信应用获取 access_token: corpid=${this.corpid}`);
+    const axiosConfig = {
+      params: { corpid: this.corpid, corpsecret: this.corpsecret },
+      timeout: 10000,
+    };
+    
+    const proxyAgent = this.createProxyAgent(this.proxyUrl);
+    if (proxyAgent) {
+      axiosConfig.httpsAgent = proxyAgent;
+    }
+    
     const response = await axios.get(
       'https://qyapi.weixin.qq.com/cgi-bin/gettoken',
-      {
-        params: { corpid: this.corpid, corpsecret: this.corpsecret },
-        timeout: 10000,
-      }
+      axiosConfig
     );
 
     const data = response.data;
@@ -84,14 +92,21 @@ class WecomappChannel extends BaseChannel {
     }
 
     logger.info(`企业微信应用发送消息: touser=${this.touser}, msgtype=${body.msgtype}`);
+    const axiosConfig = {
+      params: { access_token: accessToken },
+      headers: { 'Content-Type': 'application/json' },
+      timeout: 15000,
+    };
+    
+    const proxyAgent = this.createProxyAgent(this.proxyUrl);
+    if (proxyAgent) {
+      axiosConfig.httpsAgent = proxyAgent;
+    }
+    
     const response = await axios.post(
       'https://qyapi.weixin.qq.com/cgi-bin/message/send',
       body,
-      {
-        params: { access_token: accessToken },
-        headers: { 'Content-Type': 'application/json' },
-        timeout: 15000,
-      }
+      axiosConfig
     );
 
     const data = response.data;
@@ -198,6 +213,14 @@ class WecomappChannel extends BaseChannel {
         required: true,
         placeholder: '成员ID（多个用 | 分隔）或 @all',
         description: '消息接收者成员 ID，多个用 | 分隔；填 @all 推送应用可见范围内的全部成员',
+      },
+      {
+        name: 'proxyUrl',
+        label: '代理地址',
+        type: 'text',
+        required: false,
+        placeholder: '如 http://127.0.0.1:7890 或 socks5://127.0.0.1:1080',
+        description: '可选，当服务器IP不固定时可通过代理访问企业微信API（支持HTTP/HTTPS/SOCKS5代理）',
       },
     ];
   }
