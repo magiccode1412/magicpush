@@ -48,6 +48,15 @@
           />
         </el-select>
 
+        <el-select v-model="filter.endpointId" placeholder="接口" clearable class="w-40">
+          <el-option
+            v-for="ep in endpoints"
+            :key="ep.id"
+            :label="ep.name"
+            :value="ep.id"
+          />
+        </el-select>
+
         <el-date-picker
           v-model="filter.dateRange"
           type="daterange"
@@ -223,6 +232,7 @@ import { ref, reactive, onMounted, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { getLogs, getStats, clearLogs } from '@/api/log'
 import { getChannelTypes } from '@/api/channel'
+import { getEndpoints } from '@/api/endpoint'
 import { Search, Trash2 } from 'lucide-vue-next'
 import { ElMessage, ElMessageBox } from 'element-plus'
 
@@ -234,10 +244,12 @@ const loading = ref(false)
 const showDetailDialog = ref(false)
 const selectedLog = ref(null)
 const channelTypes = ref([])
+const endpoints = ref([])
 
 const filter = reactive({
   status: '',
   channelType: '',
+  endpointId: '',
   dateRange: null,
   keyword: '',
   keywordScope: 'all',
@@ -274,6 +286,10 @@ const loadData = async () => {
       params.channelType = filter.channelType
     }
 
+    if (filter.endpointId) {
+      params.endpointId = filter.endpointId
+    }
+
     if (filter.dateRange && filter.dateRange.length === 2) {
       params.startDate = filter.dateRange[0]
       params.endDate = filter.dateRange[1]
@@ -284,10 +300,11 @@ const loadData = async () => {
       params.keywordScope = filter.keywordScope || 'all'
     }
 
-    const [logsRes, statsRes, typesRes] = await Promise.all([
+    const [logsRes, statsRes, typesRes, endpointsRes] = await Promise.all([
       getLogs(params),
       getStats(),
       getChannelTypes(),
+      getEndpoints({ pageSize: 100 }),
     ])
 
     if (logsRes.success) {
@@ -301,6 +318,10 @@ const loadData = async () => {
 
     if (typesRes.success) {
       channelTypes.value = typesRes.data || []
+    }
+
+    if (endpointsRes.success) {
+      endpoints.value = endpointsRes.data?.list || []
     }
   } catch (error) {
     console.error('加载数据失败:', error)
@@ -327,6 +348,7 @@ const handleFilter = () => {
 const resetFilter = () => {
   filter.status = ''
   filter.channelType = ''
+  filter.endpointId = ''
   filter.dateRange = null
   filter.keyword = ''
   filter.keywordScope = 'all'
