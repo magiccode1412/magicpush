@@ -811,7 +811,7 @@ const loadData = async () => {
       getInboundTemplates(),
     ])
     if (endpointsRes.success) {
-      endpoints.value = endpointsRes.data || []
+      endpoints.value = (endpointsRes.data && endpointsRes.data.list) || []
     }
     if (channelsRes.success) {
       channels.value = channelsRes.data || []

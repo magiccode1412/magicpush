@@ -10,7 +10,7 @@
       <!-- Badge -->
       <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-purple-500/10 border border-purple-500/20 mb-8 animate-fade-in-up">
         <span class="w-2 h-2 rounded-full bg-green-400 animate-pulse-slow" />
-        <span class="text-sm font-medium text-purple-300">v1.11.0 已发布</span>
+        <span class="text-sm font-medium text-purple-300">v1.12.0 已发布</span>
       </div>
 
       <!-- Title -->
@@ -57,7 +57,7 @@
       <!-- Stats -->
       <div class="flex items-center justify-center gap-8 mt-14 animate-fade-in-up" style="animation-delay: 500ms;">
         <div class="text-center">
-          <div class="text-2xl md:text-3xl font-bold text-white">22+</div>
+          <div class="text-2xl md:text-3xl font-bold text-white">23+</div>
           <div class="text-xs text-slate-500 mt-1">消息渠道</div>
         </div>
         <div class="w-px h-10 bg-white/10" />

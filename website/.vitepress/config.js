@@ -5,7 +5,7 @@ import autoprefixer from 'autoprefixer'
 export default defineConfig({
   ignoreDeadLinks: true,
   title: 'MagicPush 魔法推送',
-  description: '支持多种消息渠道的推送服务管理平台，通过标准化 REST API 将消息推送到微信、Telegram、飞书、钉钉、邮件等 20+ 通知渠道',
+  description: '支持多种消息渠道的推送服务管理平台，通过标准化 REST API 将消息推送到微信、Telegram、飞书、钉钉、邮件、小爱音箱等 20+ 通知渠道',
   head: [
     ['link', { rel: 'icon', type: 'image/png', href: '/logo.png' }],
     ['meta', { property: 'og:type', content: 'website' }],

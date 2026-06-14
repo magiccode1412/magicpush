@@ -486,7 +486,7 @@ const loadEndpoints = async () => {
   try {
     const res = await getEndpoints()
     if (res.success) {
-      endpoints.value = res.data || []
+      endpoints.value = (res.data && res.data.list) || []
     }
   } catch (error) {
     console.error('加载接口列表失败:', error)

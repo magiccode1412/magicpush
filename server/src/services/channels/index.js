@@ -22,6 +22,7 @@ const PushDeerChannel = require('./pushdeer.channel');
 const IGotChannel = require('./igot.channel');
 const SynologyChatChannel = require('./synologychat.channel');
 const ShowDocChannel = require('./showdoc.channel');
+const MisoundChannel = require('./misound.channel');
 // TODO: QQ 机器人渠道开发中，待测试后启用
 // const QqbotChannel = require('./qqbot.channel');
 
@@ -50,6 +51,7 @@ const channelAdapters = {
   igot: IGotChannel,
   synologychat: SynologyChatChannel,
   showdoc: ShowDocChannel,
+  misound: MisoundChannel,
   // qqbot: QqbotChannel, // TODO: 待测试后启用
 };
 
@@ -119,6 +121,7 @@ module.exports = {
   IGotChannel,
   SynologyChatChannel,
   ShowDocChannel,
+  MisoundChannel,
   // QqbotChannel, // TODO: 待测试后启用
   getChannelAdapter,
   getChannelTypes,

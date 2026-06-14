@@ -24,7 +24,8 @@ const categoryColors = {
   '微信生态': 'bg-green-400',
   '即时通讯': 'bg-blue-400',
   '邮件与推送': 'bg-orange-400',
-  '通用/自托管': 'bg-violet-400'
+  '通用/自托管': 'bg-violet-400',
+  '智能硬件': 'bg-cyan-400'
 }
 
 const categoryColor = computed(() => categoryColors[props.category] || 'bg-slate-400')

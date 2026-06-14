@@ -24,7 +24,10 @@ export const channels = [
   { name: 'Gotify', category: '通用/自托管', description: '开源自托管推送服务器' },
   { name: 'ntfy', category: '通用/自托管', description: '开源跨平台推送服务，支持自托管' },
   { name: 'PushMe', category: '通用/自托管', description: '多平台统一推送服务' },
-  { name: 'ShowDoc', category: '通用/自托管', description: '在线文档/知识库推送，支持 Markdown 和 HTML' }
+  { name: 'ShowDoc', category: '通用/自托管', description: '在线文档/知识库推送，支持 Markdown 和 HTML' },
+
+  // ========== 智能硬件 (1个) ==========
+  { name: '小爱音箱', category: '智能硬件', description: '小米小爱音箱 TTS 语音播报，通过底层 API 直接推送' }
 ]
 
 export const channelCategories = [...new Set(channels.map(c => c.category))]

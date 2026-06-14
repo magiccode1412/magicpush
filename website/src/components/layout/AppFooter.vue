@@ -9,7 +9,7 @@
             <span class="text-lg font-bold text-white">MagicPush</span>
           </a>
           <p class="text-sm text-slate-500 leading-relaxed mb-6">
-            支持多种消息渠道的推送服务管理平台，通过标准化 REST API 将消息推送到微信、Telegram、飞书、钉钉、邮件等 20+ 通知渠道。
+            支持多种消息渠道的推送服务管理平台，通过标准化 REST API 将消息推送到微信、Telegram、飞书、钉钉、邮件、小爱音箱等 20+ 通知渠道。
           </p>
           <div class="flex items-center gap-3">
             <a
