@@ -5,10 +5,16 @@
         <h2 class="text-2xl font-bold text-gray-900 dark:text-white">推送记录</h2>
         <p class="text-gray-500 dark:text-gray-400 mt-1">查看所有推送消息的历史记录</p>
       </div>
-      <el-button type="danger" plain @click="handleClear">
-        <Trash2 class="w-4 h-4 mr-1" />
-        清空记录
-      </el-button>
+      <div class="flex gap-2">
+        <el-button type="warning" plain @click="showAutoCleanupDialog = true">
+          <Clock class="w-4 h-4 mr-1" />
+          自动清理
+        </el-button>
+        <el-button type="danger" plain @click="handleClear">
+          <Trash2 class="w-4 h-4 mr-1" />
+          清空记录
+        </el-button>
+      </div>
     </div>
 
     <!-- 统计卡片 -->
@@ -45,6 +51,15 @@
             :key="ct.type"
             :label="ct.name"
             :value="ct.type"
+          />
+        </el-select>
+
+        <el-select v-model="filter.endpointId" placeholder="接口" clearable class="w-40">
+          <el-option
+            v-for="ep in endpoints"
+            :key="ep.id"
+            :label="ep.name"
+            :value="ep.id"
           />
         </el-select>
 
@@ -215,15 +230,50 @@
         </div>
       </div>
     </el-dialog>
+
+    <!-- 自动清理设置对话框 -->
+    <el-dialog v-model="showAutoCleanupDialog" title="自动清理设置" width="440px">
+      <div class="space-y-4">
+        <p class="text-sm text-gray-500 dark:text-gray-400">
+          开启后，系统将自动清理超过指定天数的推送记录，帮助释放存储空间。
+        </p>
+
+        <div class="flex items-center gap-3">
+          <el-switch v-model="autoCleanupForm.enabled" active-text="开启自动清理" />
+        </div>
+
+        <div v-if="autoCleanupForm.enabled" class="pl-1">
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            保留天数
+          </label>
+          <el-input-number
+            v-model="autoCleanupForm.retentionDays"
+            :min="1"
+            :max="365"
+            :step="1"
+            controls-position="right"
+            class="w-full"
+          />
+          <p class="text-xs text-gray-400 mt-1">将保留最近 {{ autoCleanupForm.retentionDays }} 天的推送记录</p>
+        </div>
+      </div>
+      <template #footer>
+        <el-button @click="showAutoCleanupDialog = false">取消</el-button>
+        <el-button type="primary" @click="handleSaveAutoCleanup" :loading="autoCleanupSaving">
+          保存
+        </el-button>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
 <script setup>
 import { ref, reactive, onMounted, watch } from 'vue'
 import { useRoute } from 'vue-router'
-import { getLogs, getStats, clearLogs } from '@/api/log'
+import { getLogs, getStats, clearLogs, getAutoCleanupSetting, updateAutoCleanupSetting } from '@/api/log'
 import { getChannelTypes } from '@/api/channel'
-import { Search, Trash2 } from 'lucide-vue-next'
+import { getEndpoints } from '@/api/endpoint'
+import { Search, Trash2, Clock } from 'lucide-vue-next'
 import { ElMessage, ElMessageBox } from 'element-plus'
 
 const route = useRoute()
@@ -234,10 +284,18 @@ const loading = ref(false)
 const showDetailDialog = ref(false)
 const selectedLog = ref(null)
 const channelTypes = ref([])
+const endpoints = ref([])
+const showAutoCleanupDialog = ref(false)
+const autoCleanupSaving = ref(false)
+const autoCleanupForm = reactive({
+  enabled: false,
+  retentionDays: 30,
+})
 
 const filter = reactive({
   status: '',
   channelType: '',
+  endpointId: '',
   dateRange: null,
   keyword: '',
   keywordScope: 'all',
@@ -274,6 +332,10 @@ const loadData = async () => {
       params.channelType = filter.channelType
     }
 
+    if (filter.endpointId) {
+      params.endpointId = filter.endpointId
+    }
+
     if (filter.dateRange && filter.dateRange.length === 2) {
       params.startDate = filter.dateRange[0]
       params.endDate = filter.dateRange[1]
@@ -284,10 +346,11 @@ const loadData = async () => {
       params.keywordScope = filter.keywordScope || 'all'
     }
 
-    const [logsRes, statsRes, typesRes] = await Promise.all([
+    const [logsRes, statsRes, typesRes, endpointsRes] = await Promise.all([
       getLogs(params),
       getStats(),
       getChannelTypes(),
+      getEndpoints({ pageSize: 100 }),
     ])
 
     if (logsRes.success) {
@@ -301,6 +364,10 @@ const loadData = async () => {
 
     if (typesRes.success) {
       channelTypes.value = typesRes.data || []
+    }
+
+    if (endpointsRes.success) {
+      endpoints.value = endpointsRes.data?.list || []
     }
   } catch (error) {
     console.error('加载数据失败:', error)
@@ -327,6 +394,7 @@ const handleFilter = () => {
 const resetFilter = () => {
   filter.status = ''
   filter.channelType = ''
+  filter.endpointId = ''
   filter.dateRange = null
   filter.keyword = ''
   filter.keywordScope = 'all'
@@ -377,8 +445,41 @@ const handleClear = async () => {
   }
 }
 
+const loadAutoCleanupSetting = async () => {
+  try {
+    const res = await getAutoCleanupSetting()
+    if (res.success) {
+      autoCleanupForm.enabled = res.data.enabled
+      autoCleanupForm.retentionDays = res.data.retentionDays
+    }
+  } catch (error) {
+    console.error('获取自动清理设置失败:', error)
+  }
+}
+
+const handleSaveAutoCleanup = async () => {
+  autoCleanupSaving.value = true
+  try {
+    const res = await updateAutoCleanupSetting({
+      enabled: autoCleanupForm.enabled,
+      retentionDays: autoCleanupForm.retentionDays,
+    })
+    if (res.success) {
+      ElMessage.success('自动清理设置已保存')
+      showAutoCleanupDialog.value = false
+    } else {
+      ElMessage.error(res.message || '保存失败')
+    }
+  } catch (error) {
+    console.error('保存自动清理设置失败:', error)
+    ElMessage.error('保存设置失败')
+  } finally {
+    autoCleanupSaving.value = false
+  }
+}
+
 onMounted(async () => {
-  await loadData()
+  await Promise.all([loadData(), loadAutoCleanupSetting()])
   openLogFromQuery()
 })
 </script>

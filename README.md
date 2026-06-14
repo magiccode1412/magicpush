@@ -26,19 +26,30 @@
   </p>
 </div>
 
-## 使用交流
+
+## 交流&打赏
 
 <table>
   <tr>
     <td align="center">
       <a href="https://qm.qq.com/q/wWS78gByRa">点此加入QQ群</a>
       <br>
-      <img src="./public/image/qq-group.jpg" alt="qq-group" width="128px">
+      <img src="./public/image/qq-group.jpg" alt="qq-group" height="256px">
     </td>
     <td align="center">
       <a href="https://pd.qq.com/s/eveskv89x">点此加入QQ频道</a>
       <br>
-      <img src="./public/image/qq-channel.jpg" alt="qq-channel" width="128px">
+      <img src="./public/image/qq-channel.jpg" alt="qq-channel" height="256px">
+    </td>
+    <td align="center">
+      <a href="https://pd.qq.com/s/eveskv89x">支付宝</a>
+      <br>
+      <img src="./public/image/alipay.png" alt="qq-channel" height="256px">
+    </td>
+    <td align="center">
+      <a href="https://pd.qq.com/s/eveskv89x">微信</a>
+      <br>
+      <img src="./public/image/wechat.png" alt="qq-channel" height="256px">
     </td>
   </tr>
 </table>
@@ -134,6 +145,7 @@
 - **PushDeer** (全平台推送服务，支持 iOS/Android/Mac，**项目已停止维护**)
 - **iGot** (开放式通知推送服务，支持 iOS/Android)
 - **群晖 Chat** (Synology NAS 即时通讯套件，通过 Incoming Webhook 推送)
+- **ShowDoc** (在线文档/知识库推送，支持 Markdown 和 HTML，一键式推送 URL)
 
 ### 核心功能
 - 多渠道消息同时推送
@@ -189,6 +201,7 @@
 | **PushDeer** | 无明确限制（自建）<br>有限制（公共云） | 每个 pushkey | 官方公共云可能有限流；自建服务无限制 |
 | **iGot** | 未公开精确限制 | 每个 key | 个人/小团队维护的公共云服务，建议关注限流情况 |
 | **群晖 Chat** | 取决于硬件性能 | 无明确 API 限流 | 自托管服务，受 NAS 硬件性能和网络带宽影响；高频推送可能造成资源压力 |
+| **ShowDoc** | 无限制（自建）<br>有限制（公共云） | 每个 push URL | 官方公共云可能有限流；自建服务无平台限制 |
 
 > **提示：** 以上为各平台官方公开的限制信息，具体限制可能随平台政策调整而变化，请以各平台最新文档为准。高频推送场景建议优先选择无平台限制的自建渠道（Bark/Gotify/Webhook）。
 

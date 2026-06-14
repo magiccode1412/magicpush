@@ -18,7 +18,7 @@
         <div class="text-sm text-blue-700 dark:text-blue-300">
           <p class="font-medium mb-1">支持的渠道类型</p>
           <p class="opacity-80">
-            微信龙虾机器人 · 企业微信群机器人 · 钉钉 · 飞书 · Telegram · 微信公众号 · WxPusher · PushPlus · Server酱 · Webhook · SMTP邮件 · Gotify · Bark · Meow · PushMe · 息知 · 企业微信应用 · 元宝 Bot · ntfy · PushDeer · iGot · 群晖 Chat
+            微信龙虾机器人 · 企业微信群机器人 · 钉钉 · 飞书 · Telegram · 微信公众号 · WxPusher · PushPlus · Server酱 · Webhook · SMTP邮件 · Gotify · Bark · Meow · PushMe · 息知 · 企业微信应用 · 元宝 Bot · ntfy · PushDeer · iGot · 群晖 Chat · ShowDoc
           </p>
         </div>
       </div>
@@ -398,6 +398,7 @@ import {
   Clock,
   ExternalLink,
   MonitorSpeaker,
+  FileText,
 } from 'lucide-vue-next'
 import ClawbotBindDialog from '@/components/ClawbotBindDialog.vue'
 import YuanbaobotBindDialog from '@/components/YuanbaobotBindDialog.vue'
@@ -473,6 +474,7 @@ const getChannelColor = (type) => {
     pushdeer: 'bg-orange-500',
     igot: 'bg-indigo-500',
     synologychat: 'bg-yellow-600',
+    showdoc: 'bg-sky-600',
   }
   return colors[type] || 'bg-gray-500'
 }
@@ -502,6 +504,7 @@ const getChannelIcon = (type) => {
     pushdeer: Smartphone,
     igot: Send,
     synologychat: MonitorSpeaker,
+    showdoc: FileText,
   }
   return icons[type] || Share2
 }

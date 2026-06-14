@@ -15,3 +15,11 @@ export const getStats = () => {
 export const clearLogs = () => {
   return request.delete('/logs/clear')
 }
+
+export const getAutoCleanupSetting = () => {
+  return request.get('/logs/auto-cleanup')
+}
+
+export const updateAutoCleanupSetting = (data) => {
+  return request.put('/logs/auto-cleanup', data)
+}

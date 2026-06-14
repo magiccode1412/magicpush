@@ -1,4 +1,5 @@
 const LogService = require('../services/log.service');
+const { SettingsModel } = require('../models');
 const ResponseUtil = require('../utils/response');
 const logger = require('../utils/logger');
 
@@ -72,6 +73,52 @@ class LogController {
     } catch (error) {
       logger.error('清空推送记录失败:', error);
       return ResponseUtil.serverError(res, '清空推送记录失败');
+    }
+  }
+
+  /**
+   * 获取自动清理设置
+   */
+  static getAutoCleanupSetting(req, res) {
+    try {
+      const enabled = SettingsModel.getBoolean('log_auto_cleanup_enabled', false);
+      const retentionDays = parseInt(SettingsModel.get('log_retention_days', '30')) || 30;
+      return ResponseUtil.success(res, { enabled, retentionDays }, '获取自动清理设置成功');
+    } catch (error) {
+      logger.error('获取自动清理设置失败:', error);
+      return ResponseUtil.serverError(res, '获取自动清理设置失败');
+    }
+  }
+
+  /**
+   * 更新自动清理设置
+   */
+  static async updateAutoCleanupSetting(req, res) {
+    try {
+      const { enabled, retentionDays } = req.body;
+
+      if (typeof enabled !== 'boolean') {
+        return ResponseUtil.badRequest(res, '参数错误：enabled 必须为布尔值');
+      }
+
+      const days = parseInt(retentionDays);
+      if (!days || days < 1 || days > 365) {
+        return ResponseUtil.badRequest(res, '参数错误：retentionDays 必须为 1-365 之间的数字');
+      }
+
+      SettingsModel.setBoolean('log_auto_cleanup_enabled', enabled);
+      SettingsModel.set('log_retention_days', String(days));
+
+      logger.info(`用户 ${req.user.userId} ${enabled ? '开启' : '关闭'}了自动清理，保留天数: ${days}`);
+
+      return ResponseUtil.success(
+        res,
+        { enabled, retentionDays: days },
+        `自动清理已${enabled ? '开启' : '关闭'}`
+      );
+    } catch (error) {
+      logger.error('更新自动清理设置失败:', error);
+      return ResponseUtil.serverError(res, '更新自动清理设置失败');
     }
   }
 }

@@ -1,5 +1,5 @@
 appname               = magicpush
-version               = 1.11.0
+version               = 1.12.0
 display_name          = 魔法推送
 desc                  = """一个支持多种消息渠道的统一推送服务管理平台，通过标准化的REST API接口实现消息推送
 目前支持21个渠道：
@@ -13,6 +13,8 @@ maintainer_url        = https://github.com/magiccode1412
 desktop_uidir         = ui
 desktop_applaunchname = magicpush.Application
 service_port          = "${wizard_app_port}"
-changelog             = """1. 升级接口管理的入站配置，支持字符串拼接（字面量与 JSONPath 混合配置），使用方法参考 README 文档
-2. 修复令牌过期导致的 401 刷新死循环与重复跳转问题
+changelog             = """1. 企业微信应用渠道添加代理支持（支持 HTTP/HTTPS/SOCKS5 代理，解决需要固定 IP 的场景）
+2. 新增 ShowDoc 推送渠道
+3. 新增自动清理推送记录功能（可配置保留天数），默认关闭
+4. 修改设置页面布局为列表布局
 """

@@ -23,7 +23,8 @@ export const channels = [
   { name: 'Webhook', category: '通用/自托管', description: '通用HTTP推送，支持自定义URL/Headers/Body' },
   { name: 'Gotify', category: '通用/自托管', description: '开源自托管推送服务器' },
   { name: 'ntfy', category: '通用/自托管', description: '开源跨平台推送服务，支持自托管' },
-  { name: 'PushMe', category: '通用/自托管', description: '多平台统一推送服务' }
+  { name: 'PushMe', category: '通用/自托管', description: '多平台统一推送服务' },
+  { name: 'ShowDoc', category: '通用/自托管', description: '在线文档/知识库推送，支持 Markdown 和 HTML' }
 ]
 
 export const channelCategories = [...new Set(channels.map(c => c.category))]
