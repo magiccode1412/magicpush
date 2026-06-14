@@ -10,11 +10,18 @@ class EndpointService {
    * 获取接口列表
    */
   static async getEndpoints(userId, options = {}) {
-    const endpoints = await EndpointModel.findByUserId(userId, options);
+    const page = options.page || 1;
+    const pageSize = options.pageSize || 20;
+
+    const allEndpoints = await EndpointModel.findByUserId(userId, { ...options, limit: undefined });
+
+    const total = allEndpoints.length;
+    const start = (page - 1) * pageSize;
+    const pagedEndpoints = allEndpoints.slice(start, start + pageSize);
 
     // 为每个接口添加绑定的渠道信息
     const endpointsWithChannels = await Promise.all(
-      endpoints.map(async (endpoint) => {
+      pagedEndpoints.map(async (endpoint) => {
         const channels = await EndpointModel.getChannels(endpoint.id);
         return {
           ...endpoint,
@@ -23,7 +30,15 @@ class EndpointService {
       })
     );
 
-    return endpointsWithChannels;
+    return {
+      list: endpointsWithChannels,
+      pagination: {
+        page,
+        pageSize,
+        total,
+        totalPages: Math.ceil(total / pageSize),
+      },
+    };
   }
 
   /**

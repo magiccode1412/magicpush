@@ -1,6 +1,6 @@
 {
   "name": "magicpush",
-  "version": "1.11.0",
+  "version": "1.12.0",
   "displayName": "MagicPush",
   "description": "支持多渠道消息推送的统一管理平台",
   "repository": {
@@ -8,6 +8,17 @@
     "url": "https://github.com/magiccode1412/magicpush"
   },
   "changelog": [
+    {
+      "version": "1.12.0",
+      "date": "2026-06-14",
+      "type": "release",
+      "changes": [
+        "企业微信应用添加代理支持",
+        "添加自动清理推送记录功能",
+        "新增showdoc推送渠道",
+        "修改设置页面布局为列表布局"
+      ]
+    },
     {
       "version": "1.11.0",
       "date": "2026-05-19",
