@@ -19,4 +19,8 @@ router.get('/stats/overview', logController.getStats);
 // 清空推送记录
 router.delete('/clear', logController.clearLogs);
 
+// 自动清理设置
+router.get('/auto-cleanup', logController.getAutoCleanupSetting);
+router.put('/auto-cleanup', logController.updateAutoCleanupSetting);
+
 module.exports = router;
