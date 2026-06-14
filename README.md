@@ -26,19 +26,30 @@
   </p>
 </div>
 
-## 使用交流
+
+## 交流&打赏
 
 <table>
   <tr>
     <td align="center">
       <a href="https://qm.qq.com/q/wWS78gByRa">点此加入QQ群</a>
       <br>
-      <img src="./public/image/qq-group.jpg" alt="qq-group" width="128px">
+      <img src="./public/image/qq-group.jpg" alt="qq-group" height="256px">
     </td>
     <td align="center">
       <a href="https://pd.qq.com/s/eveskv89x">点此加入QQ频道</a>
       <br>
-      <img src="./public/image/qq-channel.jpg" alt="qq-channel" width="128px">
+      <img src="./public/image/qq-channel.jpg" alt="qq-channel" height="256px">
+    </td>
+    <td align="center">
+      <a href="https://pd.qq.com/s/eveskv89x">支付宝</a>
+      <br>
+      <img src="./public/image/alipay.png" alt="qq-channel" height="256px">
+    </td>
+    <td align="center">
+      <a href="https://pd.qq.com/s/eveskv89x">微信</a>
+      <br>
+      <img src="./public/image/wechat.png" alt="qq-channel" height="256px">
     </td>
   </tr>
 </table>
