@@ -2,10 +2,17 @@
 $:
   vscode:
     - docker:
+        # 使用仓库内的自定义开发环境镜像；image 作为构建失败时的回退镜像
+        build: .ide/Dockerfile
         image: cnbcool/default-dev-env:latest
       services:
         - vscode
         - docker
+      # 打开开发环境时自动执行一次：后台启动 MagicPush 前后端（不阻塞终端）
+      env:
+        CNB_WELCOME_CMD: >-
+          setsid bash scripts/start.sh > /tmp/dev.log 2>&1 < /dev/null &
+          echo "✅ MagicPush 开发服务已在后台启动：后端 http://localhost:3000 ，前端 http://localhost:5173 （日志：/tmp/dev.log）"
       # 开发环境启动后会执行的任务
       stages:
         - name: install dependence
