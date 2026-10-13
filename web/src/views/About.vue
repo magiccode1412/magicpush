@@ -56,45 +56,17 @@
       </div>
     </div>
 
-    <!-- 交流&打赏 -->
+    <!-- 打赏 -->
     <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-8">
-      <h3 class="text-2xl font-bold text-center text-gray-900 dark:text-white mb-8">💝 交流 & 打赏</h3>
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <!-- QQ群 -->
-        <div class="text-center group">
-          <a href="https://qm.qq.com/q/wWS78gByRa" target="_blank" class="block mb-3">
-            <div class="relative overflow-hidden rounded-xl bg-gradient-to-br from-blue-400 to-blue-600 p-1 group-hover:scale-105 transition-transform duration-300">
-              <img src="/image/qq-group.jpg" alt="QQ群" class="w-full h-48 object-cover  rounded-lg">
-            </div>
-          </a>
-          <p class="font-medium text-gray-700 dark:text-gray-300 mb-2">QQ群</p>
-          <a href="https://qm.qq.com/q/wWS78gByRa" target="_blank" class="inline-flex items-center gap-1.5 px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white text-sm rounded-lg transition-colors">
-            <Users class="w-4 h-4" />
-            加入QQ群
-          </a>
-        </div>
-
-        <!-- QQ频道 -->
-        <div class="text-center group">
-          <a href="https://pd.qq.com/s/eveskv89x" target="_blank" class="block mb-3">
-            <div class="relative overflow-hidden rounded-xl bg-gradient-to-br from-indigo-400 to-indigo-600 p-1 group-hover:scale-105 transition-transform duration-300">
-              <img src="/image/qq-channel.jpg" alt="QQ频道" class="w-full h-48 object-cover rounded-lg">
-            </div>
-          </a>
-          <p class="font-medium text-gray-700 dark:text-gray-300 mb-2">QQ频道</p>
-          <a href="https://pd.qq.com/s/eveskv89x" target="_blank" class="inline-flex items-center gap-1.5 px-4 py-2 bg-indigo-500 hover:bg-indigo-600 text-white text-sm rounded-lg transition-colors">
-            <Radio class="w-4 h-4" />
-            加入QQ频道
-          </a>
-        </div>
-
+      <h3 class="text-2xl font-bold text-center text-gray-900 dark:text-white mb-8">💝 打赏</h3>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
         <!-- 支付宝 -->
         <div class="text-center group">
-          <a href="https://pd.qq.com/s/eveskv89x" target="_blank" class="block mb-3">
+          <div class="mb-3">
             <div class="relative overflow-hidden rounded-xl bg-gradient-to-br from-sky-400 to-blue-500 p-1 group-hover:scale-105 transition-transform duration-300">
               <img src="/image/alipay.png" alt="支付宝" class="w-full h-48 object-cover rounded-lg bg-white">
             </div>
-          </a>
+          </div>
           <p class="font-medium text-gray-700 dark:text-gray-300 mb-2">支付宝</p>
           <span class="inline-flex items-center gap-1.5 px-4 py-2 bg-sky-500 text-white text-sm rounded-lg">
             <Heart class="w-4 h-4" />
@@ -104,11 +76,11 @@
 
         <!-- 微信 -->
         <div class="text-center group">
-          <a href="https://pd.qq.com/s/eveskv89x" target="_blank" class="block mb-3">
+          <div class="mb-3">
             <div class="relative overflow-hidden rounded-xl bg-gradient-to-br from-green-400 to-emerald-600 p-1 group-hover:scale-105 transition-transform duration-300">
               <img src="/image/wechat.png" alt="微信" class="w-full h-48 object-cover rounded-lg bg-white">
             </div>
-          </a>
+          </div>
           <p class="font-medium text-gray-700 dark:text-gray-300 mb-2">微信</p>
           <span class="inline-flex items-center gap-1.5 px-4 py-2 bg-green-500 text-white text-sm rounded-lg">
             <Heart class="w-4 h-4" />
@@ -178,7 +150,7 @@
 </template>
 
 <script setup>
-import { Github, Globe, FileText, Clock, Users, Radio, Heart } from 'lucide-vue-next'
+import { Github, Globe, FileText, Clock, Heart } from 'lucide-vue-next'
 import { VERSION } from '@/utils/version'
 
 const techStack = [
