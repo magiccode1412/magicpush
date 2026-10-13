@@ -10,19 +10,19 @@
         一个支持多种消息渠道的推送服务管理平台，用户可以通过标准化的REST API接口将消息推送到多种通知渠道
       </p>
       <div class="flex flex-wrap justify-center gap-4 mb-6">
-        <a href="https://www.160621.xyz/magicpush" target="_blank" class="inline-flex items-center gap-2 px-5 py-2.5 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-lg hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-colors font-medium">
+        <a href="https://magicpush.160621.xyz/" target="_blank" class="inline-flex items-center gap-2 px-5 py-2.5 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-lg hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-colors font-medium">
           <Globe class="w-4 h-4" />
           官方网站
         </a>
-        <a href="https://www.160621.xyz/magicpush/guide/dev/overview.html" target="_blank" class="inline-flex items-center gap-2 px-5 py-2.5 bg-green-50 dark:bg-green-900/30 text-green-600 dark:text-green-400 rounded-lg hover:bg-green-100 dark:hover:bg-green-900/50 transition-colors font-medium">
+        <a href="https://cnb.cool/magiccode1412/magicpush/-/issues" target="_blank" class="inline-flex items-center gap-2 px-5 py-2.5 bg-green-50 dark:bg-green-900/30 text-green-600 dark:text-green-400 rounded-lg hover:bg-green-100 dark:hover:bg-green-900/50 transition-colors font-medium">
           <FileText class="w-4 h-4" />
-          开发文档
+          反馈渠道
         </a>
         <a href="https://github.com/magiccode1412/magicpush" target="_blank" class="inline-flex items-center gap-2 px-5 py-2.5 bg-gray-50 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors font-medium">
           <Github class="w-4 h-4" />
           项目地址
         </a>
-        <a href="https://www.160621.xyz/magicpush-dev/guide/changelog.html" target="_blank" class="inline-flex items-center gap-2 px-5 py-2.5 bg-orange-50 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 rounded-lg hover:bg-orange-100 dark:hover:bg-orange-900/50 transition-colors font-medium">
+        <a href="https://magicpush.160621.xyz/guide/changelog" target="_blank" class="inline-flex items-center gap-2 px-5 py-2.5 bg-orange-50 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 rounded-lg hover:bg-orange-100 dark:hover:bg-orange-900/50 transition-colors font-medium">
           <Clock class="w-4 h-4" />
           更新日志
         </a>
@@ -63,11 +63,10 @@
         <!-- 支付宝 -->
         <div class="text-center group">
           <div class="mb-3">
-            <div class="relative overflow-hidden rounded-xl bg-gradient-to-br from-sky-400 to-blue-500 p-1 group-hover:scale-105 transition-transform duration-300">
-              <img src="/image/alipay.png" alt="支付宝" class="w-full h-48 object-cover rounded-lg bg-white">
+            <div class="relative overflow-hidden rounded-xl bg-gradient-to-br from-sky-400 to-blue-500 p-1 max-w-[200px] mx-auto group-hover:scale-105 transition-transform duration-300">
+              <img src="/image/alipay.png" alt="支付宝" class="max-w-[200px] mx-auto w-full aspect-[3/4] object-contain rounded-lg bg-white">
             </div>
           </div>
-          <p class="font-medium text-gray-700 dark:text-gray-300 mb-2">支付宝</p>
           <span class="inline-flex items-center gap-1.5 px-4 py-2 bg-sky-500 text-white text-sm rounded-lg">
             <Heart class="w-4 h-4" />
             支付宝打赏
@@ -77,11 +76,10 @@
         <!-- 微信 -->
         <div class="text-center group">
           <div class="mb-3">
-            <div class="relative overflow-hidden rounded-xl bg-gradient-to-br from-green-400 to-emerald-600 p-1 group-hover:scale-105 transition-transform duration-300">
-              <img src="/image/wechat.png" alt="微信" class="w-full h-48 object-cover rounded-lg bg-white">
+            <div class="relative overflow-hidden rounded-xl bg-gradient-to-br from-green-400 to-emerald-600 p-1 max-w-[200px] mx-auto group-hover:scale-105 transition-transform duration-300">
+              <img src="/image/wechat.png" alt="微信" class="max-w-[200px] mx-auto w-full aspect-[3/4] object-contain rounded-lg bg-white">
             </div>
           </div>
-          <p class="font-medium text-gray-700 dark:text-gray-300 mb-2">微信</p>
           <span class="inline-flex items-center gap-1.5 px-4 py-2 bg-green-500 text-white text-sm rounded-lg">
             <Heart class="w-4 h-4" />
             微信打赏
