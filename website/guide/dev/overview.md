@@ -154,6 +154,7 @@ PORT=3000                          # 监听端口，默认 3000
 | 企业微信应用 | wecomapp | corpid, corpsecret, agentid, touser | 应用消息推送 |
 | 息知 | xizhi | pushMode, key | 息知推送 |
 | PushMe | pushme | key | 推推 |
+| MQTT | mqtt | brokerUrl, topic | MQTT 协议发布消息 |
 
 ---
 

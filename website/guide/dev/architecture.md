@@ -99,6 +99,7 @@ BaseChannel (抽象基类) — base.channel.js
         ├── BarkChannel           (Bark iOS 推送)
         ├── PushMeChannel         (PushMe 推推)
         ├── XizhiChannel          (息知)
+        ├── MqttChannel           (MQTT 协议发布消息)
         └── QqbotChannel          (QQ 机器人 — 开发中未启用)
 ```
 

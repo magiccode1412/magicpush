@@ -106,7 +106,7 @@
 | **微信生态** | 微信龙虾机器人、元宝 Bot、企业微信机器人、企业微信应用、微信公众号、Server酱、息知 |
 | **即时通讯** | Telegram Bot、飞书机器人、钉钉机器人、QQ机器人 |
 | **App推送** | PushPlus、WxPusher、Bark、Meow、PushMe、ntfy、PushDeer、iGot |
-| **通用协议** | Webhook、SMTP邮件、Gotify |
+| **通用协议** | Webhook、SMTP邮件、Gotify、MQTT |
 | **其他** | 群晖 Chat、ShowDoc、小爱音箱 |
 
 > 📖 各渠道详细配置说明及频率限制请查看：[推送渠道配置文档](https://www.160621.xyz/magicpush/guide/channels/rate-limits.html)

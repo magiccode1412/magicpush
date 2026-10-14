@@ -24,6 +24,7 @@ const SynologyChatChannel = require('./synologychat.channel');
 const ShowDocChannel = require('./showdoc.channel');
 const MisoundChannel = require('./misound.channel');
 const QqbotChannel = require('./qqbot.channel');
+const MqttChannel = require('./mqtt.channel');
 
 // 渠道类型到适配器的映射
 const channelAdapters = {
@@ -52,6 +53,7 @@ const channelAdapters = {
   showdoc: ShowDocChannel,
   misound: MisoundChannel,
   qqbot: QqbotChannel,
+  mqtt: MqttChannel,
 };
 
 /**
@@ -158,6 +160,7 @@ module.exports = {
   ShowDocChannel,
   MisoundChannel,
   QqbotChannel,
+  MqttChannel,
   getChannelAdapter,
   getChannelTypes,
   getChannelTypeInfo,

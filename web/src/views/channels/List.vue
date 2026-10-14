@@ -507,6 +507,7 @@ const getChannelColor = (type) => {
     synologychat: 'bg-yellow-600',
     showdoc: 'bg-sky-600',
     misound: 'bg-orange-600',
+    mqtt: 'bg-teal-500',
   }
   return colors[type] || 'bg-gray-500'
 }
@@ -538,6 +539,7 @@ const getChannelIcon = (type) => {
     synologychat: MonitorSpeaker,
     showdoc: FileText,
     misound: MonitorSpeaker,
+    mqtt: Send,
   }
   return icons[type] || Share2
 }

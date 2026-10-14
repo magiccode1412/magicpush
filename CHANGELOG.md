@@ -1,5 +1,12 @@
 # 更新日志 (Changelog):
 
+## [Unreleased]
+
+### 新增 (Features)
+- 新增推送渠道-MQTT（将消息发布到任意 MQTT Broker，支持 JSON / 纯文本载荷，可配置 QoS / Retain / TLS）
+
+---
+
 ## [1.14.0] - 2026-07-30
 
 ### 更新 (Changes)
