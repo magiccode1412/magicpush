@@ -10,18 +10,11 @@ $:
         - docker
       # 打开开发环境时自动执行一次：后台启动 MagicPush 前后端（不阻塞终端）
       env:
-        CNB_WELCOME_CMD: >-
-          bash scripts/start.sh
+        CNB_WELCOME_CMD: echo "开发环境-启动🚀" && bash scripts/start.sh
       # 开发环境启动后会执行的任务
       stages:
         - name: install dependence
           script: bash scripts/install.sh
-        - name: install fnpack
-          script: |
-            cd /root
-            curl -fsSL -o fnpack https://static2.fnnas.com/fnpack/fnpack-1.2.1-linux-amd64
-            chmod +x fnpack
-            mv fnpack /usr/local/bin/fnpack
 
   push:
   - imports: https://cnb.cool/magiccode1412/secret/-/blob/main/env.yml

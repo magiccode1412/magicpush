@@ -49,6 +49,12 @@ RUN curl -fsSL https://code-server.dev/install.sh | sh \
 # 安装 CodeBuddy Code（提供 codebuddy 命令，用于浏览器中的 CodeBuddy Web，需 >= 2.137.0）
 RUN npm install -g @tencent-ai/codebuddy-code
 
+# 安装飞牛fpk工具
+RUN cd /root \
+    && curl -fsSL -o fnpack https://static2.fnnas.com/fnpack/fnpack-1.2.3-linux-amd64 \
+    && chmod +x fnpack \
+    && mv fnpack /usr/local/bin/fnpack
+
 # 中文命令行支持
 ENV LANG=C.UTF-8
 ENV LANGUAGE=C.UTF-8
