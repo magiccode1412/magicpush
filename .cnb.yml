@@ -11,8 +11,7 @@ $:
       # 打开开发环境时自动执行一次：后台启动 MagicPush 前后端（不阻塞终端）
       env:
         CNB_WELCOME_CMD: >-
-          setsid bash scripts/start.sh > /tmp/dev.log 2>&1 < /dev/null &
-          echo "✅ MagicPush 开发服务已在后台启动：后端 http://localhost:3000 ，前端 http://localhost:5173 （日志：/tmp/dev.log）"
+          bash scripts/start.sh
       # 开发环境启动后会执行的任务
       stages:
         - name: install dependence
