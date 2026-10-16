@@ -59,6 +59,11 @@ app.use((req, res, next) => {
     ip: getRealIP(req),
     userAgent: req.get('User-Agent'),
   });
+
+  // 临时调试：设置 DEBUG_BODY=true 时打印请求体到终端
+  if (process.env.DEBUG_BODY === 'true' && req.body && Object.keys(req.body).length) {
+    logger.info(`[DEBUG] Body: ${JSON.stringify(req.body)}`);
+  }
   next();
 });
 
