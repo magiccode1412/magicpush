@@ -1,3 +1,32 @@
+# 构建Docker镜像流水线
+.build_docker: &build_docker
+  name: 构建Docker镜像
+  imports: https://cnb.cool/magiccode1412/secret/-/blob/main/env.yml
+  services:
+    - docker
+  env:
+    IMAGE_TAG: ${CNB_DOCKER_REGISTRY}/${CNB_REPO_SLUG_LOWERCASE}:latest
+    DOCKERHUB_IMAGE_TAG: ${DOCKERHUB_USERNAME}/${CNB_REPO_NAME_LOWERCASE}:latest
+  stages:
+    - name: 获取版本号
+      script: |
+        VERSION=$(jq -r '.version' /workspace/version.json)
+        echo "##[set-output app_version=$VERSION]"
+      exports:
+        app_version: APP_VERSION
+    - name: 登录Docker仓库
+      script: |
+        docker login -u ${CNB_TOKEN_USER_NAME} -p "${CNB_TOKEN}" ${CNB_DOCKER_REGISTRY}
+        docker login -u "${DOCKERHUB_USERNAME}" -p "${DOCKERHUB_TOKEN}"
+    - name: 构建和推送Docker镜像
+      script: |
+        docker buildx build \
+          -t ${IMAGE_TAG} \
+          -t ${CNB_DOCKER_REGISTRY}/${CNB_REPO_SLUG_LOWERCASE}:${APP_VERSION} \
+          -t ${DOCKERHUB_IMAGE_TAG} \
+          -t ${DOCKERHUB_USERNAME}/${CNB_REPO_NAME_LOWERCASE}:${APP_VERSION} \
+          --platform linux/amd64,linux/arm64,linux/arm/v7 --push .
+
 # 云原生开发
 $:
   vscode:
@@ -13,7 +42,8 @@ $:
           bash scripts/start.sh
 
   push:
-  - imports: https://cnb.cool/magiccode1412/secret/-/blob/main/env.yml
+  - name: 同步仓库到Github
+    imports: https://cnb.cool/magiccode1412/secret/-/blob/main/env.yml
     stages:
       - name: sync_to_github
         image: tencentcom/git-sync
@@ -26,119 +56,7 @@ $:
 
 main:
   web_trigger_docker_cnb:
-    - runner:
-        tags: cnb:arch:amd64
-      services:
-        - docker
-      imports: https://cnb.cool/magiccode1412/secret/-/blob/main/env.yml
-      env:
-        CNB_IMAGE_TAG: ${CNB_DOCKER_REGISTRY}/${CNB_REPO_SLUG_LOWERCASE}:latest-linux-amd64
-        DOCKERHUB_IMAGE_TAG: ${DOCKERHUB_USERNAME}/${CNB_REPO_NAME_LOWERCASE}:latest-linux-amd64
-      stages:
-        - name: docker login
-          script: echo "$DOCKERHUB_TOKEN" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
-        - name: docker build
-          script: docker build -t ${CNB_IMAGE_TAG} .
-        - name: docker push
-          script: |
-            docker push ${CNB_IMAGE_TAG}
-            docker tag ${CNB_IMAGE_TAG} ${DOCKERHUB_IMAGE_TAG}
-            docker push ${DOCKERHUB_IMAGE_TAG}
-        - name: resolve
-          type: cnb:resolve
-          options:
-            key: build-amd64 
-          
-    - runner:
-        tags: cnb:arch:arm64:v8
-      services:
-        - docker
-      imports: https://cnb.cool/magiccode1412/secret/-/blob/main/env.yml
-      env:
-        CNB_IMAGE_TAG: ${CNB_DOCKER_REGISTRY}/${CNB_REPO_SLUG_LOWERCASE}:latest-linux-arm64
-        DOCKERHUB_IMAGE_TAG: ${DOCKERHUB_USERNAME}/${CNB_REPO_NAME_LOWERCASE}:latest-linux-arm64
-      stages:
-        - name: docker login
-          script: echo "$DOCKERHUB_TOKEN" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
-        - name: docker build
-          script: docker build -t ${CNB_IMAGE_TAG} .
-        - name: docker push
-          script: |
-            docker push ${CNB_IMAGE_TAG}
-            docker tag ${CNB_IMAGE_TAG} ${DOCKERHUB_IMAGE_TAG}
-            docker push ${DOCKERHUB_IMAGE_TAG}
-        - name: resolve
-          type: cnb:resolve
-          options:
-            key: build-arm64
-
-    - services:
-        - docker
-      imports: https://cnb.cool/magiccode1412/secret/-/blob/main/env.yml
-      env:
-        CNB_IMAGE_TAG: ${CNB_DOCKER_REGISTRY}/${CNB_REPO_SLUG_LOWERCASE}:latest
-        DOCKERHUB_IMAGE_TAG: ${DOCKERHUB_USERNAME}/${CNB_REPO_NAME_LOWERCASE}:latest
-      stages:
-        - name: get_version
-          script: |
-            VERSION=$(jq -r '.version' /workspace/version.json)
-            echo "##[set-output app_version=$VERSION]"
-          exports:
-            app_version: APP_VERSION
-        - name: await the amd64
-          type: cnb:await
-          options:
-            key: build-amd64
-        - name: await the arm64
-          type: cnb:await
-          options:
-            key: build-arm64
-        - name: manifest_cnb
-          image: cnbcool/manifest
-          settings:
-            target: ${CNB_IMAGE_TAG}
-            template: ${CNB_IMAGE_TAG}-OS-ARCH
-            platforms:
-              - linux/amd64
-              - linux/arm64
-        - name: manifest_dockerhub
-          image: cnbcool/manifest
-          settings:
-            username: ${DOCKERHUB_USERNAME}
-            password: ${DOCKERHUB_TOKEN}
-            target: ${DOCKERHUB_IMAGE_TAG}
-            template: ${DOCKERHUB_IMAGE_TAG}-OS-ARCH
-            platforms:
-              - linux/amd64
-              - linux/arm64
-        - name: manifest_cnb_version
-          image: cnbcool/manifest
-          settings:
-            target: ${CNB_DOCKER_REGISTRY}/${CNB_REPO_SLUG_LOWERCASE}:${APP_VERSION}
-            template: ${CNB_IMAGE_TAG}-OS-ARCH
-            platforms:
-              - linux/amd64
-              - linux/arm64
-        - name: manifest_dockerhub_version
-          image: cnbcool/manifest
-          settings:
-            username: ${DOCKERHUB_USERNAME}
-            password: ${DOCKERHUB_TOKEN}
-            target: ${DOCKERHUB_USERNAME}/${CNB_REPO_NAME_LOWERCASE}:${APP_VERSION}
-            template: ${DOCKERHUB_IMAGE_TAG}-OS-ARCH
-            platforms:
-              - linux/amd64
-              - linux/arm64
-        - name: remove tag
-          type: artifact:remove-tag
-          options:
-            name: ${CNB_REPO_NAME}
-            tags:
-              - latest-linux-amd64
-              - latest-linux-arm64
-            type: docker
-        - name: update jsdelivr cache
-          script: curl -s "https://purge.jsdelivr.net/gh/magiccode1412/magicpush@main/version.json"
+    - <<: *build_docker
 
 dev:
   web_trigger_docker_dev:
@@ -148,17 +66,4 @@ dev:
       stages:
         - name: docker build && push
           script: bash ./scripts/docker.sh dev
-        - name: update jsdelivr cache
-          script: curl -s "https://purge.jsdelivr.net/gh/magiccode1412/magicpush@dev/version.json"
 
-  web_trigger_sync_from_github:
-    - imports: https://cnb.cool/magiccode1412/secret/-/blob/main/env.yml
-      stages:
-        - name: sync from github
-          image: tencentcom/git-sync
-          settings:
-            target_url: https://github.com/${GITHUB_USERNAME}/${CNB_REPO_NAME_LOWERCASE}.git
-            auth_type: https
-            username: "${GITHUB_USERNAME}"
-            password: "${GITHUB_ACCESS_TOKEN}"
-            sync_mode: pull
