@@ -44,6 +44,8 @@ RUN curl -fsSL https://code-server.dev/install.sh | sh \
     && code-server --install-extension Vue.volar \
     && code-server --install-extension esbenp.prettier-vscode \
     && code-server --install-extension bradlc.vscode-tailwindcss \
+    && code-server --install-extension Tencent-Cloud.coding-copilot \
+    && code-server --install-extension MS-CEINTL.vscode-language-pack-zh-hans \
     && echo done
 
 # 安装 CodeBuddy Code（提供 codebuddy 命令，用于浏览器中的 CodeBuddy Web，需 >= 2.137.0）
