@@ -19,13 +19,13 @@ const path = require('path');
 
 const rootDir = path.resolve(__dirname, '..');
 const versionFile = path.join(rootDir, 'version.json');
-const serverPackage = path.join(rootDir, 'server/package.json');
-const webPackage = path.join(rootDir, 'web/package.json');
-const webVersionUtils = path.join(rootDir, 'web/src/utils/version.js');
-const changelogFile = path.join(rootDir, 'website/guide/changelog.md');
+const serverPackage = path.join(rootDir, 'apps/server/package.json');
+const webPackage = path.join(rootDir, 'apps/web/package.json');
+const webVersionUtils = path.join(rootDir, 'apps/web/src/utils/version.js');
+const changelogFile = path.join(rootDir, 'apps/website/guide/changelog.md');
 const gitChangelogFile = path.join(rootDir, 'CHANGELOG.md');
-const fnappManifest = path.join(rootDir, 'fnapp/manifest');
-const dockerComposeFile = path.join(rootDir, 'fnapp/app/docker/docker-compose.yaml');
+const fnappManifest = path.join(rootDir, 'apps/fnapp/manifest');
+const dockerComposeFile = path.join(rootDir, 'apps/fnapp/app/docker/docker-compose.yaml');
 
 /**
  * 读取 version.json

@@ -140,7 +140,7 @@ class EndpointService {
 ### 2.3 全局错误中间件 — 兜底处理
 
 ```javascript
-// server/src/middleware/error.middleware.js
+// apps/server/src/middleware/error.middleware.js
 const errorMiddleware = (err, req, res, next) => {
   // 参数验证错误
   if (err.name === 'ValidationError') {
@@ -169,7 +169,7 @@ const errorMiddleware = (err, req, res, next) => {
 ### 2.4 数据库迁移 — 静默忽略已存在的字段
 
 ```javascript
-// server/src/database/init.js
+// apps/server/src/database/init.js
 try {
   db.exec(`ALTER TABLE users ADD COLUMN role TEXT DEFAULT 'user'`);
 } catch (e) {
@@ -450,8 +450,8 @@ console.log('debug');         // 生产代码禁止使用 console.log/console.er
 | 文件 | 作用 |
 |------|------|
 | `package.json`（根） | 提供 `lint` / `lint:fix` / `format` / `format:check` 脚本与共享 devDependencies |
-| `eslint.config.js` | ESLint 扁平配置：JS 用 `eslint:recommended`，Vue 用 `vue/essential`（仅捕获错误，不强制模板风格）；`server/` 按 CommonJS，其余按 ESM |
-| `.prettierrc.json` | Prettier 配置（前端默认无分号，`server/` 覆盖为带分号） |
+| `eslint.config.js` | ESLint 扁平配置：JS 用 `eslint:recommended`，Vue 用 `vue/essential`（仅捕获错误，不强制模板风格）；`apps/server/` 按 CommonJS，其余按 ESM |
+| `.prettierrc.json` | Prettier 配置（前端默认无分号，`apps/server/` 覆盖为带分号） |
 | `.prettierignore` | 忽略构建产物与锁文件 |
 
 ### 7.1 常用命令

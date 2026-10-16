@@ -37,7 +37,7 @@
 ## 2. 项目结构
 
 ```
-web/src/
+apps/web/src/
 ├── App.vue                    # 根组件（页面切换动画）
 ├── main.js                    # 应用入口
 │
@@ -101,7 +101,7 @@ web/src/
 使用 Vue Router 4 的嵌套路由 + 懒加载：
 
 ```javascript
-// web/src/router/index.js
+// apps/web/src/router/index.js
 const routes = [
   {
     path: '/',
@@ -257,7 +257,7 @@ onMounted(() => {
 ### 5.1 Setup Store 模式
 
 ```javascript
-// web/src/stores/auth.js
+// apps/web/src/stores/auth.js
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 
@@ -311,7 +311,7 @@ export const useAuthStore = defineStore('auth', () => {
 
 ### 6.1 Axios 实例配置
 
-文件：`web/src/api/request.js`
+文件：`apps/web/src/api/request.js`
 
 ```javascript
 import axios from 'axios'
@@ -372,7 +372,7 @@ export default request
 #### 通用 CRUD API（以渠道为例）
 
 ```javascript
-// web/src/api/channel.js
+// apps/web/src/api/channel.js
 import request from './request'
 
 // 获取渠道列表
@@ -396,7 +396,7 @@ export function testChannel(channelId) {
 对于需要特殊绑定流程的渠道（如扫码登录），API 应**独立成文件**：
 
 ```javascript
-// web/src/api/clawbot.js - 微信龙虾机器人绑定
+// apps/web/src/api/clawbot.js - 微信龙虾机器人绑定
 import request from './request'
 
 export function getClawbotQRCode() {
@@ -407,7 +407,7 @@ export function clawbotBindConfirm(data) {
   return request.post('/channels/clawbot/bind/confirm', data)
 }
 
-// web/src/api/misound.js - 小爱音箱扫码登录
+// apps/web/src/api/misound.js - 小爱音箱扫码登录
 import request from './request'
 
 export function initQRLogin() {
@@ -459,7 +459,7 @@ Element Plus 暗色模式在全局样式中通过 HTML class 切换。
 
 ### 7.3 自定义样式
 
-项目特有的全局样式放在 `web/src/styles/index.css` 中。避免在组件中使用 `<style scoped>`，优先使用 Tailwind 类名或 Element Plus 组件属性控制样式。
+项目特有的全局样式放在 `apps/web/src/styles/index.css` 中。避免在组件中使用 `<style scoped>`，优先使用 Tailwind 类名或 Element Plus 组件属性控制样式。
 
 ---
 
@@ -470,7 +470,7 @@ Element Plus 暗色模式在全局样式中通过 HTML class 切换。
 ### 步骤 1：创建 API 模块
 
 ```javascript
-// web/src/api/template.js
+// apps/web/src/api/template.js
 import request from './request'
 
 export function getTemplateList(params) {
@@ -493,7 +493,7 @@ export function deleteTemplate(id) {
 ### 步骤 2：创建页面组件
 
 ```vue
-<!-- web/src/views/templates/List.vue -->
+<!-- apps/web/src/views/templates/List.vue -->
 <template> ... </template>
 <script setup> ... </script>
 ```
@@ -501,7 +501,7 @@ export function deleteTemplate(id) {
 ### 步骤 3：注册路由
 
 ```javascript
-// web/src/router/index.js
+// apps/web/src/router/index.js
 {
   path: 'templates',
   name: 'Templates',
@@ -521,7 +521,7 @@ export function deleteTemplate(id) {
 
 ### 9.1 运行命令
 
-在 `web/` 目录下执行：
+在 `apps/web/` 目录下执行：
 
 ```bash
 pnpm test          # 运行全部测试（vitest run）

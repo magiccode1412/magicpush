@@ -89,20 +89,20 @@ MagicPush 的完整开发者文档入口。本文档涵盖项目架构、开发�
 
 ```bash
 # 后端
-cd server && npm install
+cd apps/server && npm install
 
 # 前端
-cd web && npm install
+cd apps/web && npm install
 
 # 初始化数据库（自动创建表 + 测试账号 admin/admin123）
-cd server && npm run init-db
+cd apps/server && npm run init-db
 
 # 方式一：启动脚本（同时启动前后端）
 bash ./scripts/start.sh
 
 # 方式二：分别启动
-cd server && npm start          # 后端 :3000
-cd web && npm run dev           # 前端 :5173
+cd apps/server && npm start          # 后端 :3000
+cd apps/web && npm run dev           # 前端 :5173
 
 # 方式三：Docker
 docker compose up -d            # 前后端分离模式
@@ -162,8 +162,8 @@ PORT=3000                          # 监听端口，默认 3000
 
 | 问题 | 解决方案 |
 |------|----------|
-| **端口被占用** | 修改 `PORT` 环境变量或 `web/vite.config.js` 的 `server.port` |
-| **数据库权限错误** | 确保 `server/data/` 目录有写入权限，或通过 `DB_PATH` 指定其他位置 |
+| **端口被占用** | 修改 `PORT` 环境变量或 `apps/web/vite.config.js` 的 `server.port` |
+| **数据库权限错误** | 确保 `apps/server/data/` 目录有写入权限，或通过 `DB_PATH` 指定其他位置 |
 | **CORS 错误** | 检查 `FRONTEND_URL` 是否正确设置 |
 | **推送失败但配置正确** | 检查目标服务网络可达性；境外服务考虑使用代理；查看日志文件 |
 | **内存占用过高** | 检查是否有任务堆积或连接泄漏；内置 V8 堆监控会在超过 80% 时告警 |

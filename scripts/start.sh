@@ -5,7 +5,7 @@ echo ""
 
 # 启动后端服务
 echo "📦 启动后端服务 (http://localhost:3000)..."
-cd /workspace/server
+cd /workspace/apps/server
 pnpm start &
 SERVER_PID=$!
 
@@ -14,7 +14,7 @@ sleep 2
 
 # 启动前端服务
 echo "🎨 启动前端服务 (http://localhost:5173)..."
-cd /workspace/web
+cd /workspace/apps/web
 pnpm run dev &
 WEB_PID=$!
 

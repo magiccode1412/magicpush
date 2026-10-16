@@ -32,7 +32,7 @@
 
 ## 2. 运行命令
 
-在 `server/` 目录下执行：
+在 `apps/server/` 目录下执行：
 
 ```bash
 # 运行全部测试（递归扫描 tests/ 下所有 *.test.js）
@@ -48,7 +48,7 @@ pnpm test:coverage
 pnpm test:watch
 ```
 
-依赖说明：项目已在 `server/package.json` 新增以下脚本：
+依赖说明：项目已在 `apps/server/package.json` 新增以下脚本：
 
 ```json
 "scripts": {
@@ -63,7 +63,7 @@ pnpm test:watch
 ## 3. 目录结构与命名约定
 
 ```text
-server/tests/
+apps/server/tests/
 ├── unit/                      # 单元测试（本期重点）
 │   ├── channels/
 │   │   ├── meow.channel.test.js        # axios mock 范式
@@ -216,11 +216,11 @@ function createMockRes() {
 
 ## 9. 前端测试（Vitest）
 
-前端 `web/` 已引入 [Vitest](https://vitest.dev/) 作为单元测试框架，运行于 `jsdom` 环境（store 依赖 `localStorage`）。
+前端 `apps/web/` 已引入 [Vitest](https://vitest.dev/) 作为单元测试框架，运行于 `jsdom` 环境（store 依赖 `localStorage`）。
 
 ### 9.1 运行命令
 
-在 `web/` 目录下执行：
+在 `apps/web/` 目录下执行：
 
 ```bash
 pnpm test          # 运行全部测试（等价于 vitest run）
@@ -230,7 +230,7 @@ pnpm test:watch    # 监听模式，文件变更自动重跑（开发时）
 ### 9.2 目录与命名约定
 
 ```text
-web/src/stores/
+apps/web/src/stores/
 ├── auth.js
 ├── settings.js
 ├── auth.spec.js        # auth store 单测
@@ -243,7 +243,7 @@ web/src/stores/
 
 ### 9.3 配置
 
-`web/vitest.config.js` 复用 `vite.config.js` 的 `@` 别名，并启用 `environment: 'jsdom'`：
+`apps/web/vitest.config.js` 复用 `vite.config.js` 的 `@` 别名，并启用 `environment: 'jsdom'`：
 
 ```js
 import { defineConfig } from 'vitest/config'

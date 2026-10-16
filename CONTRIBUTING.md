@@ -58,7 +58,7 @@ git remote add upstream https://github.com/原作者/magicpush.git
 
 ```bash
 # 安装后端依赖
-cd server
+cd apps/server
 pnpm install
 
 # 安装前端依赖
@@ -74,14 +74,14 @@ pnpm install
 
 **终端 1 - 启动后端：**
 ```bash
-cd server
+cd apps/server
 cp .env.example .env   # 首次运行需要配置环境变量（见下方说明）
 pnpm dev                # 使用 nodemon 热重载，默认端口 3000
 ```
 
 **终端 2 - 启动前端：**
 ```bash
-cd web
+cd apps/web
 pnpm dev               # 默认端口 5173
 ```
 
@@ -89,7 +89,7 @@ pnpm dev               # 默认端口 5173
 
 ### 环境变量说明
 
-首次运行需要在 `server/.env` 中配置：
+首次运行需要在 `apps/server/.env` 中配置：
 
 ```env
 # 必填项
@@ -176,14 +176,14 @@ git push origin fix/login-error
 
 ## 代码规范
 
-### 后端 (server/)
+### 后端 (apps/server/)
 
 **文件命名：** 小驼峰 (`userService.js`, `authController.js`)
 
 **基本结构示例：**
 
 ```javascript
-// server/src/services/userService.js
+// apps/server/src/services/userService.js
 
 const db = require('../database');
 const logger = require('../utils/logger');
@@ -212,14 +212,14 @@ module.exports = { getUserById };
 - ✅ 使用 `logger` 而不是 `console.log`
 - ✅ 一个模块只做一件事
 
-### 前端 (web/)
+### 前端 (apps/web/)
 
 **组件命名：** 大驼峰 (`UserProfile.vue`, `LoginDialog.vue`)
 
 **基本结构示例：**
 
 ```vue
-<!-- web/src/components/UserProfile.vue -->
+<!-- apps/web/src/components/UserProfile.vue -->
 <template>
   <div class="user-profile">
     <h2>{{ user.name }}</h2>

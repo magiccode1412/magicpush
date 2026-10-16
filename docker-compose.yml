@@ -1,7 +1,7 @@
 services:
   server:
     build:
-      context: ./server
+      context: ./apps/server
       dockerfile: Dockerfile
     container_name: magicpush-server
     restart: unless-stopped
@@ -22,7 +22,7 @@ services:
 
   web:
     build:
-      context: ./web
+      context: ./apps/web
       dockerfile: Dockerfile
     container_name: magicpush-web
     restart: unless-stopped

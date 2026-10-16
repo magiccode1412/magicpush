@@ -1,10 +1,10 @@
 .pnpm-store
 node_modules
-server/data
-server/logs
+apps/server/data
+apps/server/logs
 .env
-web/dist
-.codebuddy
+apps/web/dist
+.codebuddy/plans
 package-lock.json
 
 # 测试覆盖率产物

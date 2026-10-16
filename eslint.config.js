@@ -42,7 +42,7 @@ export default [
 
   // 后端为 CommonJS
   {
-    files: ['server/**/*.js'],
+    files: ['apps/server/**/*.js'],
     languageOptions: {
       sourceType: 'commonjs',
     },

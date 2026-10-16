@@ -26,7 +26,7 @@
 项目采用**适配器模式（Adapter Pattern）**管理消息通知渠道。每个渠道是一个独立的适配器类，继承自 `BaseChannel` 基类，通过统一的注册机制被系统识别和使用。
 
 ```
-server/src/services/channels/
+apps/server/src/services/channels/
 ├── base.channel.js          # 基类，定义统一接口
 ├── index.js                 # 渠道注册中心
 ├── wecom.channel.js         # 企业微信
@@ -71,10 +71,10 @@ adapter.send(message)            ← 统一调用 send 方法
 
 | 文件 | 操作 | 说明 |
 |------|------|------|
-| `server/src/services/channels/<name>.channel.js` | **新建** | 渠道适配器实现 |
-| `server/src/services/channels/index.js` | **修改** | 注册新渠道（添加 ~4 行代码） |
-| `server/src/middleware/validator.middleware.js` | **修改** | 在 `createChannelValidation` 的 `isIn()` 白名单中添加渠道类型 |
-| `server/package.json` | **修改** | 如需第三方依赖，添加到 dependencies |
+| `apps/server/src/services/channels/<name>.channel.js` | **新建** | 渠道适配器实现 |
+| `apps/server/src/services/channels/index.js` | **修改** | 注册新渠道（添加 ~4 行代码） |
+| `apps/server/src/middleware/validator.middleware.js` | **修改** | 在 `createChannelValidation` 的 `isIn()` 白名单中添加渠道类型 |
+| `apps/server/package.json` | **修改** | 如需第三方依赖，添加到 dependencies |
 
 ### 2.2 不需要修改的文件
 
@@ -86,7 +86,7 @@ adapter.send(message)            ← 统一调用 send 方法
 >
 > 如果渠道需要特殊的用户认证/绑定流程（如**扫码登录、OAuth授权、设备配对**），则需要额外创建：
 > - **后端**：独立的 Controller + Service + Routes（参考 `misound.controller.js`, `xiaomi-auth.service.js`）
-> - **前端**：专属的 API 模块 + 绑定对话框组件（参考 `web/src/api/misound.js`, `MisoundBindDialog.vue`）
+> - **前端**：专属的 API 模块 + 绑定对话框组件（参考 `apps/web/src/api/misound.js`, `MisoundBindDialog.vue`）
 > - **路由挂载**：在 `channel.routes.js` 中通过 `router.use('/子路径', subRoutes)` 注册
 >
 > 详细开发规范参见 [后端开发指南 - 子路由挂载](./backend-development.md#15-注册路由)
@@ -97,7 +97,7 @@ adapter.send(message)            ← 统一调用 send 方法
 
 ### 3.1 创建渠道适配器
 
-在 `server/src/services/channels/` 目录下新建 `<name>.channel.js` 文件。
+在 `apps/server/src/services/channels/` 目录下新建 `<name>.channel.js` 文件。
 
 **文件命名规范**：全小写，单词间用 `-` 分隔，如 `smtp.channel.js`、`bark.channel.js`。
 
@@ -186,7 +186,7 @@ module.exports = XxxChannel;
 
 ### 3.2 注册渠道
 
-修改 `server/src/services/channels/index.js`，添加两处代码：
+修改 `apps/server/src/services/channels/index.js`，添加两处代码：
 
 **1) 顶部添加 require 导入：**
 
@@ -217,10 +217,10 @@ module.exports = {
 
 ### 3.3 安装依赖
 
-如果渠道需要第三方 npm 包，在 `server/` 目录下安装：
+如果渠道需要第三方 npm 包，在 `apps/server/` 目录下安装：
 
 ```bash
-cd server
+cd apps/server
 pnpm add <package-name>
 ```
 
@@ -367,13 +367,13 @@ static getConfigFields() {
 ### 6.1 安装依赖
 
 ```bash
-cd server
+cd apps/server
 pnpm add nodemailer
 ```
 
 ### 6.2 创建适配器文件
 
-文件路径：`server/src/services/channels/smtp.channel.js`
+文件路径：`apps/server/src/services/channels/smtp.channel.js`
 
 ```javascript
 const nodemailer = require('nodemailer');
@@ -554,7 +554,7 @@ module.exports = SmtpChannel;
 
 ### 6.3 注册渠道
 
-修改 `server/src/services/channels/index.js`：
+修改 `apps/server/src/services/channels/index.js`：
 
 ```javascript
 // 顶部添加导入
@@ -660,7 +660,7 @@ curl -X POST http://localhost:3000/api/channels/<channel_id>/test \
 ### Q: 添加新渠道后前端没有显示？
 
 确认以下几点：
-1. 文件是否放置在 `server/src/services/channels/` 目录下
+1. 文件是否放置在 `apps/server/src/services/channels/` 目录下
 2. `index.js` 中是否正确 import 并注册到 `channelAdapters`
 3. 服务端是否已重启
 4. `getConfigFields()` 返回的数组是否非空

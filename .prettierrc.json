@@ -7,7 +7,7 @@
   "vueIndentScriptAndStyle": false,
   "overrides": [
     {
-      "files": "server/**/*.{js,json}",
+      "files": "apps/server/**/*.{js,json}",
       "options": {
         "semi": true
       }

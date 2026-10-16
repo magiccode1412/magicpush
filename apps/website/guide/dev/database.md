@@ -161,12 +161,12 @@ system_settings                      (全局 KV 键值对设置，无用户归�
 
 ## 4. 数据库迁移策略
 
-采用 **try-catch ALTER TABLE** 的增量迁移方式，在 `server/src/database/init.js` 中逐步添加新字段：
+采用 **try-catch ALTER TABLE** 的增量迁移方式，在 `apps/server/src/database/init.js` 中逐步添加新字段：
 
 ### 4.1 迁移方式
 
 ```javascript
-// server/src/database/init.js
+// apps/server/src/database/init.js
 
 // 新增字段时：try-catch 包裹，已存在则忽略
 try {

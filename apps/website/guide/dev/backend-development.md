@@ -24,7 +24,7 @@
 
 ### 1.1 创建 Model
 
-文件：`server/src/models/notificationTemplate.model.js`
+文件：`apps/server/src/models/notificationTemplate.model.js`
 
 ```javascript
 const db = require('../config/database');
@@ -129,7 +129,7 @@ module.exports = NotificationTemplateModel;
 
 ### 1.2 创建 Service
 
-文件：`server/src/services/notificationTemplate.service.js`
+文件：`apps/server/src/services/notificationTemplate.service.js`
 
 ```javascript
 const NotificationTemplateModel = require('../models/notificationTemplate.model');
@@ -205,7 +205,7 @@ module.exports = NotificationTemplateService;
 
 ### 1.3 创建 Controller
 
-文件：`server/src/controllers/notificationTemplate.controller.js`
+文件：`apps/server/src/controllers/notificationTemplate.controller.js`
 
 ```javascript
 const NotificationTemplateService = require('../services/notificationTemplate.service');
@@ -314,7 +314,7 @@ module.exports = NotificationTemplateController;
 
 ### 1.4 创建 Route
 
-文件：`server/src/routes/notificationTemplate.routes.js`
+文件：`apps/server/src/routes/notificationTemplate.routes.js`
 
 ```javascript
 const express = require('express');
@@ -354,7 +354,7 @@ module.exports = router;
 
 #### 方式一：顶层注册（独立功能模块）
 
-修改 `server/src/routes/index.js`：
+修改 `apps/server/src/routes/index.js`：
 
 ```javascript
 // 顶部引入
@@ -369,7 +369,7 @@ app.use('/api/templates', notificationTemplateRoutes);
 对于需要特殊绑定流程的渠道（如扫码登录），应在主渠道路由中挂载子路由：
 
 ```javascript
-// server/src/routes/channel.routes.js
+// apps/server/src/routes/channel.routes.js
 
 // 微信龙虾机器人绑定路由（必须在 /:id 之前，避免路径冲突）
 const clawbotRoutes = require('./clawbot.routes');
@@ -383,7 +383,7 @@ router.use('/misound', misoundRoutes);
 **子路由文件示例：**
 
 ```javascript
-// server/src/routes/misound.routes.js
+// apps/server/src/routes/misound.routes.js
 const express = require('express');
 const { body, param } = require('express-validator');
 const router = express.Router();
@@ -415,7 +415,7 @@ module.exports = router;
 
 ## 2. 新增中间件
 
-文件：`server/src/middleware/xxx.middleware.js`
+文件：`apps/server/src/middleware/xxx.middleware.js`
 
 ```javascript
 const logger = require('../utils/logger');
@@ -442,14 +442,14 @@ module.exports = requestLoggerMiddleware;
 - 文件名 `{功能名}.middleware.js`
 - 导出一个函数 `(req, res, next) => {}`
 - 必须调用 `next()` 将控制权传递给下一个中间件
-- 全局中间件在 `server/src/app.js` 中注册
+- 全局中间件在 `apps/server/src/app.js` 中注册
 - 路由级中间件在 routes 文件中使用
 
 ---
 
 ## 3. 添加数据库迁移
 
-在 `server/src/database/init.js` 的末尾追加：
+在 `apps/server/src/database/init.js` 的末尾追加：
 
 ```javascript
 // ========== 迁移：通知模板表 ==========

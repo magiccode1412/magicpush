@@ -5,16 +5,16 @@ RUN corepack enable && corepack prepare pnpm@latest --activate
 # 阶段2: 安装后端依赖
 FROM base AS server-deps
 WORKDIR /app/server
-COPY server/package.json server/pnpm-lock.yaml ./
+COPY apps/server/package.json apps/server/pnpm-lock.yaml ./
 RUN pnpm install --frozen-lockfile --prod
 
 # 阶段3: 构建前端
 FROM base AS web-builder
 WORKDIR /app/web
 ARG VITE_API_BASE_URL
-COPY web/package.json web/pnpm-lock.yaml ./
+COPY apps/web/package.json apps/web/pnpm-lock.yaml ./
 RUN pnpm install --frozen-lockfile
-COPY web/ ./
+COPY apps/web/ ./
 RUN pnpm run build
 
 # 阶段4: 最终运行镜像
@@ -29,8 +29,8 @@ ENV TZ=Asia/Shanghai
 COPY --from=server-deps /app/server/node_modules ./server/node_modules
 
 # 复制后端源码
-COPY server/src/ ./server/src/
-COPY server/package.json ./server/
+COPY apps/server/src/ ./server/src/
+COPY apps/server/package.json ./server/
 
 # 复制前端构建产物
 COPY --from=web-builder /app/web/dist ./web/dist
