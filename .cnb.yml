@@ -27,6 +27,34 @@
           -t ${DOCKERHUB_USERNAME}/${CNB_REPO_NAME_LOWERCASE}:${APP_VERSION} \
           --platform linux/amd64,linux/arm64,linux/arm/v7 --push .
 
+# 发布：部署文档到edgeone
+.edgeone: &edgeone
+  name: 部署文档到edgeone
+  stages:
+  - name: 部署文档到edgeone
+    image: cnbcool/webhook
+    ifModify:
+      - "apps/website/**"
+    settings:
+      urls:
+        - https://api.edgeone.ai/eo/pages/hook/cnb
+      method: POST
+      content_type: application/json
+      template: |
+        {
+          "repoName": "{{ CNB_REPO_NAME }}",
+          "repoUrl": "{{ CNB_REPO_URL_HTTPS }}",
+          "branch": "{{ CNB_BRANCH }}",
+          "commit": "{{ CNB_COMMIT_SHORT }}",
+          "commitMessage": "{{ CNB_COMMIT_MESSAGE }}",
+          "committer": "{{ CNB_COMMITTER }}",
+          "event": "{{ CNB_EVENT }}",
+          "buildId": "{{ CNB_BUILD_ID }}",
+          "buildWebUrl": "{{ CNB_BUILD_WEB_URL }}",
+          "buildUser": "{{ CNB_BUILD_USER }}",
+          "pipelineName": "{{ CNB_PIPELINE_NAME }}"
+        }
+
 # 云原生开发
 $:
   vscode:
@@ -58,6 +86,7 @@ $:
           username: "${GITHUB_USERNAME}"
           password: "${GITHUB_ACCESS_TOKEN}"
           force: true  
+  - <<: *edgeone
 
 main:
   web_trigger_docker_cnb:
