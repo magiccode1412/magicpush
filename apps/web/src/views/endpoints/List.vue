@@ -886,6 +886,10 @@ const inboundExampleData = {
     User: { Name: 'emby' },
     Server: { Name: 'Emby' }
   },
+  fnos: {
+    title: '飞牛OS 通知',
+    body: '这是一条来自飞牛OS的测试消息',
+  },
   generic: {
     title: '示例标题',
     content: '示例内容',

@@ -212,6 +212,17 @@ const PRESET_TEMPLATES = {
       type: 'text',
     },
   },
+  fnos: {
+    name: '飞牛OS',
+    description: '飞牛OS 通知',
+    fieldMapping: {
+      title: '$.title',
+      content: '$.body',
+    },
+    defaultValues: {
+      type: 'text',
+    },
+  },
   generic: {
     name: '通用',
     description: '自定义映射规则',

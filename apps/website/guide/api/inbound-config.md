@@ -74,6 +74,7 @@ Authorization: Bearer 你的令牌
 | **Prometheus** | Prometheus AlertManager 告警 |
 | **GitHub** | GitHub Webhook 事件（PR、Issue 等）|
 | **Emby** | Emby/Jellyfin 媒体库事件通知 |
+| **飞牛OS** | 飞牛OS（fnOS）系统/应用通知 |
 | **通用** | 其他任意格式的数据（需手动填写字段映射）|
 
 > **注意**：选择「Grafana」「Prometheus」「GitHub」「Emby」等预设模板时，字段映射由系统自动处理，无需手动填写。只有选择「通用」时才会显示字段映射编辑区域。
