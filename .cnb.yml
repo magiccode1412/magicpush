@@ -33,13 +33,18 @@ $:
     - docker:
         build: .ide/Dockerfile
       services:
-        - vscode
+        - name: vscode
+          options:
+            keepAliveTimeout: 2h
         - docker
       env:
         CNB_WELCOME_CMD: |
           echo "开发环境-启动🚀"
           bash scripts/install.sh
           bash scripts/start.sh
+      stages:
+        - name: 防止报错
+          script: ls -a
 
   push:
   - name: 同步仓库到Github

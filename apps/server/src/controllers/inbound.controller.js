@@ -2,7 +2,6 @@ const InboundService = require('../services/inbound.service');
 const PushService = require('../services/push.service');
 const ResponseUtil = require('../utils/response');
 const logger = require('../utils/logger');
-const getRealIP = require('../utils/ip');
 
 /**
  * 入站控制器
@@ -64,7 +63,7 @@ class InboundController {
       const message = InboundService.processInbound(endpoint, payload);
 
       // 执行推送
-      const result = await PushService.pushByToken(token, message, getRealIP(req), req.requestId);
+      const result = await PushService.pushByToken(token, message, req.ip, req.requestId);
 
       if (result.success) {
         logger.info(`[Inbound] 推送成功: endpoint=${endpoint.name}`);

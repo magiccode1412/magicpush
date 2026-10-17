@@ -1,7 +1,6 @@
 const PushService = require('../services/push.service');
 const ResponseUtil = require('../utils/response');
 const logger = require('../utils/logger');
-const getRealIP = require('../utils/ip');
 
 /**
  * 推送控制器
@@ -30,7 +29,7 @@ class PushController {
       const { title, content, type = 'text', extraData } = source;
       const url = source.url || '';
 
-      const result = await PushService.pushByToken(token, { title, content, type, url, extraData }, getRealIP(req), req.requestId);
+      const result = await PushService.pushByToken(token, { title, content, type, url, extraData }, req.ip, req.requestId);
 
       if (result.success) {
         return ResponseUtil.success(res, result, '推送成功');
@@ -56,7 +55,7 @@ class PushController {
         endpointId,
         req.user.userId,
         { title, content, type, url, extraData },
-        getRealIP(req),
+        req.ip,
         req.requestId
       );
 
@@ -87,7 +86,7 @@ class PushController {
         channelId,
         req.user.userId,
         { title, content, type, url, extraData },
-        getRealIP(req),
+        req.ip,
         req.requestId
       );
 

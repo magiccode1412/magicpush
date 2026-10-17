@@ -136,6 +136,8 @@
 
 > **注意：** 预构建的 Docker 镜像（`magiccode1412/magicpush:latest`）为 All-in-One 模式（Express 直接提供静态文件），不包含 Nginx，因此仅具备 Express 层的两层限流。如需启用 Nginx 层的兜底限流，请使用 `docker-compose up -d` 自行构建前后端分离镜像。
 
+> **部署要求：** 生产环境必须将后端部署在**反向代理（Nginx / 宝塔 / 雷池 / Lucky 等）之后**，且后端端口不对公网直连（网络隔离是防止 IP 伪造的真正边界）。真实客户端 IP 由 `TRUST_PROXY` 环境变量控制（默认信任单反代），多跳或接入 CDN 的场景请参考 [Docker 部署 - 反向代理部署](https://www.160621.xyz/magicpush/guide/deploy/docker.html)。
+
 ## 🛠️ 技术栈
 
 ### 后端

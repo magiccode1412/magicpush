@@ -11,7 +11,6 @@ require('./config/version');
 const routes = require('./routes');
 const { errorMiddleware, notFoundMiddleware } = require('./middleware/error.middleware');
 const logger = require('./utils/logger');
-const getRealIP = require('./utils/ip');
 const requestIdMiddleware = require('./middleware/requestId.middleware');
 const retentionService = require('./services/retention.service');
 const { registerShutdown } = require('./utils/shutdown');
@@ -26,11 +25,27 @@ if (!fs.existsSync(logsDir)) {
   fs.mkdirSync(logsDir, { recursive: true });
 }
 
+/**
+ * 解析 TRUST_PROXY 配置（部署契约见 README）：
+ * - 不填 / 空        → 默认 1（单反代，信任第 1 跳）
+ * - 纯数字字符串     → 数字跳数（0=直连/本地开发；N=反代前还叠了 N-1 个受信代理）
+ * - 其他             → 视为逗号分隔的 CIDR/IP 列表（按对端 IP 是否落入受信网段判定，更安全）
+ * @param {string} [raw]
+ * @returns {number | string[]}
+ */
+function parseTrustProxy(raw) {
+  const v = (raw || '').trim();
+  if (!v) return 1;
+  if (/^\d+$/.test(v)) return Math.max(0, parseInt(v, 10));
+  return v.split(',').map(s => s.trim()).filter(Boolean);
+}
+
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// 信任第一跳反向代理，使 req.ip 返回真实客户端 IP
-app.set('trust proxy', 1);
+// 真实客户端 IP 由 trust proxy 机制解析为 req.ip；默认信任单反代（跳数 1），
+// 可用 TRUST_PROXY 覆盖（数字跳数或 CIDR/IP 列表）。
+app.set('trust proxy', parseTrustProxy(process.env.TRUST_PROXY));
 
 // 初始化数据库
 initDatabase().catch(err => {
@@ -56,7 +71,7 @@ app.use(requestIdMiddleware);
 app.use((req, res, next) => {
   logger.info(`${req.method} ${req.originalUrl}`, {
     requestId: req.requestId,
-    ip: getRealIP(req),
+    ip: req.ip,
     userAgent: req.get('User-Agent'),
   });
 

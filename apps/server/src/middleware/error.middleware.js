@@ -1,6 +1,5 @@
 const ResponseUtil = require('../utils/response');
 const logger = require('../utils/logger');
-const getRealIP = require('../utils/ip');
 
 /**
  * 全局错误处理中间件
@@ -13,7 +12,7 @@ const errorMiddleware = (err, req, res, _next) => {
     requestId: req.requestId,
     url: req.originalUrl,
     method: req.method,
-    ip: getRealIP(req),
+    ip: req.ip,
   });
 
   // 处理特定类型的错误
