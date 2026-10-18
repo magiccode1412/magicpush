@@ -25,7 +25,7 @@
     "https-proxy-agent": "^7.0.2",
     "jsonwebtoken": "^9.0.2",
     "mqtt": "^5.10.1",
-    "nodemailer": "^8.0.5",
+    "nodemailer": "^8.0.8",
     "protobufjs": "^8.7.0",
     "socks-proxy-agent": "^8.0.2",
     "uuid": "^14.0.1",
