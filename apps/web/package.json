@@ -25,7 +25,7 @@
     "@vitejs/plugin-vue": "^5.0.4",
     "autoprefixer": "^10.4.20",
     "jsdom": "^24.1.0",
-    "postcss": "^8.5.18",
+    "postcss": "8.5.23",
     "tailwind-merge": "^2.5.5",
     "tailwindcss": "^3.4.3",
     "tailwindcss-animate": "^1.0.7",
