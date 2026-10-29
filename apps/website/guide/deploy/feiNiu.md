@@ -36,9 +36,31 @@ MagicPush 已上架[飞牛NAS](https://www.fnos.com/)应用商店，支持一键
 
 ### 3. 选择飞牛OS 预配置
 
+**v1.14.0（当前）**
+
+在「数据来源类型」中选择 **通用**，标题字段填入`$.title`，内容字段填入`$.body`即可
+
+**v1.14.1发布后**
+
 在「数据来源类型」中选择 **飞牛OS**。
 
 这是系统内置的预设模板，字段映射（`title` / `body`）已自动处理，无需手动填写。想自定义格式可改为「通用」模板，详见[入站配置指南](/guide/api/inbound-config)。
+
+附上飞牛通知的请求体示例：
+
+```json
+{
+    "eventId":"webhook-test-1792151841175",
+    "providerType":"",
+    "providerId":"",
+    "eventType":"",
+    "occurredAtMs":0,
+    "level":"normal",
+    "title":"test-测试推送",
+    "body":"设备名称：vm-fnos\n触发告警：test-测试推送\n告警详情：这是一条测试消息。\n触发时间：2026-10-16 19:57:21 +08:00",
+    "data":null
+}
+```
 
 ### 4. 把接收地址填入飞牛
 
