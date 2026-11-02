@@ -11,9 +11,12 @@ importers:
 
   .:
     dependencies:
+      postcss:
+        specifier: 8.5.18
+        version: 8.5.18
       vitepress:
         specifier: ^1.3.4
-        version: 1.6.4(@algolia/client-search@5.55.0)(postcss@8.5.15)(search-insights@2.17.3)
+        version: 1.6.4(@algolia/client-search@5.55.0)(postcss@8.5.18)(search-insights@2.17.3)
 
 packages:
 
@@ -698,8 +701,8 @@ packages:
   picocolors@1.1.1:
     resolution: {integrity: sha512-xceH2snhtb5M9liqDsmEw56le376mTZkEX/jEb/RxNFyegNul7eNslCXP9FDj/Lcu0X8KEyMceP2ntpaHrDEVA==}
 
-  postcss@8.5.15:
-    resolution: {integrity: sha512-FfR8sjd4em2T6fb3I2MwAJU7HWVMr9zba+enmQeeWFfCbm+UOC/0X4DS8XtpUTMwWMGbjKYP7xjfNekzyGmB3A==}
+  postcss@8.5.18:
+    resolution: {integrity: sha512-xdB1oSLHbz1vRWgCDalrCqEFTWzFlhqFC5tIHLMOSUIjhm3XXQ1qrFy8S/ESr1JYRRXqM3c1QFiMZUJdUTqyMQ==}
     engines: {node: ^10 || ^12 || >=14}
 
   preact@10.29.2:
@@ -1234,7 +1237,7 @@ snapshots:
       '@vue/shared': 3.5.38
       estree-walker: 2.0.2
       magic-string: 0.30.21
-      postcss: 8.5.15
+      postcss: 8.5.18
       source-map-js: 1.2.1
 
   '@vue/compiler-ssr@3.5.38':
@@ -1467,7 +1470,7 @@ snapshots:
 
   picocolors@1.1.1: {}
 
-  postcss@8.5.15:
+  postcss@8.5.18:
     dependencies:
       nanoid: 3.3.15
       picocolors: 1.1.1
@@ -1588,12 +1591,12 @@ snapshots:
   vite@5.4.21:
     dependencies:
       esbuild: 0.25.12
-      postcss: 8.5.15
+      postcss: 8.5.18
       rollup: 4.62.2
     optionalDependencies:
       fsevents: 2.3.3
 
-  vitepress@1.6.4(@algolia/client-search@5.55.0)(postcss@8.5.15)(search-insights@2.17.3):
+  vitepress@1.6.4(@algolia/client-search@5.55.0)(postcss@8.5.18)(search-insights@2.17.3):
     dependencies:
       '@docsearch/css': 3.8.2
       '@docsearch/js': 3.8.2(@algolia/client-search@5.55.0)(search-insights@2.17.3)
@@ -1614,7 +1617,7 @@ snapshots:
       vite: 5.4.21
       vue: 3.5.38
     optionalDependencies:
-      postcss: 8.5.15
+      postcss: 8.5.18
     transitivePeerDependencies:
       - '@algolia/client-search'
       - '@types/node'
