@@ -129,18 +129,6 @@
           </div>
           <el-switch v-model="settingsStore.checkUpdateEnabled" />
         </div>
-        <!-- 包含 dev 分支子行 -->
-        <div v-if="settingsStore.checkUpdateEnabled" class="flex items-center justify-between px-5 py-3 pl-[52px] border-b border-gray-100 dark:border-gray-700">
-          <div>
-            <p class="text-sm font-medium text-gray-700 dark:text-gray-300">包含 dev 分支</p>
-            <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">同时检测开发分支的预发布版本</p>
-          </div>
-          <el-switch v-model="settingsStore.checkUpdateDevEnabled" />
-        </div>
-        <!-- 提示文字 -->
-        <div v-if="settingsStore.checkUpdateEnabled && settingsStore.checkUpdateDevEnabled" class="px-5 pb-3 pl-[52px]">
-          <p class="text-xs text-gray-400 dark:text-gray-500">dev 分支为开发中的预发布版本，可能不稳定</p>
-        </div>
       </div>
 
       <!-- 用户注册开关 (管理员) -->

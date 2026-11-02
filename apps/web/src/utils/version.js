@@ -1,7 +1,7 @@
 // 版本信息（默认值，成功从服务端获取后会被覆盖）
 export const VERSION = {
   name: 'MagicPush',
-  version: '1.14.0',
+  version: '1.15.0',
   get displayName() {
     return this.name + (this.version ? ` v${this.version}` : '')
   },
@@ -29,11 +29,9 @@ export const fetchVersionFromServer = async () => {
   return null
 }
 
-// 远程版本检测（前端直连 jsdelivr CDN）
-const CDN_VERSION_URL = 'https://cdn.jsdelivr.net/gh/magiccode1412/magicpush@main/version.json'
-const CDN_DEV_VERSION_URL = 'https://cdn.jsdelivr.net/gh/magiccode1412/magicpush@dev/version.json'
+// 远程版本检测（前端直连自托管 version 接口）
+const CDN_VERSION_URL = 'https://api.160621.xyz/v1/magicpush/version'
 const REMOTE_CACHE_KEY = 'mp_remote_version_check'
-const REMOTE_DEV_CACHE_KEY = 'mp_remote_dev_version_check'
 const CACHE_DURATION = 24 * 60 * 60 * 1000 // 24小时缓存
 
 /**
@@ -45,17 +43,6 @@ export const getCheckUpdateEnabled = () => {
     return val === null ? true : val === 'true'
   } catch {
     return true
-  }
-}
-
-/**
- * 获取是否同时检测 dev 版本更新（从 localStorage 读取，默认关闭）
- */
-export const getCheckUpdateDevEnabled = () => {
-  try {
-    return localStorage.getItem('mp_check_update_dev_enabled') === 'true'
-  } catch {
-    return false
   }
 }
 
@@ -104,15 +91,6 @@ async function _fetchRemoteVersion(url, cacheKey, force = false) {
   } catch {
     return null
   }
-}
-
-/**
- * 检测 dev 分支是否有新版本可用
- * @param {boolean} force - 是否强制忽略缓存重新请求
- * @returns {Promise<{hasUpdate: boolean, remoteVersion: string, latestChangelog: Object|null}|null>}
- */
-export const checkRemoteVersionDev = async (force = false) => {
-  return _fetchRemoteVersion(CDN_DEV_VERSION_URL, REMOTE_DEV_CACHE_KEY, force)
 }
 
 /**

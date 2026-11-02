@@ -12,7 +12,6 @@ describe('settings store', () => {
   it('defaults check-update flags correctly', () => {
     const store = useSettingsStore()
     expect(store.checkUpdateEnabled).toBe(true)
-    expect(store.checkUpdateDevEnabled).toBe(false)
   })
 
   it('isProxyEnabled is false when proxy is disabled', () => {

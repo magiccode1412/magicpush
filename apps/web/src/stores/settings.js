@@ -16,9 +16,6 @@ export const useSettingsStore = defineStore('settings', () => {
       : localStorage.getItem('mp_check_update_enabled') === 'true'
   )
 
-  // 是否同时检测 dev 版本（默认关闭）
-  const checkUpdateDevEnabled = ref(localStorage.getItem('mp_check_update_dev_enabled') === 'true')
-
   // 获取实际使用的 baseUrl（代理或原始）
   const getBaseUrl = (originalUrl) => {
     if (!isProxyEnabled.value) {
@@ -50,10 +47,6 @@ export const useSettingsStore = defineStore('settings', () => {
     localStorage.setItem('mp_check_update_enabled', value.toString())
   })
 
-  watch(checkUpdateDevEnabled, (value) => {
-    localStorage.setItem('mp_check_update_dev_enabled', value.toString())
-  })
-
   // 设置代理
   const setProxy = (enabled, url) => {
     proxyEnabled.value = enabled
@@ -71,7 +64,6 @@ export const useSettingsStore = defineStore('settings', () => {
     proxyUrl,
     isProxyEnabled,
     checkUpdateEnabled,
-    checkUpdateDevEnabled,
     getBaseUrl,
     setProxy,
     clearProxy,

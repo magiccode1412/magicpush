@@ -1,5 +1,27 @@
 # 更新日志 (Changelog):
 
+## [1.15.0] - 2026-11-02
+
+### 新增 (Features)
+- 新增推送渠道-MQTT（将消息发布到任意 MQTT Broker，支持 JSON / 纯文本载荷，可配置 QoS / Retain / TLS）
+- 入站配置新增「飞牛OS」数据来源类型（内置标题/内容映射模板）
+- 新增 `DEBUG_BODY` 环境变量，可临时将请求体打印到终端用于调试
+
+### 改进 (Improvements)
+- 改用 trust proxy 解析真实客户端 IP
+- 官网：优化 SEO 配置并添加站点地图；新增开发版文档标识与横幅；增强文档渠道自动判定
+
+### 安全 (Security)
+- 升级并修复大量依赖安全漏洞：vite、fast-uri、nanoid、postcss、qs、body-parser、nodemailer、follow-redirects、source-map-js、ip-address、axios、lodash-es 等
+
+### 其他 (Other)
+- 项目结构迁移至 `apps` 目录（server / web / website / fnapp）
+- CI/CD：重构 Docker 多平台统一构建流水线，新增 EdgeOne 文档部署等
+- 移除前端「开发版（dev 分支）」更新检测功能
+- 前端远程版本检测源由 jsDelivr CDN 切换为自托管地址 `https://api.160621.xyz/v1/magicpush/version`
+
+---
+
 ## [1.14.0] - 2026-07-30
 
 ### 更新 (Changes)

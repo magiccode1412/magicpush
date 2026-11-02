@@ -119,7 +119,6 @@
         v-model:visible="showUpdateDialog"
         :latest-changelog="latestChangelog"
         :remote-version="currentRemoteVersion"
-        :is-dev-version="isCurrentDevVersion"
       />
     </div>
   </div>
@@ -132,7 +131,7 @@ import { useAuthStore } from '@/stores/auth'
 import { useThemeStore } from '@/stores/theme'
 import { useSettingsStore } from '@/stores/settings'
 import { ElMessage } from 'element-plus'
-import { VERSION, fetchVersionFromServer, checkRemoteVersion, checkRemoteVersionDev } from '@/utils/version'
+import { VERSION, fetchVersionFromServer, checkRemoteVersion } from '@/utils/version'
 import VersionUpdateDialog from '@/components/VersionUpdateDialog.vue'
 import {
   Menu,
@@ -164,21 +163,12 @@ const latestChangelog = ref(null)
 const hasRemoteUpdate = ref(false)
 const checkingUpdate = ref(false)
 const currentRemoteVersion = ref('')
-const isCurrentDevVersion = ref(false)
 
 // 手动检查更新（强制刷新，不受开关影响）
 const handleCheckUpdate = async () => {
   checkingUpdate.value = true
-  const promises = [checkRemoteVersion(true)]
-  if (settingsStore.checkUpdateDevEnabled) {
-    promises.push(checkRemoteVersionDev(true))
-  }
-  const results = await Promise.all(promises)
+  const mainResult = await checkRemoteVersion(true)
   checkingUpdate.value = false
-
-  // 优先显示有更新的结果（main > dev），都无更新则提示最新
-  const mainResult = results[0]
-  const devResult = results[1]
 
   if (!mainResult) {
     ElMessage.warning('无法获取远程版本信息，请检查网络')
@@ -188,16 +178,6 @@ const handleCheckUpdate = async () => {
   if (mainResult.hasUpdate) {
     latestChangelog.value = mainResult.latestChangelog
     currentRemoteVersion.value = mainResult.remoteVersion
-    isCurrentDevVersion.value = false
-    showUpdateDialog.value = true
-    return
-  }
-
-  if (devResult && devResult.hasUpdate) {
-    latestChangelog.value = devResult.latestChangelog
-    // 去掉后缀的 " (dev)"，由弹窗统一展示标识
-    currentRemoteVersion.value = devResult.remoteVersion.replace(/ \(dev\)$/, '')
-    isCurrentDevVersion.value = true
     showUpdateDialog.value = true
     return
   }
@@ -223,10 +203,7 @@ onMounted(async () => {
 
   // 静默检测远程是否有新版（受开关控制）
   if (settingsStore.checkUpdateEnabled) {
-    const [remoteResult, devResult] = await Promise.all([
-      checkRemoteVersion(false),
-      settingsStore.checkUpdateDevEnabled ? checkRemoteVersionDev(false) : null,
-    ])
+    const remoteResult = await checkRemoteVersion(false)
 
     if (remoteResult?.hasUpdate) {
       hasRemoteUpdate.value = true
@@ -234,22 +211,8 @@ onMounted(async () => {
       if (lastNotifiedRemote !== remoteResult.remoteVersion) {
         latestChangelog.value = remoteResult.latestChangelog
         currentRemoteVersion.value = remoteResult.remoteVersion
-        isCurrentDevVersion.value = false
         showUpdateDialog.value = true
         localStorage.setItem('mp_last_remote_version', remoteResult.remoteVersion)
-      }
-    }
-
-    // dev 分支有新版且未通知过
-    if (devResult?.hasUpdate) {
-      hasRemoteUpdate.value = true
-      const lastNotifiedDev = localStorage.getItem('mp_last_remote_dev_version')
-      if (lastNotifiedDev !== devResult.remoteVersion) {
-        latestChangelog.value = devResult.latestChangelog
-        currentRemoteVersion.value = devResult.remoteVersion.replace(/ \(dev\)$/, '')
-        isCurrentDevVersion.value = true
-        showUpdateDialog.value = true
-        localStorage.setItem('mp_last_remote_dev_version', devResult.remoteVersion)
       }
     }
   }
