@@ -64,7 +64,7 @@
         <div class="text-center group">
           <div class="mb-3">
             <div class="relative overflow-hidden rounded-xl bg-gradient-to-br from-sky-400 to-blue-500 p-1 max-w-[200px] mx-auto group-hover:scale-105 transition-transform duration-300">
-              <img src="/image/alipay.png" alt="支付宝" class="max-w-[200px] mx-auto w-full aspect-[3/4] object-contain rounded-lg bg-white">
+              <img src="/image/alipay.png" alt="支付宝" class="max-w-[200px] mx-auto w-full aspect-square object-contain rounded-lg bg-white">
             </div>
           </div>
           <span class="inline-flex items-center gap-1.5 px-4 py-2 bg-sky-500 text-white text-sm rounded-lg">
@@ -77,7 +77,7 @@
         <div class="text-center group">
           <div class="mb-3">
             <div class="relative overflow-hidden rounded-xl bg-gradient-to-br from-green-400 to-emerald-600 p-1 max-w-[200px] mx-auto group-hover:scale-105 transition-transform duration-300">
-              <img src="/image/wechat.png" alt="微信" class="max-w-[200px] mx-auto w-full aspect-[3/4] object-contain rounded-lg bg-white">
+              <img src="/image/wechat.png" alt="微信" class="max-w-[200px] mx-auto w-full aspect-square object-contain rounded-lg bg-white">
             </div>
           </div>
           <span class="inline-flex items-center gap-1.5 px-4 py-2 bg-green-500 text-white text-sm rounded-lg">
@@ -130,40 +130,10 @@
       </div>
     </div>
 
-    <!-- 技术栈 -->
-    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6 text-center">
-      <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">技术栈</h3>
-      <div class="flex flex-wrap gap-3 justify-center">
-        <span
-          v-for="tech in techStack"
-          :key="tech"
-          class="px-4 py-2 rounded-full bg-gray-100 dark:bg-gray-700 text-sm font-medium text-gray-700 dark:text-gray-300"
-        >
-          {{ tech }}
-        </span>
-      </div>
-    </div>
-
   </div>
 </template>
 
 <script setup>
 import { Github, Globe, FileText, Clock, Heart } from 'lucide-vue-next'
 import { VERSION } from '@/utils/version'
-
-const techStack = [
-  'Node.js 18+',
-  'Express.js 4.x',
-  'SQLite3 (better-sqlite3)',
-  'JWT (jsonwebtoken)',
-  'bcryptjs',
-  'express-rate-limit',
-  'Vue 3 (Composition API)',
-  'Vite 5.x',
-  'Tailwind CSS 3.x',
-  'Element Plus',
-  'Pinia',
-  'Vue Router 4.x',
-  'Docker',
-]
 </script>
