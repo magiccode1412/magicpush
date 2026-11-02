@@ -14,7 +14,8 @@
   },
   "pnpm": {
     "overrides": {
-      "esbuild": "^0.25.0"
+      "esbuild": "^0.25.0",
+      "nanoid": "3.3.18"
     },
     "onlyBuiltDependencies": [
       "esbuild"
