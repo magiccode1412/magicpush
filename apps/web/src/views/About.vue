@@ -64,7 +64,7 @@
         <div class="text-center group">
           <div class="mb-3">
             <div class="relative overflow-hidden rounded-xl bg-gradient-to-br from-sky-400 to-blue-500 p-1 max-w-[200px] mx-auto group-hover:scale-105 transition-transform duration-300">
-              <img src="/image/alipay.png" alt="支付宝" class="max-w-[200px] mx-auto w-full aspect-square object-contain rounded-lg bg-white">
+              <img src="/image/alipay.webp" alt="支付宝" class="max-w-[200px] mx-auto w-full aspect-square object-contain rounded-lg bg-white">
             </div>
           </div>
           <span class="inline-flex items-center gap-1.5 px-4 py-2 bg-sky-500 text-white text-sm rounded-lg">
@@ -77,7 +77,7 @@
         <div class="text-center group">
           <div class="mb-3">
             <div class="relative overflow-hidden rounded-xl bg-gradient-to-br from-green-400 to-emerald-600 p-1 max-w-[200px] mx-auto group-hover:scale-105 transition-transform duration-300">
-              <img src="/image/wechat.png" alt="微信" class="max-w-[200px] mx-auto w-full aspect-square object-contain rounded-lg bg-white">
+              <img src="/image/wechat.webp" alt="微信" class="max-w-[200px] mx-auto w-full aspect-square object-contain rounded-lg bg-white">
             </div>
           </div>
           <span class="inline-flex items-center gap-1.5 px-4 py-2 bg-green-500 text-white text-sm rounded-lg">

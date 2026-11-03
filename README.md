@@ -5,7 +5,8 @@
     <a href="https://www.160621.xyz/magicpush" target="_blank">官方网站</a> |
     <a href="https://www.160621.xyz/magicpush/guide/dev/overview.html" target="_blank">开发文档</a> |
     <a href="https://github.com/magiccode1412/magicpush" target="_blank">项目地址</a> |
-    <a href="docs/CHANGELOG.md">更新日志</a>
+    <a href="docs/CHANGELOG.md">更新日志</a> |
+    <a href="https://cnb.cool/magiccode1412/magicpush/-/issues" target="_blank">唯一反馈渠道</a>
   </span>
   <p>一个支持多种消息渠道的推送服务管理平台，用户可以通过标准化的REST API接口将消息推送到多种通知渠道。</p>
   <p>
@@ -35,19 +36,15 @@
     <td align="center">
       <span>支付宝</span>
       <br>
-      <img src="./public/image/alipay.png" alt="alipay" height="256px">
+      <img src="./public/image/alipay.webp" alt="alipay" height="256px">
     </td>
     <td align="center">
       <span>微信</span>
       <br>
-      <img src="./public/image/wechat.png" alt="wechat" height="256px">
+      <img src="./public/image/wechat.webp" alt="wechat" height="256px">
     </td>
   </tr>
 </table>
-
-## 🌐 Demo站
-
-由于没有好的沙箱环境用于部署Demo，且Docker部署门槛不高，故不再提供Demo预览
 
 ## 预览
 
@@ -59,16 +56,6 @@
     <img src="./public/image/intro/03.png" alt="preview">
     <img src="./public/image/intro/04.png" alt="preview">
     <img src="./public/image/intro/05.png" alt="preview">
-    <!-- <img src="./public/image/1.webp" alt="preview">
-    <img src="./public/image/2.webp" alt="preview">
-    <img src="./public/image/3.webp" alt="preview">
-    <img src="./public/image/4.webp" alt="preview">
-    <img src="./public/image/5.webp" alt="preview">
-    <img src="./public/image/6.webp" alt="preview">
-    <img src="./public/image/7.webp" alt="preview">
-    <img src="./public/image/8.webp" alt="preview">
-    <img src="./public/image/9.webp" alt="preview">
-    <img src="./public/image/10.webp" alt="preview"> -->
   </div>
 </details>
 
