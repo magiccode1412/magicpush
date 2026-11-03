@@ -9,7 +9,7 @@
     "preview": "vitepress preview"
   },
   "dependencies": {
-    "postcss": "8.5.18",
+    "postcss": "8.5.23",
     "vitepress": "^1.3.4"
   },
   "pnpm": {
