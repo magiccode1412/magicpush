@@ -68,6 +68,88 @@ body {
   margin-top: 0 !important;
 }
 
+/* 移动端弹窗适配：el-dialog / el-drawer 的 width、size 以固定像素（400~600px）
+   写在行内样式里，窄屏会把 .el-overlay 撑出屏幕并出现横向滚动。
+   以下以浮层自身宽度作为上限，桌面端不受影响，小屏自动收进视口。 */
+.el-overlay,
+.el-overlay-message-box {
+  overflow-x: hidden;
+}
+
+.el-dialog:not(.is-fullscreen) {
+  max-width: calc(100% - 32px) !important;
+}
+
+.el-drawer.ltr,
+.el-drawer.rtl {
+  max-width: 100% !important;
+}
+
+/* ElMessageBox 默认 420px，自定义 HTML / customStyle 也可能超宽 */
+.el-message-box {
+  max-width: min(var(--el-messagebox-width, 420px), 100%) !important;
+}
+
+/* 全局提示、通知、下拉/气泡等浮层 */
+.el-message,
+.el-notification {
+  max-width: calc(100% - 32px) !important;
+}
+
+.el-popper {
+  max-width: calc(100vw - 16px) !important;
+}
+
+/* 长文本、长链接、代码块只在内容区换行或滚动，不把弹窗撑宽 */
+.el-dialog__body,
+.el-drawer__body,
+.el-message-box__content {
+  min-width: 0;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+
+.el-dialog__body img,
+.el-dialog__body pre,
+.el-dialog__body table,
+.el-drawer__body img,
+.el-drawer__body pre,
+.el-drawer__body table,
+.el-message-box__content img,
+.el-message-box__content pre {
+  max-width: 100%;
+}
+
+.el-dialog__body pre,
+.el-dialog__body table,
+.el-drawer__body pre,
+.el-drawer__body table,
+.el-message-box__content pre {
+  overflow-x: auto;
+}
+
+@media (max-width: 640px) {
+  /* 窄屏下底部按钮允许换行，避免一行 nowrap 按钮把弹窗撑宽 */
+  .el-dialog__footer,
+  .el-drawer__footer {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 8px;
+  }
+
+  .el-dialog__footer > div,
+  .el-drawer__footer > div {
+    flex-wrap: wrap;
+  }
+
+  /* Element Plus 默认给相邻按钮 12px margin，改用 gap 后清零 */
+  .el-dialog__footer .el-button,
+  .el-drawer__footer .el-button {
+    margin-left: 0;
+  }
+}
+
 ::-webkit-scrollbar-track {
   background: transparent;
 }

@@ -245,7 +245,7 @@
           <span class="text-lg font-semibold text-gray-900 dark:text-white">主题模式</span>
         </div>
       </template>
-      <div class="grid grid-cols-3 gap-4 p-2">
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 p-2">
         <!-- 浅色模式 -->
         <div
           class="relative cursor-pointer rounded-xl border-2 p-6 flex flex-col items-center gap-3 transition-all duration-200"

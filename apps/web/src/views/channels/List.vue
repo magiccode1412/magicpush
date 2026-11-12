@@ -807,7 +807,8 @@ onMounted(() => {
 .channel-type-dropdown.el-select__popper {
   /* 关键：使用 min-content 防止被长内容撑开，同时不设最大值保持与输入框等宽 */
   width: fit-content !important;
-  max-width: var(--el-dropdown-menu-max-width, 480px) !important;
+  /* 该规则带 !important 且优先级高于全局 .el-popper，需自行限制移动端宽度 */
+  max-width: min(var(--el-dropdown-menu-max-width, 480px), calc(100vw - 16px)) !important;
 }
 
 .channel-type-dropdown .el-select-dropdown__wrap {
