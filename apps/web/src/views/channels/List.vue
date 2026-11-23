@@ -397,7 +397,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed, onMounted } from 'vue'
+import { ref, reactive, computed, onMounted, watch } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { getChannels, getChannelTypes, createChannel, updateChannel, deleteChannel, testChannel } from '@/api/channel'
 import {
@@ -760,7 +760,15 @@ const resetForm = () => {
   form.channelType = ''
   form.name = ''
   form.config = {}
+  formRef.value?.clearValidate()
 }
+
+// 监听对话框关闭，重置表单，避免下次打开时残留编辑状态
+watch(showCreateDialog, (newVal) => {
+  if (!newVal) {
+    resetForm()
+  }
+})
 
 const openClawbotBind = () => {
   clawbotBindMode.value = 'create'
