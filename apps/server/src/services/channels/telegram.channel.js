@@ -15,7 +15,10 @@ const logger = require('../../utils/logger');
 class TelegramChannel extends BaseChannel {
   constructor(config, channelKey) {
     super(config, channelKey);
-    this.apiUrl = `https://api.telegram.org/bot${config.botToken}`;
+    const host = typeof config.host === 'string' && config.host.trim()
+      ? config.host.trim().replace(/\/+$/, '')
+      : 'https://api.telegram.org';
+    this.apiUrl = `${host}/bot${config.botToken}`;
     this.chatId = config.chatId;
     this.proxyUrl = config.proxyUrl;
   }
@@ -258,6 +261,17 @@ class TelegramChannel extends BaseChannel {
     if (!config.chatId || config.chatId.trim() === '') {
       return { valid: false, message: 'Chat ID不能为空' };
     }
+    if (config.host !== undefined && config.host !== null && `${config.host}`.trim() !== '') {
+      let hostUrl;
+      try {
+        hostUrl = new URL(`${config.host}`.trim());
+      } catch {
+        return { valid: false, message: 'API Host 必须是有效的地址' };
+      }
+      if (hostUrl.protocol !== 'http:' && hostUrl.protocol !== 'https:') {
+        return { valid: false, message: 'API Host 只支持 http 或 https 协议' };
+      }
+    }
     return { valid: true, message: '' };
   }
 
@@ -378,6 +392,14 @@ class TelegramChannel extends BaseChannel {
         required: true,
         placeholder: '请输入Chat ID',
         description: '目标聊天ID（用户ID或群组ID）',
+      },
+      {
+        name: 'host',
+        label: 'API Host',
+        type: 'text',
+        required: false,
+        placeholder: 'https://tg.example.com',
+        description: '可选，自定义 Telegram API 地址（如 Cloudflare 反代），留空使用官方地址',
       },
       {
         name: 'proxyUrl',

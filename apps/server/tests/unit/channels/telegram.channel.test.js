@@ -40,6 +40,28 @@ test('构造：apiUrl 由 botToken 拼接', () => {
   assert.strictEqual(ch.apiUrl, `https://api.telegram.org/bot${TOKEN}`);
 });
 
+test('构造：自定义 host 使用反代地址并去除尾部斜杠', () => {
+  const ch = new TelegramChannel({ botToken: TOKEN, chatId: CHAT, host: '  https://tg.example.com///  ' });
+  assert.strictEqual(ch.apiUrl, `https://tg.example.com/bot${TOKEN}`);
+});
+
+test('构造：host 为空时回退官方地址', () => {
+  const ch = new TelegramChannel({ botToken: TOKEN, chatId: CHAT, host: '   ' });
+  assert.strictEqual(ch.apiUrl, `https://api.telegram.org/bot${TOKEN}`);
+});
+
+test('send：自定义 host 时请求反代地址', async () => {
+  const ch = new TelegramChannel({ botToken: TOKEN, chatId: CHAT, host: 'https://tg.example.com/' });
+  await ch.send({ title: 'T', content: 'C' });
+  assert.strictEqual(lastPost.url, `https://tg.example.com/bot${TOKEN}/sendMessage`);
+});
+
+test('getConfigFields：包含可选的 host 字段', () => {
+  const field = TelegramChannel.getConfigFields().find(f => f.name === 'host');
+  assert.ok(field);
+  assert.strictEqual(field.required, false);
+});
+
 test('send：text 类型带标题加粗', async () => {
   const ch = new TelegramChannel({ botToken: TOKEN, chatId: CHAT });
   await ch.send({ title: 'T', content: 'C' });
@@ -128,4 +150,12 @@ test('validate：botToken / chatId 必填', () => {
   assert.strictEqual(ch.validate({ botToken: '', chatId: 'x' }).valid, false);
   assert.strictEqual(ch.validate({ botToken: 't', chatId: '' }).valid, false);
   assert.strictEqual(ch.validate({ botToken: TOKEN, chatId: CHAT }).valid, true);
+});
+
+test('validate：host 可选，非法地址或非 http(s) 协议被拒绝', () => {
+  const ch = new TelegramChannel({ botToken: TOKEN, chatId: CHAT });
+  assert.strictEqual(ch.validate({ botToken: TOKEN, chatId: CHAT, host: '' }).valid, true);
+  assert.strictEqual(ch.validate({ botToken: TOKEN, chatId: CHAT, host: 'https://tg.example.com' }).valid, true);
+  assert.strictEqual(ch.validate({ botToken: TOKEN, chatId: CHAT, host: 'not-a-url' }).valid, false);
+  assert.strictEqual(ch.validate({ botToken: TOKEN, chatId: CHAT, host: 'ftp://example.com' }).valid, false);
 });

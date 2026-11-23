@@ -97,6 +97,7 @@ Telegram Bot 是 Telegram 官方提供的机器人平台，通过 BotFather 创�
 | **Bot Token** | 从 BotFather 获取的 Bot Token | `123456789:ABCdefGHIJKlmNoPQRsTUVwxyZ` |
 | **Chat ID** | 目标聊天 ID（用户 ID 或群组 ID） | `123456789` 或 `-1001234567890` |
 | **代理地址**（可选） | 用于访问 Telegram API 的代理地址 | `http://127.0.0.1:7890` |
+| **API Host**（可选） | 自定义 Telegram API 地址，用于 Cloudflare 等反向代理 | `https://tg.example.com` |
 
 > 💡 **关于代理**：
 > - 如果服务器在国内，通常无法直连 Telegram API，需要配置代理
@@ -346,6 +347,16 @@ MagicPush 自动处理代理配置：
 2. MagicPush 会自动创建对应的代理 Agent
 3. 所有发往 Telegram API 的请求都会经过代理
 
+### 自定义 API Host（反向代理）
+
+服务器无法直连 Telegram 时，也可以把 Telegram API 反代到自己的域名，并在渠道配置中填写 `API Host`：
+
+1. 将 `/bot<Token>/<方法>` 路径原样反代到你的域名（例如 `https://tg.example.com/bot<Token>/<方法>`）
+2. 在渠道配置中将 `API Host` 填为 `https://tg.example.com`（只填域名，不要带 `/bot...` 部分）
+3. 留空时使用官方地址 `https://api.telegram.org`
+
+> ⚠️ Bot Token 会出现在请求路径中，请只填写可信的反代地址并启用 HTTPS，避免 Token 被代理日志记录或泄露。反代需保留 `/bot<Token>/<方法>` 路径，且不要拦截图片/文件消息的 `multipart/form-data` 请求。
+
 ### Parse Mode
 
 根据 `type` 参数，MagicPush 自动设置 `parse_mode`：
@@ -393,6 +404,13 @@ MagicPush 自动处理代理配置：
 1. 在服务器上运行代理软件（如 Clash、V2Ray 等）
 2. 在 MagicPush 渠道配置中填写代理地址（如 `http://127.0.0.1:7890`）
 3. 确保代理软件允许局域网连接（如果需要）
+
+### Q: 使用 Cloudflare 等反代后发送失败？
+
+**解决**：
+1. 确认 `API Host` 只填写域名部分，如 `https://tg.example.com`，不要带 `/bot<Token>` 路径
+2. 确认反代规则原样透传 `/bot<Token>/<方法>`，且关闭对该路径的缓存
+3. 确认图片/文件消息的 `multipart/form-data` 请求没有被拦截
 
 ### Q: 如何发送到群组？
 
