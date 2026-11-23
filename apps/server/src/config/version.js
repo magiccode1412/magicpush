@@ -6,7 +6,7 @@ const path = require('path');
  * 从 version.json 读取版本信息，确保版本号统一管理
  */
 
-const versionPath = path.resolve(__dirname, '../../../version.json');
+const versionPath = path.resolve(__dirname, '../../../../version.json');
 
 let versionCache = null;
 
