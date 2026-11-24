@@ -55,6 +55,19 @@
           "pipelineName": "{{ CNB_PIPELINE_NAME }}"
         }
 
+.github: &github
+  - name: 同步仓库到Github
+    imports: https://cnb.cool/magiccode1412/secret/-/blob/main/env.yml
+    stages:
+      - name: sync_to_github
+        image: tencentcom/git-sync
+        settings:
+          target_url: https://github.com/${GITHUB_USERNAME}/${CNB_REPO_NAME_LOWERCASE}.git
+          auth_type: https
+          username: "${GITHUB_USERNAME}"
+          password: "${GITHUB_ACCESS_TOKEN}"
+          force: true  
+
 # 云原生开发
 $:
   vscode:
@@ -74,23 +87,13 @@ $:
         - name: 防止报错
           script: ls -a
 
-  push:
-  - name: 同步仓库到Github
-    imports: https://cnb.cool/magiccode1412/secret/-/blob/main/env.yml
-    stages:
-      - name: sync_to_github
-        image: tencentcom/git-sync
-        settings:
-          target_url: https://github.com/${GITHUB_USERNAME}/${CNB_REPO_NAME_LOWERCASE}.git
-          auth_type: https
-          username: "${GITHUB_USERNAME}"
-          password: "${GITHUB_ACCESS_TOKEN}"
-          force: true  
-  - <<: *edgeone
-
 main:
   web_trigger_docker_cnb:
     - <<: *build_docker
+    
+  push:
+    - <<: *edgeone
+    - <<: *github
 
 dev:
   web_trigger_docker_dev:
@@ -100,4 +103,8 @@ dev:
       stages:
         - name: docker build && push
           script: bash ./scripts/docker.sh dev
+
+  push:
+    - <<: *edgeone
+    - <<: *github
 
