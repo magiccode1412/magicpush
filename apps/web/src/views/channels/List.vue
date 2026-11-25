@@ -5,7 +5,7 @@
         <h2 class="text-2xl font-bold text-gray-900 dark:text-white">渠道管理</h2>
         <p class="text-gray-500 dark:text-gray-400 mt-1">绑定和管理您的消息推送渠道</p>
       </div>
-      <el-button type="primary" @click="showCreateDialog = true">
+      <el-button type="primary" @click="openCreateDialog">
         <Plus class="w-4 h-4 mr-1" />
         绑定渠道
       </el-button>
@@ -123,7 +123,7 @@
       </div>
       <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">暂无渠道</h3>
       <p class="text-gray-500 dark:text-gray-400 mb-4">绑定您的第一个消息推送渠道</p>
-      <el-button type="primary" @click="showCreateDialog = true">
+      <el-button type="primary" @click="openCreateDialog">
         <Plus class="w-4 h-4 mr-1" />
         绑定渠道
       </el-button>
@@ -134,8 +134,10 @@
       v-model="showCreateDialog"
       :title="editingChannel ? '编辑渠道' : '绑定渠道'"
       width="500px"
+      destroy-on-close
     >
       <el-form
+        :key="formKey"
         ref="formRef"
         :model="form"
         :rules="formRules"
@@ -148,6 +150,8 @@
             class="w-full"
             popper-class="channel-type-dropdown"
             :disabled="!!editingChannel"
+            :validate-event="false"
+            @change="handleChannelTypeChange"
           >
             <el-option
               v-for="type in channelTypes"
@@ -447,6 +451,7 @@ const qqbotBindMode = ref('create')
 const qqbotBindChannelId = ref(null)
 
 const formRef = ref(null)
+const formKey = ref(0)
 const form = reactive({
   channelType: '',
   name: '',
@@ -621,6 +626,7 @@ const handleCommand = (command, channel) => {
       })
     }
     form.config = processedConfig
+    formKey.value += 1
     showCreateDialog.value = true
   } else if (command === 'rebind') {
     clawbotBindMode.value = 'rebind'
@@ -761,6 +767,16 @@ const resetForm = () => {
   form.name = ''
   form.config = {}
   formRef.value?.clearValidate()
+}
+
+const openCreateDialog = () => {
+  resetForm()
+  formKey.value += 1
+  showCreateDialog.value = true
+}
+
+const handleChannelTypeChange = () => {
+  formRef.value?.validateField('channelType')
 }
 
 // 监听对话框关闭，重置表单，避免下次打开时残留编辑状态
